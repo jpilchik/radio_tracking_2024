@@ -1,0 +1,940 @@
+---
+title: "Creating my datasheet"
+format: html
+---
+
+# Prep
+
+```{r load libraries}
+# Load required libraries
+library(dplyr)
+library(lubridate)
+library(readxl)
+library(leaflet)
+library(tidyverse)
+library(tidyr)
+```
+# Preparing Stream Surveys
+
+```{r add day and night shift differentiation into the stream survey 1}
+# Read in the stream survey data
+stream_survey_week1 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/Stream Survey Week 1.csv")
+
+# Convert date to remove the incorrect associated time and keep only the date 
+# Adjust date into the correct format
+stream_survey_week1$date <- as.Date(stream_survey_week1$date, format = "%m/%d/%Y")
+
+# Combine the date and start time into a DateTime column
+stream_survey_week1$dateTime <- as.POSIXct(paste(stream_survey_week1$date, 
+                                                 stream_survey_week1$startTime), 
+                                           format="%Y-%m-%d %H:%M")
+
+# Add Shift column based on the time ranges
+# Day shifts were from 5:00 EST to 11:00 EST
+stream_survey_week1 <- stream_survey_week1 %>%
+  mutate(
+    shift = case_when(
+        hour(dateTime) >= 4 & hour(dateTime) < 12 ~ "day",
+        TRUE ~ "night"  # Any other time is night shift
+    )
+  )
+
+# Display the first few rows to check the result
+head(stream_survey_week1)
+
+# Write new stream survey csv
+write.csv(stream_survey_week1, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/streamSurvey1.csv", row.names = FALSE )
+
+```
+```{r add day and night shift differentiation into the stream survey 2}
+# Read in the stream survey data
+stream_survey_week2 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/Stream Survey Week 2.csv")
+
+# Convert date to remove the incorrect associated time and keep only the date 
+# Adjust date into the correct format
+stream_survey_week2$date <- as.Date(stream_survey_week2$date, format = "%m/%d/%Y")
+
+# Combine the date and start time into a DateTime column
+stream_survey_week2$dateTime <- as.POSIXct(paste(stream_survey_week2$date, 
+                                                 stream_survey_week2$startTime), 
+                                           format="%Y-%m-%d %H:%M")
+
+# Add Shift column based on the time ranges
+# Day shifts were from 11:00 EST to 17:00 EST
+stream_survey_week2 <- stream_survey_week2 %>%
+  mutate(
+    shift = case_when(
+        hour(dateTime) >= 10 & hour(dateTime) < 18 ~ "day",
+        TRUE ~ "night"  # Any other time is night shift
+    )
+  )
+
+# Display the first few rows to check the result
+head(stream_survey_week2)
+
+# Write new stream survey csv
+write.csv(stream_survey_week2, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/streamSurvey2.csv", row.names = FALSE )
+
+```
+```{r add day and night shift differentiation into the stream survey 3}
+# Read in the stream survey data
+stream_survey_week3 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/Stream Survey Week 3.csv")
+
+# Convert date to remove the incorrect associated time and keep only the date 
+# Adjust date into the correct format
+stream_survey_week3$date <- as.Date(stream_survey_week3$date, format = "%m/%d/%Y")
+
+# Combine the date and start time into a DateTime column
+stream_survey_week3$dateTime <- as.POSIXct(paste(stream_survey_week3$date, 
+                                                 stream_survey_week3$startTime), 
+                                           format="%Y-%m-%d %H:%M")
+
+# Add Shift column based on the time ranges
+# Day shifts were from 5:00 EST to 11:00 EST
+stream_survey_week3 <- stream_survey_week3 %>%
+  mutate(
+    shift = case_when(
+        hour(dateTime) >= 4 & hour(dateTime) < 12 ~ "day",
+        TRUE ~ "night"  # Any other time is night shift
+    )
+  )
+
+# Display the first few rows to check the result
+head(stream_survey_week3)
+
+# Write new stream survey csv
+write.csv(stream_survey_week3, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/streamSurvey3.csv", row.names = FALSE )
+
+```
+```{r add day and night shift differentiation into the stream survey 4}
+# Read in the stream survey data
+stream_survey_week4 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/Stream Survey Week 4.csv")
+
+# Convert date to remove the incorrect associated time and keep only the date 
+# Adjust date into the correct format
+stream_survey_week4$date <- as.Date(stream_survey_week4$date, format = "%m/%d/%Y")
+
+# Combine the date and start time into a DateTime column
+stream_survey_week4$dateTime <- as.POSIXct(paste(stream_survey_week4$date, 
+                                                 stream_survey_week4$startTime), 
+                                           format="%Y-%m-%d %H:%M")
+
+# Add Shift column based on the time ranges
+# Day shifts were from 3:00 EST to 9:00 EST
+stream_survey_week4 <- stream_survey_week4 %>%
+  mutate(
+    shift = case_when(
+        hour(dateTime) >= 2 & hour(dateTime) < 10 ~ "day",
+        TRUE ~ "night"  # Any other time is night shift
+    )
+  )
+
+# Display the first few rows to check the result
+head(stream_survey_week4)
+
+# Write new stream survey csv
+write.csv(stream_survey_week4, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/streamSurvey4.csv", row.names = FALSE )
+
+```
+```{r add day and night shift differentiation into the stream survey 5}
+# Read in the stream survey data
+stream_survey_week5 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/Stream Survey Week 5.csv")
+
+# Convert date to remove the incorrect associated time and keep only the date 
+# Adjust date into the correct format
+stream_survey_week5$date <- as.Date(stream_survey_week5$date, format = "%m/%d/%Y")
+
+# Combine the date and start time into a DateTime column
+stream_survey_week5$dateTime <- as.POSIXct(paste(stream_survey_week5$date, 
+                                                 stream_survey_week5$startTime), 
+                                           format="%Y-%m-%d %H:%M")
+
+# Add Shift column based on the time ranges
+# Day shifts were from 7:00 EST to 13:00 EST
+stream_survey_week5 <- stream_survey_week5 %>%
+  mutate(
+    shift = case_when(
+        hour(dateTime) >= 6 & hour(dateTime) < 14 ~ "day",
+        TRUE ~ "night"  # Any other time is night shift
+    )
+  )
+
+# Display the first few rows to check the result
+head(stream_survey_week5)
+
+# Write new stream survey csv
+write.csv(stream_survey_week5, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/streamSurvey5.csv", row.names = FALSE )
+
+```
+```{r add day and night shift differentiation into the stream survey 6}
+# Read in the stream survey data
+stream_survey_week6 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/Stream Survey Week 6.csv")
+
+# Convert date to remove the incorrect associated time and keep only the date 
+# Adjust date into the correct format
+stream_survey_week6$date <- as.Date(stream_survey_week6$date, format = "%m/%d/%Y")
+
+# Combine the date and start time into a DateTime column
+stream_survey_week6$dateTime <- as.POSIXct(paste(stream_survey_week6$date, 
+                                                 stream_survey_week6$startTime), 
+                                           format="%Y-%m-%d %H:%M")
+
+# Add Shift column based on the time ranges
+# Day shifts were from 3:00 EST to 9:00 EST
+stream_survey_week6 <- stream_survey_week6 %>%
+  mutate(
+    shift = case_when(
+        hour(dateTime) >= 2 & hour(dateTime) < 10 ~ "day",
+        TRUE ~ "night"  # Any other time is night shift
+    )
+  )
+
+# Display the first few rows to check the result
+head(stream_survey_week6)
+
+# Write new stream survey csv
+write.csv(stream_survey_week6, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/streamSurvey6.csv", row.names = FALSE )
+
+```
+```{r add day and night shift differentiation into the stream survey 7}
+# Read in the stream survey data
+stream_survey_week7 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/Stream Survey Week 7.csv")
+
+# Convert date to remove the incorrect associated time and keep only the date 
+# Adjust date into the correct format
+stream_survey_week7$date <- as.Date(stream_survey_week7$date, format = "%m/%d/%Y")
+
+# Combine the date and start time into a DateTime column
+stream_survey_week7$dateTime <- as.POSIXct(paste(stream_survey_week7$date, 
+                                                 stream_survey_week7$startTime), 
+                                           format="%Y-%m-%d %H:%M")
+
+# Add Shift column based on the time ranges
+# Day shifts were from 7:00 EST to 13:00 EST
+stream_survey_week7 <- stream_survey_week7 %>%
+  mutate(
+    shift = case_when(
+        hour(dateTime) >= 6 & hour(dateTime) < 14 ~ "day",
+        TRUE ~ "night"  # Any other time is night shift
+    )
+  )
+
+# Display the first few rows to check the result
+head(stream_survey_week7)
+
+# Write new stream survey csv
+write.csv(stream_survey_week7, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/streamSurvey7.csv", row.names = FALSE )
+
+```
+```{r add day and night shift differentiation into the stream survey 8}
+# Read in the stream survey data
+stream_survey_week8 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/Stream Survey Week 8.csv")
+
+# Convert date to remove the incorrect associated time and keep only the date 
+# Adjust date into the correct format
+stream_survey_week8$date <- as.Date(stream_survey_week8$date, format = "%m/%d/%Y")
+
+# Combine the date and start time into a DateTime column
+stream_survey_week8$dateTime <- as.POSIXct(paste(stream_survey_week8$date, 
+                                                 stream_survey_week8$startTime), 
+                                           format="%Y-%m-%d %H:%M")
+
+# Add Shift column based on the time ranges
+# Day shifts were from 3:30 EST to 9:30 EST
+stream_survey_week8 <- stream_survey_week8 %>%
+  mutate(
+    shift = case_when(
+        hour(dateTime) >= 2 & hour(dateTime) < 11 ~ "day",
+        TRUE ~ "night"  # Any other time is night shift
+    )
+  )
+
+# Display the first few rows to check the result
+head(stream_survey_week8)
+
+# Write new stream survey csv
+write.csv(stream_survey_week8, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/streamSurvey8.csv", row.names = FALSE )
+
+```
+```{r add day and night shift differentiation into the stream survey 9}
+# Read in the stream survey data
+stream_survey_week9 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/Stream Survey Week 9.csv")
+
+# Convert date to remove the incorrect associated time and keep only the date 
+# Adjust date into the correct format
+stream_survey_week9$date <- as.Date(stream_survey_week9$date, format = "%m/%d/%Y")
+
+# Combine the date and start time into a DateTime column
+stream_survey_week9$dateTime <- as.POSIXct(paste(stream_survey_week9$date, 
+                                                 stream_survey_week9$startTime), 
+                                           format="%Y-%m-%d %H:%M")
+
+# Add Shift column based on the time ranges
+# Day shifts were from 7:00 EST to 13:00 EST
+stream_survey_week9 <- stream_survey_week9 %>%
+  mutate(
+    shift = case_when(
+        hour(dateTime) >= 6 & hour(dateTime) < 14 ~ "day",
+        TRUE ~ "night"  # Any other time is night shift
+    )
+  )
+
+# Display the first few rows to check the result
+head(stream_survey_week9)
+
+# Write new stream survey csv
+write.csv(stream_survey_week9, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/streamSurvey9.csv", row.names = FALSE )
+
+```
+```{r add day and night shift differentiation into the stream survey 10}
+# Read in the stream survey data
+stream_survey_week10 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/Stream Survey Week 10.csv")
+
+# Convert date to remove the incorrect associated time and keep only the date 
+# Adjust date into the correct format
+stream_survey_week10$date <- as.Date(stream_survey_week10$date, format = "%m/%d/%Y")
+
+# Combine the date and start time into a DateTime column
+stream_survey_week10$dateTime <- as.POSIXct(paste(stream_survey_week10$date, 
+                                                 stream_survey_week10$startTime), 
+                                           format="%Y-%m-%d %H:%M")
+
+# Add Shift column based on the time ranges
+# Day shifts were from 4:00 EST to 10:00 EST
+stream_survey_week10 <- stream_survey_week10 %>%
+  mutate(
+    shift = case_when(
+        hour(dateTime) >= 3 & hour(dateTime) < 11 ~ "day",
+        TRUE ~ "night"  # Any other time is night shift
+    )
+  )
+
+# Display the first few rows to check the result
+head(stream_survey_week10)
+
+# Write new stream survey csv
+write.csv(stream_survey_week10, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/streamSurvey10.csv", row.names = FALSE )
+
+```
+```{r add day and night shift differentiation into the stream survey 11}
+# Read in the stream survey data
+stream_survey_week11 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/Stream Survey Week 11.csv")
+
+# Convert date to remove the incorrect associated time and keep only the date 
+# Adjust date into the correct format
+stream_survey_week11$date <- as.Date(stream_survey_week11$date, format = "%m/%d/%Y")
+
+# Combine the date and start time into a DateTime column
+stream_survey_week11$dateTime <- as.POSIXct(paste(stream_survey_week11$date, 
+                                                 stream_survey_week11$startTime), 
+                                           format="%Y-%m-%d %H:%M")
+
+# Add Shift column 
+# All shifts in week 11 were day shifts
+stream_survey_week11 <- stream_survey_week11 %>%
+  mutate(shift = "day")
+
+# Display the first few rows to check the result
+head(stream_survey_week11)
+
+# Write new stream survey csv
+write.csv(stream_survey_week11, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/streamSurvey11.csv", row.names = FALSE )
+
+```
+```{r add day and night shift differentiation into the stream survey 12}
+# Read in the stream survey data
+stream_survey_week12 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/Stream Survey Week 12.csv")
+
+# Convert date to remove the incorrect associated time and keep only the date 
+# Adjust date into the correct format
+stream_survey_week12$date <- as.Date(stream_survey_week12$date, format = "%m/%d/%Y")
+
+# Combining the date and start time into a DateTime column
+stream_survey_week12$dateTime <- as.POSIXct(paste(stream_survey_week12$date, 
+                                                 stream_survey_week12$startTime), 
+                                           format="%Y-%m-%d %H:%M")
+
+# Add Shift column
+# All shifts in week 12 were day shifts
+stream_survey_week12 <- stream_survey_week12 %>%
+  mutate(shift = "day")
+
+# Display the first few rows to check the result
+head(stream_survey_week12)
+
+# Write new stream survey csv
+write.csv(stream_survey_week12, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/streamSurvey12.csv", row.names = FALSE )
+
+```
+
+```{r processing stream surveys}
+# Define file names
+stream_file_names <- c("streamSurvey1.csv", "streamSurvey2.csv", "streamSurvey3.csv", "streamSurvey4.csv", "streamSurvey5.csv", "streamSurvey6.csv", "streamSurvey7.csv", "streamSurvey8.csv", "streamSurvey9.csv", "streamSurvey10.csv", "streamSurvey11.csv", "streamSurvey12.csv") 
+
+# Define a lookup table for stream names
+stream_name_lookup <- data.frame(
+  Abbreviation = c("Dickey (DCKY)", "Amethyst (AMTH)", "Underhill (UNDH)", 
+                   "Dry (DRYU)"),  # List all abbreviations
+  FullName = c("DICKEY", "AMETHYST", "UNDERHILL", "DRY UPPER")  # Corresponding full names
+)
+
+# Create an empty list to store the processed datasets
+processed_stream_data_list <- list()
+
+# Loop through each stream survey file
+for (file_name in stream_file_names) {
+  # Read in the stream survey data
+  rawStreamData <- read.csv(file_name)
+  
+  # Step 1: Process the data
+  streamData <- rawStreamData %>%
+    
+    # Step 2: Select specific columns
+    select(stream, airTemp, cloud, precip, startTime, endTime, iso, Notes, 
+           isoTime, downstreamGPS, downstreamGain, upstreamGPS, upstreamGain, shift) %>%
+
+    # Step 3: Rename columns
+    rename(
+      streamNotes = Notes,
+      river = stream) %>%
+    
+    # Step 4: Rewrite stream names
+    left_join(stream_name_lookup, by = c("river" = "Abbreviation")) %>%
+    mutate(
+      river = coalesce(FullName, river)  # Replace Brook with FullName, if available
+    ) %>%
+    select(-FullName)  # Remove the FullName column as it's no longer needed
+  
+  # Store the processed data in the list
+  processed_stream_data_list[[file_name]] <- streamData
+  
+  # Overwrite the original file with the processed data
+  write.csv(streamData, file_name, row.names = FALSE)
+}
+
+# Display the first few rows of each processed dataset
+for (i in 1:length(processed_stream_data_list)) {
+  cat("\nData for", stream_file_names[i], ":\n")
+  print(head(processed_stream_data_list[[i]]))
+}
+
+```
+
+
+# Preparing Fish Surveys
+
+```{r add day and night shift differentiation into the fish survey 1}
+# Read in the fish survey data
+fish_survey_week1 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTrackingData/Fish Survey Week 1.csv")
+
+# Convert date to remove the incorrect associated time and keep only the date 
+# Adjust date into the correct format
+fish_survey_week1$date <- as.Date(fish_survey_week1$date, format = "%m/%d/%Y")
+
+# Combine the date and time into a DateTime column
+fish_survey_week1$dateTime <- as.POSIXct(paste(fish_survey_week1$date, 
+                                                 fish_survey_week1$time), 
+                                           format="%Y-%m-%d %H:%M")
+
+# Add Shift column based on the time ranges
+# Day shifts were from 5:00 EST to 11:00 EST
+fish_survey_week1 <- fish_survey_week1 %>%
+  mutate(
+    shift = case_when(
+        hour(dateTime) >= 4 & hour(dateTime) < 12 ~ "day",
+        TRUE ~ "night"  # Any other time is night shift
+    )
+  )
+
+# Display the first few rows to check the result
+head(fish_survey_week1)
+
+# Write new fish survey csv
+write.csv(fish_survey_week1, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishSurvey1.csv", row.names = FALSE )
+
+```
+```{r add day and night shift differentiation into the fish survey 2}
+# Read in the fish survey data
+fish_survey_week2 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTrackingData/Fish Survey Week 2.csv")
+
+# Convert date to remove the incorrect associated time and keep only the date 
+# Adjust date into the correct format
+fish_survey_week2$date <- as.Date(fish_survey_week2$date, format = "%m/%d/%Y")
+
+# Combine the date and time into a DateTime column
+fish_survey_week2$dateTime <- as.POSIXct(paste(fish_survey_week2$date, 
+                                                 fish_survey_week2$time), 
+                                           format="%Y-%m-%d %H:%M")
+
+# Add Shift column based on the time ranges
+# Day shifts were from 11:00 EST to 17:00 EST
+fish_survey_week2 <- fish_survey_week2 %>%
+  mutate(
+    shift = case_when(
+        hour(dateTime) >= 10 & hour(dateTime) < 18 ~ "day",
+        TRUE ~ "night"  # Any other time is night shift
+    )
+  )
+
+# Display the first few rows to check the result
+head(fish_survey_week2)
+
+# Write new fish survey csv
+write.csv(fish_survey_week2, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishSurvey2.csv", row.names = FALSE )
+
+```
+```{r add day and night shift differentiation into the fish survey 3}
+# Read in the fish survey data
+fish_survey_week3 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTrackingData/Fish Survey Week 3.csv")
+
+# Convert date to remove the incorrect associated time and keep only the date 
+# Adjust date into the correct format
+fish_survey_week3$date <- as.Date(fish_survey_week3$date, format = "%m/%d/%Y")
+
+# Combine the date and time into a DateTime column
+fish_survey_week3$dateTime <- as.POSIXct(paste(fish_survey_week3$date, 
+                                                 fish_survey_week3$time), 
+                                           format="%Y-%m-%d %H:%M")
+
+# Add Shift column based on the time ranges
+# Day shifts were from 5:00 EST to 11:00 EST
+fish_survey_week3 <- fish_survey_week3 %>%
+  mutate(
+    shift = case_when(
+        hour(dateTime) >= 4 & hour(dateTime) < 12 ~ "day",
+        TRUE ~ "night"  # Any other time is night shift
+    )
+  )
+
+# Display the first few rows to check the result
+head(fish_survey_week3)
+
+# Write new fish survey csv
+write.csv(fish_survey_week3, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishSurvey3.csv", row.names = FALSE )
+
+```
+```{r add day and night shift differentiation into the fish survey 4}
+# Read in the fish survey data
+fish_survey_week4 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTrackingData/Fish Survey Week 4.csv")
+
+# Convert date to remove the incorrect associated time and keep only the date 
+# Adjust date into the correct format
+fish_survey_week4$date <- as.Date(fish_survey_week4$date, format = "%m/%d/%Y")
+
+# Combine the date and time into a DateTime column
+fish_survey_week4$dateTime <- as.POSIXct(paste(fish_survey_week4$date, 
+                                                 fish_survey_week4$time), 
+                                           format="%Y-%m-%d %H:%M")
+
+# Add Shift column based on the time ranges
+# Day shifts were from 3:00 EST to 9:00 EST
+fish_survey_week4 <- fish_survey_week4 %>%
+  mutate(
+    shift = case_when(
+        hour(dateTime) >= 2 & hour(dateTime) < 10 ~ "day",
+        TRUE ~ "night"  # Any other time is night shift
+    )
+  )
+
+# Display the first few rows to check the result
+head(fish_survey_week4)
+
+# Write new fish survey csv
+write.csv(fish_survey_week4, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishSurvey4.csv", row.names = FALSE )
+
+```
+```{r add day and night shift differentiation into the fish survey 5}
+# Read in the fish survey data
+fish_survey_week5 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTrackingData/Fish Survey Week 5.csv")
+
+# Convert date to remove the incorrect associated time and keep only the date 
+# Adjust date into the correct format
+fish_survey_week5$date <- as.Date(fish_survey_week5$date, format = "%m/%d/%Y")
+
+# Combine the date and time into a DateTime column
+fish_survey_week5$dateTime <- as.POSIXct(paste(fish_survey_week5$date, 
+                                                 fish_survey_week5$time), 
+                                           format="%Y-%m-%d %H:%M")
+
+# Add Shift column based on the time ranges
+# Day shifts were from 7:00 EST to 13:00 EST
+fish_survey_week5 <- fish_survey_week5 %>%
+  mutate(
+    shift = case_when(
+        hour(dateTime) >= 6 & hour(dateTime) < 14 ~ "day",
+        TRUE ~ "night"  # Any other time is night shift
+    )
+  )
+
+# Display the first few rows to check the result
+head(fish_survey_week5)
+
+# Write new fish survey csv
+write.csv(fish_survey_week5, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishSurvey5.csv", row.names = FALSE )
+
+```
+```{r add day and night shift differentiation into the fish survey 6}
+# Read in the fish survey data
+fish_survey_week6 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTrackingData/Fish Survey Week 6.csv")
+
+# Convert date to remove the incorrect associated time and keep only the date 
+# Adjust date into the correct format
+fish_survey_week6$date <- as.Date(fish_survey_week6$date, format = "%m/%d/%Y")
+
+# Combine the date and time into a DateTime column
+fish_survey_week6$dateTime <- as.POSIXct(paste(fish_survey_week6$date, 
+                                                 fish_survey_week6$time), 
+                                           format="%Y-%m-%d %H:%M")
+
+# Add Shift column based on the time ranges
+# Day shifts were from 3:00 EST to 9:00 EST
+fish_survey_week6 <- fish_survey_week6 %>%
+  mutate(
+    shift = case_when(
+        hour(dateTime) >= 2 & hour(dateTime) < 10 ~ "day",
+        TRUE ~ "night"  # Any other time is night shift
+    )
+  )
+
+# Display the first few rows to check the result
+head(fish_survey_week6)
+
+# Write new fish survey csv
+write.csv(fish_survey_week6, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishSurvey6.csv", row.names = FALSE )
+
+```
+```{r add day and night shift differentiation into the fish survey 7}
+# Read in the fish survey data
+fish_survey_week7 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTrackingData/Fish Survey Week 7.csv")
+
+# Convert date to remove the incorrect associated time and keep only the date 
+# Adjust date into the correct format
+fish_survey_week7$date <- as.Date(fish_survey_week7$date, format = "%m/%d/%Y")
+
+# Combine the date and time into a DateTime column
+fish_survey_week7$dateTime <- as.POSIXct(paste(fish_survey_week7$date, 
+                                                 fish_survey_week7$time), 
+                                           format="%Y-%m-%d %H:%M")
+
+# Add Shift column based on the time ranges
+# Day shifts were from 7:00 EST to 13:00 EST
+fish_survey_week7 <- fish_survey_week7 %>%
+  mutate(
+    shift = case_when(
+        hour(dateTime) >= 6 & hour(dateTime) < 14 ~ "day",
+        TRUE ~ "night"  # Any other time is night shift
+    )
+  )
+
+# Display the first few rows to check the result
+head(fish_survey_week7)
+
+# Write new fish survey csv
+write.csv(fish_survey_week7, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishSurvey7.csv", row.names = FALSE )
+
+```
+```{r add day and night shift differentiation into the fish survey 8}
+# Read in the fish survey data
+fish_survey_week8 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTrackingData/Fish Survey Week 8.csv")
+
+# Convert date to remove the incorrect associated time and keep only the date 
+# Adjust date into the correct format
+fish_survey_week8$date <- as.Date(fish_survey_week8$date, format = "%m/%d/%Y")
+
+# Combine the date and time into a DateTime column
+fish_survey_week8$dateTime <- as.POSIXct(paste(fish_survey_week8$date, 
+                                                 fish_survey_week8$time), 
+                                           format="%Y-%m-%d %H:%M")
+
+# Add Shift column based on the time ranges
+# Day shifts were from 3:30 EST to 9:30 EST
+fish_survey_week8 <- fish_survey_week8 %>%
+  mutate(
+    shift = case_when(
+        hour(dateTime) >= 2 & hour(dateTime) < 11 ~ "day",
+        TRUE ~ "night"  # Any other time is night shift
+    )
+  )
+
+# Display the first few rows to check the result
+head(fish_survey_week8)
+
+# Write new fish survey csv
+write.csv(fish_survey_week8, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishSurvey8.csv", row.names = FALSE )
+
+```
+```{r add day and night shift differentiation into the fish survey 9}
+# Read in the fish survey data
+fish_survey_week9 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTrackingData/Fish Survey Week 9.csv")
+
+# Convert date to remove the incorrect associated time and keep only the date 
+# Adjust date into the correct format
+fish_survey_week9$date <- as.Date(fish_survey_week9$date, format = "%m/%d/%Y")
+
+# Combine the date and time into a DateTime column
+fish_survey_week9$dateTime <- as.POSIXct(paste(fish_survey_week9$date, 
+                                                 fish_survey_week9$time), 
+                                           format="%Y-%m-%d %H:%M")
+
+# Add Shift column based on the time ranges
+# Day shifts were from 7:00 EST to 13:00 EST
+fish_survey_week9 <- fish_survey_week9 %>%
+  mutate(
+    shift = case_when(
+        hour(dateTime) >= 6 & hour(dateTime) < 14 ~ "day",
+        TRUE ~ "night"  # Any other time is night shift
+    )
+  )
+
+# Display the first few rows to check the result
+head(fish_survey_week9)
+
+# Write new stream survey csv
+write.csv(fish_survey_week9, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishSurvey9.csv", row.names = FALSE )
+
+```
+```{r add day and night shift differentiation into the fish survey 10}
+# Read in the fish survey data
+fish_survey_week10 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTrackingData/Fish Survey Week 10.csv")
+
+# Convert date to remove the incorrect associated time and keep only the date 
+# Adjust date into the correct format
+fish_survey_week10$date <- as.Date(fish_survey_week10$date, format = "%m/%d/%Y")
+
+# Combine the date and time into a DateTime column
+fish_survey_week10$dateTime <- as.POSIXct(paste(fish_survey_week10$date, 
+                                                 fish_survey_week10$time), 
+                                           format="%Y-%m-%d %H:%M")
+
+# Add Shift column based on the time ranges
+# Day shifts were from 4:00 EST to 10:00 EST
+fish_survey_week10 <- fish_survey_week10 %>%
+  mutate(
+    shift = case_when(
+        hour(dateTime) >= 3 & hour(dateTime) < 11 ~ "day",
+        TRUE ~ "night"  # Any other time is night shift
+    )
+  )
+
+# Display the first few rows to check the result
+head(fish_survey_week10)
+
+# Write new fish survey csv
+write.csv(fish_survey_week10, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishSurvey10.csv", row.names = FALSE )
+
+```
+```{r add day and night shift differentiation into the fish survey 11}
+# Read in the fish survey data
+fish_survey_week11 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTrackingData/Fish Survey Week 11.csv")
+
+# Convert date to remove the incorrect associated time and keep only the date 
+# Adjust date into the correct format
+fish_survey_week11$date <- as.Date(fish_survey_week11$date, format = "%m/%d/%Y")
+
+# Combine the date and time into a DateTime column
+fish_survey_week11$dateTime <- as.POSIXct(paste(fish_survey_week11$date, 
+                                                 fish_survey_week11$time), 
+                                           format="%Y-%m-%d %H:%M")
+
+# Add Shift column 
+# All shifts in week 11 were day shifts
+fish_survey_week11 <- fish_survey_week11 %>%
+  mutate(shift = "day")
+
+# Display the first few rows to check the result
+head(fish_survey_week11)
+
+# Write new fish survey csv
+write.csv(fish_survey_week11, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishSurvey11.csv", row.names = FALSE )
+
+```
+```{r add day and night shift differentiation into the fish survey 12}
+# Read in the fish survey data
+fish_survey_week12 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTrackingData/Fish Survey Week 12.csv")
+
+# Convert date to remove the incorrect associated time and keep only the date 
+# Adjust date into the correct format
+fish_survey_week12$date <- as.Date(fish_survey_week12$date, format = "%m/%d/%Y")
+
+# Combine the date and time into a DateTime column
+fish_survey_week12$dateTime <- as.POSIXct(paste(fish_survey_week12$date, 
+                                                 fish_survey_week12$time), 
+                                           format="%Y-%m-%d %H:%M")
+
+# Add Shift column
+# All shifts in week 12 were day shifts
+fish_survey_week12 <- fish_survey_week12 %>%
+  mutate(shift = "day")
+
+# Display the first few rows to check the result
+head(fish_survey_week12)
+
+# Write new fish survey csv
+write.csv(fish_survey_week12, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishSurvey12.csv", row.names = FALSE )
+
+```
+
+
+
+
+```{r processing fish surveys}
+# Define file names
+fish_file_names <- c("fishSurvey1.csv", "fishSurvey2.csv", "fishSurvey3.csv", "fishSurvey4.csv", "fishSurvey5.csv", "fishSurvey6.csv", "fishSurvey7.csv", "fishSurvey8.csv", "fishSurvey9.csv", "fishSurvey10.csv", "fishSurvey11.csv", "fishSurvey12.csv")
+
+# Define a lookup table for stream names
+stream_name_lookup <- data.frame(
+  Abbreviation = c("dcky", "amth", "undh", "dryu"),  # List all abbreviations
+  FullName = c("DICKEY", "AMETHYST", "UNDERHILL", "DRY UPPER")  # Corresponding full names
+)
+
+# Create an empty list to store the processed datasets
+processed_fish_data_list <- list()
+
+# Loop through each fish survey file
+for (file_name in fish_file_names) {
+  # Read in the fish survey data
+  rawTrackingData <- read.csv(file_name)
+  
+  # Step 1: Process the data
+  trackingData <- rawTrackingData %>%
+    
+    # Step 2: Select specific columns
+    select(dckyID, habitat, position, substrate, shade, Notes, amthID, undhID, 
+           dryuID, habitatExtra, substrateExtra, signal, x, y, dateTime, shift) %>%
+    
+    # Step 3: Pivot longer to create 'Brook' and 'tagID' columns
+    pivot_longer(
+      cols = c(dckyID, amthID, undhID, dryuID),  # Columns to combine
+      names_to = "river",                        # Create a new column 'Brook' from column names
+      values_to = "tagID",                      # Combine the tag IDs into a new column 'tagID'
+      values_drop_na = FALSE                    # Ensure NA values are retained
+    ) %>%
+    
+    # Step _: Filter to keep all rows, even those with NA values
+    #filter(!is.na(tagID) | is.na(tagID)) %>%
+    
+    # Step 4: Create a new 'BrookName' column and extract the brook name and ID number
+    mutate(
+      riverName = river,                         # Copy the brook name
+      #tagID = as.numeric(gsub("[^0-9]", "", tagID)),  # Extract the numeric part as tagID
+      tagID = ifelse(is.na(tagID), NA, as.numeric(tagID)),  # Convert tagID to numeric, keep NA values
+      river = gsub("ID", "", river)              # Remove 'ID' to keep only the brook name
+    ) %>%
+    
+    # Step 5: Join with the lookup table to replace abbreviations with full names
+    left_join(stream_name_lookup, by = c("river" = "Abbreviation")) %>%
+    mutate(
+      river = coalesce(FullName, river)  # Replace Brook with FullName, if available
+    ) %>%
+    select(-FullName) %>%  # Remove the FullName column as it's no longer needed
+    
+    # Step 6: Rename columns
+    rename(
+      fishNotes = Notes,
+      lon = x,
+      lat = y
+    ) %>%
+    
+    # Step 7: Filter data to keep only rows where lat > 1
+    filter(lat > 1, !is.na(tagID)) %>%
+    
+    # Step _: Filter data to keep rows with lat > 1 or lat is NA
+    #filter(lat > 1 | is.na(lat)) %>%
+    
+    # Step 8: Remove unnecessary columns
+    select(-c(riverName)) %>%
+    
+    # Step _: (Optional) Join with a tagBrook dataset if necessary
+    #left_join(tagBrook, by = "tagID") %>%
+    
+    # Step 9: Add a source column
+    mutate(source = "iPad")
+  
+  # Store the processed data in the list
+  processed_fish_data_list[[file_name]] <- trackingData
+  
+  # Overwrite the original file with the processed data
+  write.csv(trackingData, file_name, row.names = FALSE)
+}
+
+# Display the first few rows of each processed dataset
+for (i in 1:length(processed_fish_data_list)) {
+  cat("\nData for", fish_file_names[i], ":\n")
+  print(head(processed_fish_data_list[[i]]))
+}
+
+```
+
+# Combine tracking and stream data
+
+```{r}
+# Define file names for each week
+#fish_files <- c("fishSurvey1.csv", "fishSurvey2.csv", "fishSurvey3.csv", "fishSurvey4.csv", "fishSurvey5.csv", "fishSurvey6.csv", "fishSurvey7.csv", "fishSurvey8.csv", "fishSurvey9.csv", "fishSurvey10.csv", "fishSurvey11.csv", "fishSurvey12.csv")
+
+#stream_files <- c("streamSurvey1.csv", "streamSurvey2.csv", "streamSurvey3.csv", "streamSurvey4.csv", "streamSurvey5.csv", "streamSurvey6.csv", "streamSurvey7.csv", "streamSurvey8.csv", "streamSurvey9.csv", "streamSurvey10.csv", "streamSurvey11.csv", "streamSurvey12.csv")
+
+# Loop through each week
+#for (week in 1:length(fish_files)) {
+  # Read in the fish and stream survey data for the current week
+  #fish_data <- read.csv(fish_files[week])
+  #stream_data <- read.csv(stream_files[week])
+  
+  # Combine the datasets by shift and river columns
+  #combined_data <- left_join(fish_data, stream_data, by = c("shift", "river"))
+  
+  # Save the combined data to a new CSV file
+  #combined_file_name <- paste0("combined_week", week, ".csv")
+  #write.csv(combined_data, combined_file_name, row.names = FALSE)
+  
+  # Optionally display the first few rows of the combined data
+  #cat("\nCombined data for week", week, ":\n")
+  #print(head(combined_data))
+#}
+
+
+```
+
+```{r combine fish and stream surveys}
+# Define file names for each week
+fish_files <- c("fishSurvey1.csv", "fishSurvey2.csv", "fishSurvey3.csv", "fishSurvey4.csv", "fishSurvey5.csv", "fishSurvey6.csv", "fishSurvey7.csv", "fishSurvey8.csv", "fishSurvey9.csv", "fishSurvey10.csv", "fishSurvey11.csv", "fishSurvey12.csv")
+
+stream_files <- c("streamSurvey1.csv", "streamSurvey2.csv", "streamSurvey3.csv", "streamSurvey4.csv", "streamSurvey5.csv", "streamSurvey6.csv", "streamSurvey7.csv", "streamSurvey8.csv", "streamSurvey9.csv", "streamSurvey10.csv", "streamSurvey11.csv", "streamSurvey12.csv")
+
+# Function to extract the number from file names
+extract_number <- function(file_name) {
+  str_extract(file_name, "\\d+")
+}
+
+# Combine datasets by matching number in filenames
+for (fish_file in fish_files) {
+  # Extract number from fish file
+  fish_number <- extract_number(fish_file)
+  
+  # Find the corresponding stream file
+  stream_file <- paste0("streamSurvey", fish_number, ".csv")
+  
+  # Check if the stream file exists
+  if (stream_file %in% stream_files) {
+    # Read in the fish and stream survey data
+    fish_data <- read.csv(fish_file)
+    stream_data <- read.csv(stream_file)
+    
+    # Combine the datasets by shift and river columns
+    combined_data <- left_join(fish_data, stream_data, by = c("shift", "river"))
+    
+    # Save the combined data to a new CSV file
+    combined_file_name <- paste0("fishStream", fish_number, ".csv")
+    write.csv(combined_data, combined_file_name, row.names = FALSE)
+    
+    # Display the first few rows of the combined data
+    cat("\nCombined data for number", fish_number, ":\n")
+    print(head(combined_data))
+  } else {
+    cat("\nNo corresponding stream file found for", fish_file, "\n")
+  }
+}
+
+```
+
+
+
