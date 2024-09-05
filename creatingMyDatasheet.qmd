@@ -1060,75 +1060,6 @@ print(head(fishStream12))
 
 ```
 
-```{r}
-# Define file names for each week
-#fish_files <- c("fishSurvey1.csv", "fishSurvey2.csv", "fishSurvey3.csv", "fishSurvey4.csv", "fishSurvey5.csv", "fishSurvey6.csv", "fishSurvey7.csv", "fishSurvey8.csv", "fishSurvey9.csv", "fishSurvey10.csv", "fishSurvey11.csv", "fishSurvey12.csv")
-
-#stream_files <- c("streamSurvey1.csv", "streamSurvey2.csv", "streamSurvey3.csv", "streamSurvey4.csv", "streamSurvey5.csv", "streamSurvey6.csv", "streamSurvey7.csv", "streamSurvey8.csv", "streamSurvey9.csv", "streamSurvey10.csv", "streamSurvey11.csv", "streamSurvey12.csv")
-
-# Loop through each week
-#for (week in 1:length(fish_files)) {
-  # Read in the fish and stream survey data for the current week
-  #fish_data <- read.csv(fish_files[week])
-  #stream_data <- read.csv(stream_files[week])
-  
-  # Combine the datasets by shift and river columns
-  #combined_data <- left_join(fish_data, stream_data, by = c("shift", "river"))
-  
-  # Save the combined data to a new CSV file
-  #combined_file_name <- paste0("combined_week", week, ".csv")
-  #write.csv(combined_data, combined_file_name, row.names = FALSE)
-  
-  # Optionally display the first few rows of the combined data
-  #cat("\nCombined data for week", week, ":\n")
-  #print(head(combined_data))
-#}
-
-
-```
-
-```{r combine fish and stream surveys}
-# Define file names for each week
-#fish_files <- c("fishSurvey1.csv", "fishSurvey2.csv", "fishSurvey3.csv", "fishSurvey4.csv", "fishSurvey5.csv", "fishSurvey6.csv", "fishSurvey7.csv", "fishSurvey8.csv", "fishSurvey9.csv", "fishSurvey10.csv", "fishSurvey11.csv", "fishSurvey12.csv")
-
-#stream_files <- c("streamSurvey1.csv", "streamSurvey2.csv", "streamSurvey3.csv", "streamSurvey4.csv", "streamSurvey5.csv", "streamSurvey6.csv", "streamSurvey7.csv", "streamSurvey8.csv", "streamSurvey9.csv", "streamSurvey10.csv", "streamSurvey11.csv", "streamSurvey12.csv")
-
-# Function to extract the number from file names
-#extract_number <- function(file_name) {
-  #str_extract(file_name, "\\d+")
-#}
-
-# Combine datasets by matching number in filenames
-#for (fish_file in fish_files) {
-  # Extract number from fish file
-  #fish_number <- extract_number(fish_file)
-  
-  # Find the corresponding stream file
-  #stream_file <- paste0("streamSurvey", fish_number, ".csv")
-  
-  # Check if the stream file exists
-  #if (stream_file %in% stream_files) {
-    # Read in the fish and stream survey data
-    #fish_data <- read.csv(fish_file)
-    #stream_data <- read.csv(stream_file)
-    
-    # Combine the datasets by shift and river columns
-    #combined_data <- left_join(fish_data, stream_data, by = c("shift", "river"))
-    
-    # Save the combined data to a new CSV file
-    #combined_file_name <- paste0("fishStream", fish_number, ".csv")
-    #write.csv(combined_data, combined_file_name, row.names = FALSE)
-    
-    # Display the first few rows of the combined data
-    #cat("\nCombined data for number", fish_number, ":\n")
-    #print(head(combined_data))
-  #} else {
-    #cat("\nNo corresponding stream file found for", fish_file, "\n")
-  #}
-#}
-
-```
-
 ## Making Flow Tracker File Datasets by Week
 
 ```{r combine flow tracker files for week 1}
@@ -2397,7 +2328,7 @@ write.csv(flowWeek12, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My stud
 
 ```
 
-```{r processing stream surveys}
+```{r processing flow files}
 # Define file names
 flow_file_names <- c("flowWeek1.csv", "flowWeek2.csv", "flowWeek3.csv", "flowWeek4.csv", "flowWeek5.csv", "flowWeek6.csv", "flowWeek7.csv", "flowWeek8.csv", "flowWeek9.csv", "flowWeek10.csv", "flowWeek11.csv", "flowWeek12.csv") 
 
@@ -2630,7 +2561,7 @@ print(head(combined12))
 
 ## Combine all weekly datasets
 
-```{r}
+```{r combine all weekly datasets (flow, fish, and stream)}
 # Define file names
 file_names <- c("combined1.csv", "combined2.csv", "combined3.csv", "combined4.csv", "combined5.csv", "combined6.csv", "combined7.csv", "combined8.csv", "combined9.csv", "combined10.csv", "combined11.csv", "combined12.csv") 
 
