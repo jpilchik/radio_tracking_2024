@@ -1,7 +1,4 @@
----
-format: html
----
-# Creating My Datasheet
+# Creating my Datasheet
 
 ## Prep
 
