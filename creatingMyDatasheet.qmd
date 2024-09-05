@@ -3,7 +3,7 @@ title: "Creating my datasheet"
 format: html
 ---
 
-# Prep
+## Prep
 
 ```{r load libraries}
 # Load required libraries
@@ -14,7 +14,7 @@ library(leaflet)
 library(tidyverse)
 library(tidyr)
 ```
-# Preparing Stream Surveys
+## Preparing Stream Surveys
 
 ```{r add day and night shift differentiation into the stream survey 1}
 # Read in the stream survey data
@@ -421,7 +421,7 @@ for (i in 1:length(processed_stream_data_list)) {
 ```
 
 
-# Preparing Fish Surveys
+## Preparing Fish Surveys
 
 ```{r add day and night shift differentiation into the fish survey 1}
 # Read in the fish survey data
@@ -866,7 +866,7 @@ for (i in 1:length(processed_fish_data_list)) {
 
 ```
 
-# Combine tracking and stream data
+## Combine tracking and stream data
 
 ```{r combine fish and stream week 1 surveys}
 # Read in the fish and stream survey data for week 1
@@ -1129,7 +1129,7 @@ print(head(fishStream12))
 
 ```
 
-# Making Flow Tracker File Datasets by Week
+## Making Flow Tracker File Datasets by Week
 
 ```{r combine flow tracker files for week 1}
 # Define a function to search for files
@@ -2116,7 +2116,7 @@ write.csv(result_df, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study
 
 ```
 
-# Preparing Flow Tracker Files
+## Preparing Flow Tracker Files
 
 ```{r add day and night shift differentiation into the flow week 1}
 # Read in the flow data
@@ -2435,7 +2435,7 @@ for (i in 1:length(processed_flow_data_list)) {
 
 
 
-# Combine fishStream and flow data
+## Combine fishStream and flow data
 
 ```{r combine fishStream and flow week 1 surveys}
 # Read in the fishStream and flow survey data for week 1
@@ -2628,7 +2628,7 @@ print(head(combined12))
 
 ```
 
-# Combine all weekly datasets
+## Combine all weekly datasets
 
 ```{r}
 # Define file names
