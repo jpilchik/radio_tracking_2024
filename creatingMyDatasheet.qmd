@@ -832,7 +832,8 @@ for (file_name in fish_file_names) {
     rename(
       fishNotes = Notes,
       lon = x,
-      lat = y
+      lat = y,
+      trackedTime = dateTime
     ) %>%
     
     # Step 7: Filter data to keep only rows where lat > 1
@@ -867,6 +868,198 @@ for (i in 1:length(processed_fish_data_list)) {
 
 # Combine tracking and stream data
 
+```{r combine fish and stream week 1 surveys}
+# Read in the fish and stream survey data for week 1
+fishSurvey1 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishSurvey1.csv")
+streamSurvey1 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/streamSurvey1.csv")
+
+# Combine the datasets by shift and river columns
+fishStream1 <- left_join(fishSurvey1, streamSurvey1, by = c("shift", "river"))
+
+# Save the combined data to a new CSV file
+write.csv(fishStream1, "fishStream1.csv", row.names = FALSE)
+
+# Display the first few rows of the combined data
+print(head(fishStream1))
+
+```
+
+```{r combine fish and stream week 2 surveys}
+# Read in the fish and stream survey data for week 2
+fishSurvey2 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishSurvey2.csv")
+streamSurvey2 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/streamSurvey2.csv")
+
+# Combine the datasets by shift and river columns
+fishStream2 <- left_join(fishSurvey2, streamSurvey2, by = c("shift", "river"))
+
+# Save the combined data to a new CSV file
+write.csv(fishStream2, "fishStream2.csv", row.names = FALSE)
+
+# Display the first few rows of the combined data
+print(head(fishStream2))
+
+```
+
+```{r combine fish and stream week 3 surveys}
+# Read in the fish and stream survey data for week 3
+fishSurvey3 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishSurvey3.csv")
+streamSurvey3 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/streamSurvey3.csv")
+
+# Combine the datasets by shift and river columns
+fishStream3 <- left_join(fishSurvey3, streamSurvey3, by = c("shift", "river"))
+
+# Save the combined data to a new CSV file
+write.csv(fishStream3, "fishStream3.csv", row.names = FALSE)
+
+# Display the first few rows of the combined data
+print(head(fishStream3))
+
+```
+
+```{r combine fish and stream week 4 surveys}
+# Read in the fish and stream survey data for week 4
+fishSurvey4 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishSurvey4.csv")
+streamSurvey4 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/streamSurvey4.csv")
+
+# Combine the datasets by shift and river columns
+fishStream4 <- left_join(fishSurvey4, streamSurvey4, by = c("shift", "river"))
+
+# Save the combined data to a new CSV file
+write.csv(fishStream4, "fishStream4.csv", row.names = FALSE)
+
+# Display the first few rows of the combined data
+print(head(fishStream4))
+
+```
+
+```{r combine fish and stream week 5 surveys}
+# Read in the fish and stream survey data for week 5
+fishSurvey5 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishSurvey5.csv")
+streamSurvey5 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/streamSurvey5.csv")
+
+# Combine the datasets by shift and river columns
+fishStream5 <- left_join(fishSurvey5, streamSurvey5, by = c("shift", "river"))
+
+# Save the combined data to a new CSV file
+write.csv(fishStream5, "fishStream5.csv", row.names = FALSE)
+
+# Display the first few rows of the combined data
+print(head(fishStream5))
+
+```
+
+```{r combine fish and stream week 6 surveys}
+# Read in the fish and stream survey data for week 6
+fishSurvey6 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishSurvey6.csv")
+streamSurvey6 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/streamSurvey6.csv")
+
+# Combine the datasets by shift and river columns
+fishStream6 <- left_join(fishSurvey6, streamSurvey6, by = c("shift", "river"))
+
+# Save the combined data to a new CSV file
+write.csv(fishStream6, "fishStream6.csv", row.names = FALSE)
+
+# Display the first few rows of the combined data
+print(head(fishStream6))
+
+```
+
+```{r combine fish and stream week 7 surveys}
+# Read in the fish and stream survey data for week 7
+fishSurvey7 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishSurvey7.csv")
+streamSurvey7 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/streamSurvey7.csv")
+
+# Combine the datasets by shift and river columns
+fishStream7 <- left_join(fishSurvey7, streamSurvey7, by = c("shift", "river"))
+
+# Save the combined data to a new CSV file
+write.csv(fishStream7, "fishStream7.csv", row.names = FALSE)
+
+# Display the first few rows of the combined data
+print(head(fishStream7))
+
+```
+
+```{r combine fish and stream week 8 surveys}
+# Read in the fish and stream survey data for week 8
+fishSurvey8 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishSurvey8.csv")
+streamSurvey8 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/streamSurvey8.csv")
+
+# Combine the datasets by shift and river columns
+fishStream8 <- left_join(fishSurvey8, streamSurvey8, by = c("shift", "river"))
+
+# Save the combined data to a new CSV file
+write.csv(fishStream8, "fishStream8.csv", row.names = FALSE)
+
+# Display the first few rows of the combined data
+print(head(fishStream8))
+
+```
+
+```{r combine fish and stream week 9 surveys}
+# Read in the fish and stream survey data for week 9
+fishSurvey9 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishSurvey9.csv")
+streamSurvey9 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/streamSurvey9.csv")
+
+# Combine the datasets by shift and river columns
+fishStream9 <- left_join(fishSurvey9, streamSurvey9, by = c("shift", "river"))
+
+# Save the combined data to a new CSV file
+write.csv(fishStream9, "fishStream9.csv", row.names = FALSE)
+
+# Display the first few rows of the combined data
+print(head(fishStream9))
+
+```
+
+```{r combine fish and stream week 10 surveys}
+# Read in the fish and stream survey data for week 10
+fishSurvey10 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishSurvey10.csv")
+streamSurvey10 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/streamSurvey10.csv")
+
+# Combine the datasets by shift and river columns
+fishStream10 <- left_join(fishSurvey10, streamSurvey10, by = c("shift", "river"))
+
+# Save the combined data to a new CSV file
+write.csv(fishStream10, "fishStream10.csv", row.names = FALSE)
+
+# Display the first few rows of the combined data
+print(head(fishStream10))
+
+```
+
+```{r combine fish and stream week 11 surveys}
+# Read in the fish and stream survey data for week 11
+fishSurvey11 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishSurvey11.csv")
+streamSurvey11 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/streamSurvey11.csv")
+
+# Combine the datasets by shift and river columns
+fishStream11 <- left_join(fishSurvey11, streamSurvey11, by = c("shift", "river"))
+
+# Save the combined data to a new CSV file
+write.csv(fishStream11, "fishStream11.csv", row.names = FALSE)
+
+# Display the first few rows of the combined data
+print(head(fishStream11))
+
+```
+
+```{r combine fish and stream week 12 surveys}
+# Read in the fish and stream survey data for week 12
+fishSurvey12 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishSurvey12.csv")
+streamSurvey12 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/streamSurvey12.csv")
+
+# Combine the datasets by shift and river columns
+fishStream12 <- left_join(fishSurvey12, streamSurvey12, by = c("shift", "river"))
+
+# Save the combined data to a new CSV file
+write.csv(fishStream12, "fishStream12.csv", row.names = FALSE)
+
+# Display the first few rows of the combined data
+print(head(fishStream12))
+
+```
+
 ```{r}
 # Define file names for each week
 #fish_files <- c("fishSurvey1.csv", "fishSurvey2.csv", "fishSurvey3.csv", "fishSurvey4.csv", "fishSurvey5.csv", "fishSurvey6.csv", "fishSurvey7.csv", "fishSurvey8.csv", "fishSurvey9.csv", "fishSurvey10.csv", "fishSurvey11.csv", "fishSurvey12.csv")
@@ -896,45 +1089,1568 @@ for (i in 1:length(processed_fish_data_list)) {
 
 ```{r combine fish and stream surveys}
 # Define file names for each week
-fish_files <- c("fishSurvey1.csv", "fishSurvey2.csv", "fishSurvey3.csv", "fishSurvey4.csv", "fishSurvey5.csv", "fishSurvey6.csv", "fishSurvey7.csv", "fishSurvey8.csv", "fishSurvey9.csv", "fishSurvey10.csv", "fishSurvey11.csv", "fishSurvey12.csv")
+#fish_files <- c("fishSurvey1.csv", "fishSurvey2.csv", "fishSurvey3.csv", "fishSurvey4.csv", "fishSurvey5.csv", "fishSurvey6.csv", "fishSurvey7.csv", "fishSurvey8.csv", "fishSurvey9.csv", "fishSurvey10.csv", "fishSurvey11.csv", "fishSurvey12.csv")
 
-stream_files <- c("streamSurvey1.csv", "streamSurvey2.csv", "streamSurvey3.csv", "streamSurvey4.csv", "streamSurvey5.csv", "streamSurvey6.csv", "streamSurvey7.csv", "streamSurvey8.csv", "streamSurvey9.csv", "streamSurvey10.csv", "streamSurvey11.csv", "streamSurvey12.csv")
+#stream_files <- c("streamSurvey1.csv", "streamSurvey2.csv", "streamSurvey3.csv", "streamSurvey4.csv", "streamSurvey5.csv", "streamSurvey6.csv", "streamSurvey7.csv", "streamSurvey8.csv", "streamSurvey9.csv", "streamSurvey10.csv", "streamSurvey11.csv", "streamSurvey12.csv")
 
 # Function to extract the number from file names
-extract_number <- function(file_name) {
-  str_extract(file_name, "\\d+")
-}
+#extract_number <- function(file_name) {
+  #str_extract(file_name, "\\d+")
+#}
 
 # Combine datasets by matching number in filenames
-for (fish_file in fish_files) {
+#for (fish_file in fish_files) {
   # Extract number from fish file
-  fish_number <- extract_number(fish_file)
+  #fish_number <- extract_number(fish_file)
   
   # Find the corresponding stream file
-  stream_file <- paste0("streamSurvey", fish_number, ".csv")
+  #stream_file <- paste0("streamSurvey", fish_number, ".csv")
   
   # Check if the stream file exists
-  if (stream_file %in% stream_files) {
+  #if (stream_file %in% stream_files) {
     # Read in the fish and stream survey data
-    fish_data <- read.csv(fish_file)
-    stream_data <- read.csv(stream_file)
+    #fish_data <- read.csv(fish_file)
+    #stream_data <- read.csv(stream_file)
     
     # Combine the datasets by shift and river columns
-    combined_data <- left_join(fish_data, stream_data, by = c("shift", "river"))
+    #combined_data <- left_join(fish_data, stream_data, by = c("shift", "river"))
     
     # Save the combined data to a new CSV file
-    combined_file_name <- paste0("fishStream", fish_number, ".csv")
-    write.csv(combined_data, combined_file_name, row.names = FALSE)
+    #combined_file_name <- paste0("fishStream", fish_number, ".csv")
+    #write.csv(combined_data, combined_file_name, row.names = FALSE)
     
     # Display the first few rows of the combined data
-    cat("\nCombined data for number", fish_number, ":\n")
-    print(head(combined_data))
+    #cat("\nCombined data for number", fish_number, ":\n")
+    #print(head(combined_data))
+  #} else {
+    #cat("\nNo corresponding stream file found for", fish_file, "\n")
+  #}
+#}
+
+```
+
+# Making Flow Tracker File Datasets by Week
+
+```{r combine flow tracker files for week 1}
+# Define a function to search for files
+find_files <- function(directory) {
+  all_files <- list.files(path = directory, recursive = TRUE, full.names = TRUE)
+  return(all_files)
+}
+
+# Function to extract the required values from a single file and convert only Fahrenheit (°F) to Celsius
+extract_values <- function(file_path) {
+  
+  # Read the csv file
+  df <- read.csv(file_path, header = FALSE, stringsAsFactors = FALSE)
+  colnames(df) <- c("Column1", "Column2", "Column3")
+  
+  # Extract values
+  local_end_time <- df %>% filter(Column1 == "Local_End_Time") %>% select(Column3) %>% pull()
+  site_name <- df %>% filter(Column1 == "Site_Name") %>% select(Column3) %>% pull()
+  total_discharge <- df %>% filter(Column1 == "Total_Discharge") %>% select(Column3) %>% pull()
+  
+  # Extract the temperature value and unit
+  mean_temp_value <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column3) %>% pull()
+  temp_unit <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column2) %>% pull()
+
+  # Convert only if the unit is Fahrenheit ("°F")
+  if (temp_unit == "°F") {
+    mean_temp_value <- (as.numeric(mean_temp_value) - 32) * 5 / 9
   } else {
-    cat("\nNo corresponding stream file found for", fish_file, "\n")
+    mean_temp_value <- as.numeric(mean_temp_value)  # Ensure it's numeric for Celsius values or NA
   }
+  
+  # Round values to 2 decimal places
+  mean_temp_value <- round(mean_temp_value, 2)
+  total_discharge <- round(as.numeric(total_discharge), 2)
+  
+  data.frame(
+    localEndTime = local_end_time,
+    river = site_name,
+    totalDischarge = as.numeric(total_discharge),  # Ensure numeric type
+    meanTemp = mean_temp_value,  # Already handled as numeric
+    stringsAsFactors = FALSE
+  )
+}
+
+directory <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/FlowTracker/FlowTrackerFiles/TAMEflow/Week1"
+
+# Find all files in the directory
+all_files <- find_files(directory)
+
+# Initialize the result dataframe with the correct data types
+result_df <- data.frame(
+  localEndTime = character(),
+  river = character(),
+  totalDischarge = numeric(),  # Initialize as numeric
+  meanTemp = numeric(),  # Initialize as numeric
+  stringsAsFactors = FALSE
+)
+
+# Loop through all files and extract values
+for (file in all_files) {
+  file_data <- extract_values(file)
+  result_df <- bind_rows(result_df, file_data)
+}
+
+# Standardize site names
+result_df <- result_df %>%
+  mutate(river = ifelse(grepl("buff", river, ignore.case = TRUE), "BUFFAM", river)) %>%
+  mutate(river = ifelse(grepl("dryu", river, ignore.case = TRUE), "DRY UPPER", river)) %>%
+  mutate(river = ifelse(grepl("harr", river, ignore.case = TRUE), "HARRIS", river)) %>%
+  mutate(river = ifelse(grepl("undh", river, ignore.case = TRUE), "UNDERHILL", river)) %>%
+  mutate(river = ifelse(grepl("dcky", river, ignore.case = TRUE), "DICKEY", river))
+
+# Remove rows with repeating Total_Discharge values
+result_df <- result_df %>% distinct(localEndTime, .keep_all = TRUE)
+
+# Display the first few rows to check the result
+head(result_df)
+
+# Write the final CSV file
+write.csv(result_df, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek1.csv", row.names = FALSE)
+
+```
+
+```{r combine flow tracker files for week 2}
+# Define a function to search for files
+find_files <- function(directory) {
+  all_files <- list.files(path = directory, recursive = TRUE, full.names = TRUE)
+  return(all_files)
+}
+
+# Function to extract the required values from a single file and convert only Fahrenheit (°F) to Celsius
+extract_values <- function(file_path) {
+  
+  # Read the csv file
+  df <- read.csv(file_path, header = FALSE, stringsAsFactors = FALSE)
+  colnames(df) <- c("Column1", "Column2", "Column3")
+  
+  # Extract values
+  local_end_time <- df %>% filter(Column1 == "Local_End_Time") %>% select(Column3) %>% pull()
+  site_name <- df %>% filter(Column1 == "Site_Name") %>% select(Column3) %>% pull()
+  total_discharge <- df %>% filter(Column1 == "Total_Discharge") %>% select(Column3) %>% pull()
+  
+  # Extract the temperature value and unit
+  mean_temp_value <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column3) %>% pull()
+  temp_unit <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column2) %>% pull()
+
+  # Convert only if the unit is Fahrenheit ("°F")
+  if (temp_unit == "°F") {
+    mean_temp_value <- (as.numeric(mean_temp_value) - 32) * 5 / 9
+  } else {
+    mean_temp_value <- as.numeric(mean_temp_value)  # Ensure it's numeric for Celsius values or NA
+  }
+  
+  # Round values to 2 decimal places
+  mean_temp_value <- round(mean_temp_value, 2)
+  total_discharge <- round(as.numeric(total_discharge), 2)
+  
+  data.frame(
+    localEndTime = local_end_time,
+    river = site_name,
+    totalDischarge = as.numeric(total_discharge),  # Ensure numeric type
+    meanTemp = mean_temp_value,  # Already handled as numeric
+    stringsAsFactors = FALSE
+  )
+}
+
+directory <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/FlowTracker/FlowTrackerFiles/TAMEflow/Week2"
+
+# Find all files in the directory
+all_files <- find_files(directory)
+
+# Initialize the result dataframe with the correct data types
+result_df <- data.frame(
+  localEndTime = character(),
+  river = character(),
+  totalDischarge = numeric(),  # Initialize as numeric
+  meanTemp = numeric(),  # Initialize as numeric
+  stringsAsFactors = FALSE
+)
+
+# Loop through all files and extract values
+for (file in all_files) {
+  file_data <- extract_values(file)
+  result_df <- bind_rows(result_df, file_data)
+}
+
+# Standardize site names
+result_df <- result_df %>%
+  mutate(river = ifelse(grepl("buff", river, ignore.case = TRUE), "BUFFAM", river)) %>%
+  mutate(river = ifelse(grepl("dryu", river, ignore.case = TRUE), "DRY UPPER", river)) %>%
+  mutate(river = ifelse(grepl("harr", river, ignore.case = TRUE), "HARRIS", river)) %>%
+  mutate(river = ifelse(grepl("undh", river, ignore.case = TRUE), "UNDERHILL", river)) %>%
+  mutate(river = ifelse(grepl("dcky", river, ignore.case = TRUE), "DICKEY", river))
+
+# Remove rows with repeating Total_Discharge values
+result_df <- result_df %>% distinct(localEndTime, .keep_all = TRUE)
+
+# Display the first few rows to check the result
+head(result_df)
+
+# Write the final CSV file
+write.csv(result_df, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek2.csv", row.names = FALSE)
+
+
+```
+
+```{r combine flow tracker files for week 3}
+# Define a function to search for files
+find_files <- function(directory) {
+  all_files <- list.files(path = directory, recursive = TRUE, full.names = TRUE)
+  return(all_files)
+}
+
+# Function to extract the required values from a single file and convert only Fahrenheit (°F) to Celsius
+extract_values <- function(file_path) {
+  
+  # Read the csv file
+  df <- read.csv(file_path, header = FALSE, stringsAsFactors = FALSE)
+  colnames(df) <- c("Column1", "Column2", "Column3")
+  
+  # Extract values
+  local_end_time <- df %>% filter(Column1 == "Local_End_Time") %>% select(Column3) %>% pull()
+  site_name <- df %>% filter(Column1 == "Site_Name") %>% select(Column3) %>% pull()
+  total_discharge <- df %>% filter(Column1 == "Total_Discharge") %>% select(Column3) %>% pull()
+  
+  # Extract the temperature value and unit
+  mean_temp_value <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column3) %>% pull()
+  temp_unit <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column2) %>% pull()
+
+  # Convert only if the unit is Fahrenheit ("°F")
+  if (temp_unit == "°F") {
+    mean_temp_value <- (as.numeric(mean_temp_value) - 32) * 5 / 9
+  } else {
+    mean_temp_value <- as.numeric(mean_temp_value)  # Ensure it's numeric for Celsius values or NA
+  }
+  
+  # Round values to 2 decimal places
+  mean_temp_value <- round(mean_temp_value, 2)
+  total_discharge <- round(as.numeric(total_discharge), 2)
+  
+  data.frame(
+    localEndTime = local_end_time,
+    river = site_name,
+    totalDischarge = as.numeric(total_discharge),  # Ensure numeric type
+    meanTemp = mean_temp_value,  # Already handled as numeric
+    stringsAsFactors = FALSE
+  )
+}
+
+directory <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/FlowTracker/FlowTrackerFiles/TAMEflow/Week3"
+
+# Find all files in the directory
+all_files <- find_files(directory)
+
+# Initialize the result dataframe with the correct data types
+result_df <- data.frame(
+  localEndTime = character(),
+  river = character(),
+  totalDischarge = numeric(),  # Initialize as numeric
+  meanTemp = numeric(),  # Initialize as numeric
+  stringsAsFactors = FALSE
+)
+
+# Loop through all files and extract values
+for (file in all_files) {
+  file_data <- extract_values(file)
+  result_df <- bind_rows(result_df, file_data)
+}
+
+# Standardize site names
+result_df <- result_df %>%
+  mutate(river = ifelse(grepl("buff", river, ignore.case = TRUE), "BUFFAM", river)) %>%
+  mutate(river = ifelse(grepl("dryu", river, ignore.case = TRUE), "DRY UPPER", river)) %>%
+  mutate(river = ifelse(grepl("harr", river, ignore.case = TRUE), "HARRIS", river)) %>%
+  mutate(river = ifelse(grepl("undh", river, ignore.case = TRUE), "UNDERHILL", river)) %>%
+  mutate(river = ifelse(grepl("dcky", river, ignore.case = TRUE), "DICKEY", river))
+
+# Remove rows with repeating Total_Discharge values
+result_df <- result_df %>% distinct(localEndTime, .keep_all = TRUE)
+
+# Display the first few rows to check the result
+head(result_df)
+
+# Write the final CSV file
+write.csv(result_df, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek3.csv", row.names = FALSE)
+
+```
+
+```{r combine flow tracker files for week 4}
+# Define a function to search for files
+find_files <- function(directory) {
+  all_files <- list.files(path = directory, recursive = TRUE, full.names = TRUE)
+  return(all_files)
+}
+
+# Function to extract the required values from a single file and convert only Fahrenheit (°F) to Celsius
+extract_values <- function(file_path) {
+  
+  # Read the csv file
+  df <- read.csv(file_path, header = FALSE, stringsAsFactors = FALSE)
+  colnames(df) <- c("Column1", "Column2", "Column3")
+  
+  # Extract values
+  local_end_time <- df %>% filter(Column1 == "Local_End_Time") %>% select(Column3) %>% pull()
+  site_name <- df %>% filter(Column1 == "Site_Name") %>% select(Column3) %>% pull()
+  total_discharge <- df %>% filter(Column1 == "Total_Discharge") %>% select(Column3) %>% pull()
+  
+  # Extract the temperature value and unit
+  mean_temp_value <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column3) %>% pull()
+  temp_unit <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column2) %>% pull()
+
+  # Convert only if the unit is Fahrenheit ("°F")
+  if (temp_unit == "°F") {
+    mean_temp_value <- (as.numeric(mean_temp_value) - 32) * 5 / 9
+  } else {
+    mean_temp_value <- as.numeric(mean_temp_value)  # Ensure it's numeric for Celsius values or NA
+  }
+  
+  # Round values to 2 decimal places
+  mean_temp_value <- round(mean_temp_value, 2)
+  total_discharge <- round(as.numeric(total_discharge), 2)
+  
+  data.frame(
+    localEndTime = local_end_time,
+    river = site_name,
+    totalDischarge = as.numeric(total_discharge),  # Ensure numeric type
+    meanTemp = mean_temp_value,  # Already handled as numeric
+    stringsAsFactors = FALSE
+  )
+}
+
+directory <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/FlowTracker/FlowTrackerFiles/TAMEflow/Week4"
+
+# Find all files in the directory
+all_files <- find_files(directory)
+
+# Initialize the result dataframe with the correct data types
+result_df <- data.frame(
+  localEndTime = character(),
+  river = character(),
+  totalDischarge = numeric(),  # Initialize as numeric
+  meanTemp = numeric(),  # Initialize as numeric
+  stringsAsFactors = FALSE
+)
+
+# Loop through all files and extract values
+for (file in all_files) {
+  file_data <- extract_values(file)
+  result_df <- bind_rows(result_df, file_data)
+}
+
+# Standardize site names
+result_df <- result_df %>%
+  mutate(river = ifelse(grepl("buff", river, ignore.case = TRUE), "BUFFAM", river)) %>%
+  mutate(river = ifelse(grepl("dryu", river, ignore.case = TRUE), "DRY UPPER", river)) %>%
+  mutate(river = ifelse(grepl("harr", river, ignore.case = TRUE), "HARRIS", river)) %>%
+  mutate(river = ifelse(grepl("undh", river, ignore.case = TRUE), "UNDERHILL", river)) %>%
+  mutate(river = ifelse(grepl("dcky", river, ignore.case = TRUE), "DICKEY", river))
+
+# Remove rows with repeating Total_Discharge values
+result_df <- result_df %>% distinct(localEndTime, .keep_all = TRUE)
+
+# Display the first few rows to check the result
+head(result_df)
+
+# Write the final CSV file
+write.csv(result_df, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek4.csv", row.names = FALSE)
+
+```
+
+```{r combine flow tracker files for week 5}
+# Define a function to search for files
+find_files <- function(directory) {
+  all_files <- list.files(path = directory, recursive = TRUE, full.names = TRUE)
+  return(all_files)
+}
+
+# Function to extract the required values from a single file and convert only Fahrenheit (°F) to Celsius
+extract_values <- function(file_path) {
+  
+  # Read the csv file
+  df <- read.csv(file_path, header = FALSE, stringsAsFactors = FALSE)
+  colnames(df) <- c("Column1", "Column2", "Column3")
+  
+  # Extract values
+  local_end_time <- df %>% filter(Column1 == "Local_End_Time") %>% select(Column3) %>% pull()
+  site_name <- df %>% filter(Column1 == "Site_Name") %>% select(Column3) %>% pull()
+  total_discharge <- df %>% filter(Column1 == "Total_Discharge") %>% select(Column3) %>% pull()
+  
+  # Extract the temperature value and unit
+  mean_temp_value <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column3) %>% pull()
+  temp_unit <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column2) %>% pull()
+
+  # Convert only if the unit is Fahrenheit ("°F")
+  if (temp_unit == "°F") {
+    mean_temp_value <- (as.numeric(mean_temp_value) - 32) * 5 / 9
+  } else {
+    mean_temp_value <- as.numeric(mean_temp_value)  # Ensure it's numeric for Celsius values or NA
+  }
+  
+  # Round values to 2 decimal places
+  mean_temp_value <- round(mean_temp_value, 2)
+  total_discharge <- round(as.numeric(total_discharge), 2)
+  
+  data.frame(
+    localEndTime = local_end_time,
+    river = site_name,
+    totalDischarge = as.numeric(total_discharge),  # Ensure numeric type
+    meanTemp = mean_temp_value,  # Already handled as numeric
+    stringsAsFactors = FALSE
+  )
+}
+
+directory <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/FlowTracker/FlowTrackerFiles/TAMEflow/Week5"
+
+# Find all files in the directory
+all_files <- find_files(directory)
+
+# Initialize the result dataframe with the correct data types
+result_df <- data.frame(
+  localEndTime = character(),
+  river = character(),
+  totalDischarge = numeric(),  # Initialize as numeric
+  meanTemp = numeric(),  # Initialize as numeric
+  stringsAsFactors = FALSE
+)
+
+# Loop through all files and extract values
+for (file in all_files) {
+  file_data <- extract_values(file)
+  result_df <- bind_rows(result_df, file_data)
+}
+
+# Standardize site names
+result_df <- result_df %>%
+  mutate(river = ifelse(grepl("buff", river, ignore.case = TRUE), "BUFFAM", river)) %>%
+  mutate(river = ifelse(grepl("dryu", river, ignore.case = TRUE), "DRY UPPER", river)) %>%
+  mutate(river = ifelse(grepl("harr", river, ignore.case = TRUE), "HARRIS", river)) %>%
+  mutate(river = ifelse(grepl("undh", river, ignore.case = TRUE), "UNDERHILL", river)) %>%
+  mutate(river = ifelse(grepl("dcky", river, ignore.case = TRUE), "DICKEY", river))
+
+# Remove rows with repeating Total_Discharge values
+result_df <- result_df %>% distinct(localEndTime, .keep_all = TRUE)
+
+# Display the first few rows to check the result
+head(result_df)
+
+# Write the final CSV file
+write.csv(result_df, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek5.csv", row.names = FALSE)
+
+```
+
+```{r combine flow tracker files for week 6}
+# Define a function to search for files
+find_files <- function(directory) {
+  all_files <- list.files(path = directory, recursive = TRUE, full.names = TRUE)
+  return(all_files)
+}
+
+# Function to extract the required values from a single file and convert only Fahrenheit (°F) to Celsius
+extract_values <- function(file_path) {
+  
+  # Read the csv file
+  df <- read.csv(file_path, header = FALSE, stringsAsFactors = FALSE)
+  colnames(df) <- c("Column1", "Column2", "Column3")
+  
+  # Extract values
+  local_end_time <- df %>% filter(Column1 == "Local_End_Time") %>% select(Column3) %>% pull()
+  site_name <- df %>% filter(Column1 == "Site_Name") %>% select(Column3) %>% pull()
+  total_discharge <- df %>% filter(Column1 == "Total_Discharge") %>% select(Column3) %>% pull()
+  
+  # Extract the temperature value and unit
+  mean_temp_value <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column3) %>% pull()
+  temp_unit <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column2) %>% pull()
+
+  # Convert only if the unit is Fahrenheit ("°F")
+  if (temp_unit == "°F") {
+    mean_temp_value <- (as.numeric(mean_temp_value) - 32) * 5 / 9
+  } else {
+    mean_temp_value <- as.numeric(mean_temp_value)  # Ensure it's numeric for Celsius values or NA
+  }
+  
+  # Round values to 2 decimal places
+  mean_temp_value <- round(mean_temp_value, 2)
+  total_discharge <- round(as.numeric(total_discharge), 2)
+  
+  data.frame(
+    localEndTime = local_end_time,
+    river = site_name,
+    totalDischarge = as.numeric(total_discharge),  # Ensure numeric type
+    meanTemp = mean_temp_value,  # Already handled as numeric
+    stringsAsFactors = FALSE
+  )
+}
+
+directory <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/FlowTracker/FlowTrackerFiles/TAMEflow/Week6"
+
+# Find all files in the directory
+all_files <- find_files(directory)
+
+# Initialize the result dataframe with the correct data types
+result_df <- data.frame(
+  localEndTime = character(),
+  river = character(),
+  totalDischarge = numeric(),  # Initialize as numeric
+  meanTemp = numeric(),  # Initialize as numeric
+  stringsAsFactors = FALSE
+)
+
+# Loop through all files and extract values
+for (file in all_files) {
+  file_data <- extract_values(file)
+  result_df <- bind_rows(result_df, file_data)
+}
+
+# Standardize site names
+result_df <- result_df %>%
+  mutate(river = ifelse(grepl("buff", river, ignore.case = TRUE), "BUFFAM", river)) %>%
+  mutate(river = ifelse(grepl("dryu", river, ignore.case = TRUE), "DRY UPPER", river)) %>%
+  mutate(river = ifelse(grepl("harr", river, ignore.case = TRUE), "HARRIS", river)) %>%
+  mutate(river = ifelse(grepl("undh", river, ignore.case = TRUE), "UNDERHILL", river)) %>%
+  mutate(river = ifelse(grepl("dcky", river, ignore.case = TRUE), "DICKEY", river))
+
+# Remove rows with repeating Total_Discharge values
+result_df <- result_df %>% distinct(localEndTime, .keep_all = TRUE)
+
+# Display the first few rows to check the result
+head(result_df)
+
+# Write the final CSV file
+write.csv(result_df, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek6.csv", row.names = FALSE)
+
+```
+
+```{r combine flow tracker files for week 7}
+# Define a function to search for files
+find_files <- function(directory) {
+  all_files <- list.files(path = directory, recursive = TRUE, full.names = TRUE)
+  return(all_files)
+}
+
+# Function to extract the required values from a single file and convert only Fahrenheit (°F) to Celsius
+extract_values <- function(file_path) {
+  
+  # Read the csv file
+  df <- read.csv(file_path, header = FALSE, stringsAsFactors = FALSE)
+  colnames(df) <- c("Column1", "Column2", "Column3")
+  
+  # Extract values
+  local_end_time <- df %>% filter(Column1 == "Local_End_Time") %>% select(Column3) %>% pull()
+  site_name <- df %>% filter(Column1 == "Site_Name") %>% select(Column3) %>% pull()
+  total_discharge <- df %>% filter(Column1 == "Total_Discharge") %>% select(Column3) %>% pull()
+  
+  # Extract the temperature value and unit
+  mean_temp_value <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column3) %>% pull()
+  temp_unit <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column2) %>% pull()
+
+  # Convert only if the unit is Fahrenheit ("°F")
+  if (temp_unit == "°F") {
+    mean_temp_value <- (as.numeric(mean_temp_value) - 32) * 5 / 9
+  } else {
+    mean_temp_value <- as.numeric(mean_temp_value)  # Ensure it's numeric for Celsius values or NA
+  }
+  
+  # Round values to 2 decimal places
+  mean_temp_value <- round(mean_temp_value, 2)
+  total_discharge <- round(as.numeric(total_discharge), 2)
+  
+  data.frame(
+    localEndTime = local_end_time,
+    river = site_name,
+    totalDischarge = as.numeric(total_discharge),  # Ensure numeric type
+    meanTemp = mean_temp_value,  # Already handled as numeric
+    stringsAsFactors = FALSE
+  )
+}
+
+directory <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/FlowTracker/FlowTrackerFiles/TAMEflow/Week7"
+
+# Find all files in the directory
+all_files <- find_files(directory)
+
+# Initialize the result dataframe with the correct data types
+result_df <- data.frame(
+  localEndTime = character(),
+  river = character(),
+  totalDischarge = numeric(),  # Initialize as numeric
+  meanTemp = numeric(),  # Initialize as numeric
+  stringsAsFactors = FALSE
+)
+
+# Loop through all files and extract values
+for (file in all_files) {
+  file_data <- extract_values(file)
+  result_df <- bind_rows(result_df, file_data)
+}
+
+# Standardize site names
+result_df <- result_df %>%
+  mutate(river = ifelse(grepl("buff", river, ignore.case = TRUE), "BUFFAM", river)) %>%
+  mutate(river = ifelse(grepl("dryu", river, ignore.case = TRUE), "DRY UPPER", river)) %>%
+  mutate(river = ifelse(grepl("harr", river, ignore.case = TRUE), "HARRIS", river)) %>%
+  mutate(river = ifelse(grepl("undh", river, ignore.case = TRUE), "UNDERHILL", river)) %>%
+  mutate(river = ifelse(grepl("dcky", river, ignore.case = TRUE), "DICKEY", river))
+
+# Remove rows with repeating Total_Discharge values
+result_df <- result_df %>% distinct(localEndTime, .keep_all = TRUE)
+
+# Display the first few rows to check the result
+head(result_df)
+
+# Write the final CSV file
+write.csv(result_df, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek7.csv", row.names = FALSE)
+
+```
+
+```{r combine flow tracker files for week 8}
+# Define a function to search for files
+find_files <- function(directory) {
+  all_files <- list.files(path = directory, recursive = TRUE, full.names = TRUE)
+  return(all_files)
+}
+
+# Function to extract the required values from a single file and convert only Fahrenheit (°F) to Celsius
+extract_values <- function(file_path) {
+  
+  # Read the csv file
+  df <- read.csv(file_path, header = FALSE, stringsAsFactors = FALSE)
+  colnames(df) <- c("Column1", "Column2", "Column3")
+  
+  # Extract values
+  local_end_time <- df %>% filter(Column1 == "Local_End_Time") %>% select(Column3) %>% pull()
+  site_name <- df %>% filter(Column1 == "Site_Name") %>% select(Column3) %>% pull()
+  total_discharge <- df %>% filter(Column1 == "Total_Discharge") %>% select(Column3) %>% pull()
+  
+  # Extract the temperature value and unit
+  mean_temp_value <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column3) %>% pull()
+  temp_unit <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column2) %>% pull()
+
+  # Convert only if the unit is Fahrenheit ("°F")
+  if (temp_unit == "°F") {
+    mean_temp_value <- (as.numeric(mean_temp_value) - 32) * 5 / 9
+  } else {
+    mean_temp_value <- as.numeric(mean_temp_value)  # Ensure it's numeric for Celsius values or NA
+  }
+  
+  # Round values to 2 decimal places
+  mean_temp_value <- round(mean_temp_value, 2)
+  total_discharge <- round(as.numeric(total_discharge), 2)
+  
+  data.frame(
+    localEndTime = local_end_time,
+    river = site_name,
+    totalDischarge = as.numeric(total_discharge),  # Ensure numeric type
+    meanTemp = mean_temp_value,  # Already handled as numeric
+    stringsAsFactors = FALSE
+  )
+}
+
+directory <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/FlowTracker/FlowTrackerFiles/TAMEflow/Week8"
+
+# Find all files in the directory
+all_files <- find_files(directory)
+
+# Initialize the result dataframe with the correct data types
+result_df <- data.frame(
+  localEndTime = character(),
+  river = character(),
+  totalDischarge = numeric(),  # Initialize as numeric
+  meanTemp = numeric(),  # Initialize as numeric
+  stringsAsFactors = FALSE
+)
+
+# Loop through all files and extract values
+for (file in all_files) {
+  file_data <- extract_values(file)
+  result_df <- bind_rows(result_df, file_data)
+}
+
+# Standardize site names
+result_df <- result_df %>%
+  mutate(river = ifelse(grepl("buff", river, ignore.case = TRUE), "BUFFAM", river)) %>%
+  mutate(river = ifelse(grepl("dryu", river, ignore.case = TRUE), "DRY UPPER", river)) %>%
+  mutate(river = ifelse(grepl("harr", river, ignore.case = TRUE), "HARRIS", river)) %>%
+  mutate(river = ifelse(grepl("undh", river, ignore.case = TRUE), "UNDERHILL", river)) %>%
+  mutate(river = ifelse(grepl("dcky", river, ignore.case = TRUE), "DICKEY", river))
+
+# Remove rows with repeating Total_Discharge values
+result_df <- result_df %>% distinct(localEndTime, .keep_all = TRUE)
+
+# Display the first few rows to check the result
+head(result_df)
+
+# Write the final CSV file
+write.csv(result_df, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek8.csv", row.names = FALSE)
+
+```
+
+```{r combine flow tracker files for week 9}
+# Define a function to search for files
+find_files <- function(directory) {
+  all_files <- list.files(path = directory, recursive = TRUE, full.names = TRUE)
+  return(all_files)
+}
+
+# Function to extract the required values from a single file and convert only Fahrenheit (°F) to Celsius
+extract_values <- function(file_path) {
+  
+  # Read the csv file
+  df <- read.csv(file_path, header = FALSE, stringsAsFactors = FALSE)
+  colnames(df) <- c("Column1", "Column2", "Column3")
+  
+  # Extract values
+  local_end_time <- df %>% filter(Column1 == "Local_End_Time") %>% select(Column3) %>% pull()
+  site_name <- df %>% filter(Column1 == "Site_Name") %>% select(Column3) %>% pull()
+  total_discharge <- df %>% filter(Column1 == "Total_Discharge") %>% select(Column3) %>% pull()
+  
+  # Extract the temperature value and unit
+  mean_temp_value <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column3) %>% pull()
+  temp_unit <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column2) %>% pull()
+
+  # Convert only if the unit is Fahrenheit ("°F")
+  if (temp_unit == "°F") {
+    mean_temp_value <- (as.numeric(mean_temp_value) - 32) * 5 / 9
+  } else {
+    mean_temp_value <- as.numeric(mean_temp_value)  # Ensure it's numeric for Celsius values or NA
+  }
+  
+  # Round values to 2 decimal places
+  mean_temp_value <- round(mean_temp_value, 2)
+  total_discharge <- round(as.numeric(total_discharge), 2)
+  
+  data.frame(
+    localEndTime = local_end_time,
+    river = site_name,
+    totalDischarge = as.numeric(total_discharge),  # Ensure numeric type
+    meanTemp = mean_temp_value,  # Already handled as numeric
+    stringsAsFactors = FALSE
+  )
+}
+
+directory <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/FlowTracker/FlowTrackerFiles/TAMEflow/Week9"
+
+# Find all files in the directory
+all_files <- find_files(directory)
+
+# Initialize the result dataframe with the correct data types
+result_df <- data.frame(
+  localEndTime = character(),
+  river = character(),
+  totalDischarge = numeric(),  # Initialize as numeric
+  meanTemp = numeric(),  # Initialize as numeric
+  stringsAsFactors = FALSE
+)
+
+# Loop through all files and extract values
+for (file in all_files) {
+  file_data <- extract_values(file)
+  result_df <- bind_rows(result_df, file_data)
+}
+
+# Standardize site names
+result_df <- result_df %>%
+  mutate(river = ifelse(grepl("buff", river, ignore.case = TRUE), "BUFFAM", river)) %>%
+  mutate(river = ifelse(grepl("dryu", river, ignore.case = TRUE), "DRY UPPER", river)) %>%
+  mutate(river = ifelse(grepl("harr", river, ignore.case = TRUE), "HARRIS", river)) %>%
+  mutate(river = ifelse(grepl("undh", river, ignore.case = TRUE), "UNDERHILL", river)) %>%
+  mutate(river = ifelse(grepl("dcky", river, ignore.case = TRUE), "DICKEY", river))
+
+# Remove rows with repeating Total_Discharge values
+result_df <- result_df %>% distinct(localEndTime, .keep_all = TRUE)
+
+# Display the first few rows to check the result
+head(result_df)
+
+# Write the final CSV file
+write.csv(result_df, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek9.csv", row.names = FALSE)
+
+```
+
+```{r combine flow tracker files for week 10}
+# Define a function to search for files
+find_files <- function(directory) {
+  all_files <- list.files(path = directory, recursive = TRUE, full.names = TRUE)
+  return(all_files)
+}
+
+# Function to extract the required values from a single file and convert only Fahrenheit (°F) to Celsius
+extract_values <- function(file_path) {
+  
+  # Read the csv file
+  df <- read.csv(file_path, header = FALSE, stringsAsFactors = FALSE)
+  colnames(df) <- c("Column1", "Column2", "Column3")
+  
+  # Extract values
+  local_end_time <- df %>% filter(Column1 == "Local_End_Time") %>% select(Column3) %>% pull()
+  site_name <- df %>% filter(Column1 == "Site_Name") %>% select(Column3) %>% pull()
+  total_discharge <- df %>% filter(Column1 == "Total_Discharge") %>% select(Column3) %>% pull()
+  
+  # Extract the temperature value and unit
+  mean_temp_value <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column3) %>% pull()
+  temp_unit <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column2) %>% pull()
+
+  # Convert only if the unit is Fahrenheit ("°F")
+  if (temp_unit == "°F") {
+    mean_temp_value <- (as.numeric(mean_temp_value) - 32) * 5 / 9
+  } else {
+    mean_temp_value <- as.numeric(mean_temp_value)  # Ensure it's numeric for Celsius values or NA
+  }
+  
+  # Round values to 2 decimal places
+  mean_temp_value <- round(mean_temp_value, 2)
+  total_discharge <- round(as.numeric(total_discharge), 2)
+  
+  data.frame(
+    localEndTime = local_end_time,
+    river = site_name,
+    totalDischarge = as.numeric(total_discharge),  # Ensure numeric type
+    meanTemp = mean_temp_value,  # Already handled as numeric
+    stringsAsFactors = FALSE
+  )
+}
+
+directory <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/FlowTracker/FlowTrackerFiles/TAMEflow/Week10"
+
+# Find all files in the directory
+all_files <- find_files(directory)
+
+# Initialize the result dataframe with the correct data types
+result_df <- data.frame(
+  localEndTime = character(),
+  river = character(),
+  totalDischarge = numeric(),  # Initialize as numeric
+  meanTemp = numeric(),  # Initialize as numeric
+  stringsAsFactors = FALSE
+)
+
+# Loop through all files and extract values
+for (file in all_files) {
+  file_data <- extract_values(file)
+  result_df <- bind_rows(result_df, file_data)
+}
+
+# Standardize site names
+result_df <- result_df %>%
+  mutate(river = ifelse(grepl("buff", river, ignore.case = TRUE), "BUFFAM", river)) %>%
+  mutate(river = ifelse(grepl("dryu", river, ignore.case = TRUE), "DRY UPPER", river)) %>%
+  mutate(river = ifelse(grepl("harr", river, ignore.case = TRUE), "HARRIS", river)) %>%
+  mutate(river = ifelse(grepl("undh", river, ignore.case = TRUE), "UNDERHILL", river)) %>%
+  mutate(river = ifelse(grepl("dcky", river, ignore.case = TRUE), "DICKEY", river))
+
+# Remove rows with repeating Total_Discharge values
+result_df <- result_df %>% distinct(localEndTime, .keep_all = TRUE)
+
+# Display the first few rows to check the result
+head(result_df)
+
+# Write the final CSV file
+write.csv(result_df, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek10.csv", row.names = FALSE)
+
+```
+
+```{r combine flow tracker files for week 11}
+# Define a function to search for files
+find_files <- function(directory) {
+  all_files <- list.files(path = directory, recursive = TRUE, full.names = TRUE)
+  return(all_files)
+}
+
+# Function to extract the required values from a single file and convert only Fahrenheit (°F) to Celsius
+extract_values <- function(file_path) {
+  
+  # Read the csv file
+  df <- read.csv(file_path, header = FALSE, stringsAsFactors = FALSE)
+  colnames(df) <- c("Column1", "Column2", "Column3")
+  
+  # Extract values
+  local_end_time <- df %>% filter(Column1 == "Local_End_Time") %>% select(Column3) %>% pull()
+  site_name <- df %>% filter(Column1 == "Site_Name") %>% select(Column3) %>% pull()
+  total_discharge <- df %>% filter(Column1 == "Total_Discharge") %>% select(Column3) %>% pull()
+  
+  # Extract the temperature value and unit
+  mean_temp_value <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column3) %>% pull()
+  temp_unit <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column2) %>% pull()
+
+  # Convert only if the unit is Fahrenheit ("°F")
+  if (temp_unit == "°F") {
+    mean_temp_value <- (as.numeric(mean_temp_value) - 32) * 5 / 9
+  } else {
+    mean_temp_value <- as.numeric(mean_temp_value)  # Ensure it's numeric for Celsius values or NA
+  }
+  
+  # Round values to 2 decimal places
+  mean_temp_value <- round(mean_temp_value, 2)
+  total_discharge <- round(as.numeric(total_discharge), 2)
+  
+  data.frame(
+    localEndTime = local_end_time,
+    river = site_name,
+    totalDischarge = as.numeric(total_discharge),  # Ensure numeric type
+    meanTemp = mean_temp_value,  # Already handled as numeric
+    stringsAsFactors = FALSE
+  )
+}
+
+directory <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/FlowTracker/FlowTrackerFiles/TAMEflow/Week11"
+
+# Find all files in the directory
+all_files <- find_files(directory)
+
+# Initialize the result dataframe with the correct data types
+result_df <- data.frame(
+  localEndTime = character(),
+  river = character(),
+  totalDischarge = numeric(),  # Initialize as numeric
+  meanTemp = numeric(),  # Initialize as numeric
+  stringsAsFactors = FALSE
+)
+
+# Loop through all files and extract values
+for (file in all_files) {
+  file_data <- extract_values(file)
+  result_df <- bind_rows(result_df, file_data)
+}
+
+# Standardize site names
+result_df <- result_df %>%
+  mutate(river = ifelse(grepl("buff", river, ignore.case = TRUE), "BUFFAM", river)) %>%
+  mutate(river = ifelse(grepl("dryu", river, ignore.case = TRUE), "DRY UPPER", river)) %>%
+  mutate(river = ifelse(grepl("harr", river, ignore.case = TRUE), "HARRIS", river)) %>%
+  mutate(river = ifelse(grepl("undh", river, ignore.case = TRUE), "UNDERHILL", river)) %>%
+  mutate(river = ifelse(grepl("dcky", river, ignore.case = TRUE), "DICKEY", river))
+
+# Remove rows with repeating Total_Discharge values
+result_df <- result_df %>% distinct(localEndTime, .keep_all = TRUE)
+
+# Display the first few rows to check the result
+head(result_df)
+
+# Write the final CSV file
+write.csv(result_df, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek11.csv", row.names = FALSE)
+
+```
+
+```{r combine flow tracker files for week 12}
+# Define a function to search for files
+find_files <- function(directory) {
+  all_files <- list.files(path = directory, recursive = TRUE, full.names = TRUE)
+  return(all_files)
+}
+
+# Function to extract the required values from a single file and convert only Fahrenheit (°F) to Celsius
+extract_values <- function(file_path) {
+  
+  # Read the csv file
+  df <- read.csv(file_path, header = FALSE, stringsAsFactors = FALSE)
+  colnames(df) <- c("Column1", "Column2", "Column3")
+  
+  # Extract values
+  local_end_time <- df %>% filter(Column1 == "Local_End_Time") %>% select(Column3) %>% pull()
+  site_name <- df %>% filter(Column1 == "Site_Name") %>% select(Column3) %>% pull()
+  total_discharge <- df %>% filter(Column1 == "Total_Discharge") %>% select(Column3) %>% pull()
+  
+  # Extract the temperature value and unit
+  mean_temp_value <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column3) %>% pull()
+  temp_unit <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column2) %>% pull()
+
+  # Convert only if the unit is Fahrenheit ("°F")
+  if (temp_unit == "°F") {
+    mean_temp_value <- (as.numeric(mean_temp_value) - 32) * 5 / 9
+  } else {
+    mean_temp_value <- as.numeric(mean_temp_value)  # Ensure it's numeric for Celsius values or NA
+  }
+  
+  # Round values to 2 decimal places
+  mean_temp_value <- round(mean_temp_value, 2)
+  total_discharge <- round(as.numeric(total_discharge), 2)
+  
+  data.frame(
+    localEndTime = local_end_time,
+    river = site_name,
+    totalDischarge = as.numeric(total_discharge),  # Ensure numeric type
+    meanTemp = mean_temp_value,  # Already handled as numeric
+    stringsAsFactors = FALSE
+  )
+}
+
+directory <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/FlowTracker/FlowTrackerFiles/TAMEflow/Week12"
+
+# Find all files in the directory
+all_files <- find_files(directory)
+
+# Initialize the result dataframe with the correct data types
+result_df <- data.frame(
+  localEndTime = character(),
+  river = character(),
+  totalDischarge = numeric(),  # Initialize as numeric
+  meanTemp = numeric(),  # Initialize as numeric
+  stringsAsFactors = FALSE
+)
+
+# Loop through all files and extract values
+for (file in all_files) {
+  file_data <- extract_values(file)
+  result_df <- bind_rows(result_df, file_data)
+}
+
+# Standardize site names
+result_df <- result_df %>%
+  mutate(river = ifelse(grepl("buff", river, ignore.case = TRUE), "BUFFAM", river)) %>%
+  mutate(river = ifelse(grepl("dryu", river, ignore.case = TRUE), "DRY UPPER", river)) %>%
+  mutate(river = ifelse(grepl("harr", river, ignore.case = TRUE), "HARRIS", river)) %>%
+  mutate(river = ifelse(grepl("undh", river, ignore.case = TRUE), "UNDERHILL", river)) %>%
+  mutate(river = ifelse(grepl("dcky", river, ignore.case = TRUE), "DICKEY", river))
+
+# Remove rows with repeating Total_Discharge values
+result_df <- result_df %>% distinct(localEndTime, .keep_all = TRUE)
+
+# Display the first few rows to check the result
+head(result_df)
+
+# Write the final CSV file
+write.csv(result_df, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek12.csv", row.names = FALSE)
+
+```
+
+# Preparing Flow Tracker Files
+
+```{r add day and night shift differentiation into the flow week 1}
+# Read in the flow data
+flowWeek1 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek1.csv")
+
+# Convert the localEndTime column into a DateTime column
+flowWeek1$dateTime <- as.POSIXct(flowWeek1$localEndTime, format = "%Y-%m-%d %H:%M:%S")
+
+# Add Shift column based on the time ranges
+# Day shifts were from 5:00 EST to 11:00 EST
+flowWeek1 <- flowWeek1 %>%
+  mutate(
+    shift = case_when(
+        hour(dateTime) >= 4 & hour(dateTime) < 12 ~ "day",
+        TRUE ~ "night"  # Any other time is night shift
+    )
+  )
+
+# Display the first few rows to check the result
+head(flowWeek1)
+
+# Write new flow csv
+write.csv(flowWeek1, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek1.csv", row.names = FALSE )
+
+```
+```{r add day and night shift differentiation into the flow week 2}
+# Read in the flow data
+flowWeek2 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek2.csv")
+
+# Convert the localEndTime column into a DateTime column
+flowWeek2$dateTime <- as.POSIXct(flowWeek2$localEndTime, format = "%Y-%m-%d %H:%M:%S")
+
+# Add Shift column based on the time ranges
+# Day shifts were from 11:00 EST to 17:00 EST
+flowWeek2 <- flowWeek2 %>%
+  mutate(
+    shift = case_when(
+        hour(dateTime) >= 10 & hour(dateTime) < 18 ~ "day",
+        TRUE ~ "night"  # Any other time is night shift
+    )
+  )
+
+# Display the first few rows to check the result
+head(flowWeek2)
+
+# Write new flow csv
+write.csv(flowWeek2, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek2.csv", row.names = FALSE )
+
+```
+```{r add day and night shift differentiation into the flow week 3}
+# Read in the flow data
+flowWeek3 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek3.csv")
+
+# Convert the localEndTime column into a DateTime column
+flowWeek3$dateTime <- as.POSIXct(flowWeek3$localEndTime, format = "%Y-%m-%d %H:%M:%S")
+
+# Add Shift column based on the time ranges
+# Day shifts were from 5:00 EST to 11:00 EST
+flowWeek3 <- flowWeek3 %>%
+  mutate(
+    shift = case_when(
+        hour(dateTime) >= 4 & hour(dateTime) < 12 ~ "day",
+        TRUE ~ "night"  # Any other time is night shift
+    )
+  )
+
+# Display the first few rows to check the result
+head(flowWeek3)
+
+# Write new flow csv
+write.csv(flowWeek3, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek3.csv", row.names = FALSE )
+
+```
+```{r add day and night shift differentiation into the flow week 4}
+# Read in the flow data
+flowWeek4 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek4.csv")
+
+# Convert the localEndTime column into a DateTime column
+flowWeek4$dateTime <- as.POSIXct(flowWeek4$localEndTime, format = "%Y-%m-%d %H:%M:%S")
+
+# Add Shift column based on the time ranges
+# Day shifts were from 3:00 EST to 9:00 EST
+flowWeek4 <- flowWeek4 %>%
+  mutate(
+    shift = case_when(
+        hour(dateTime) >= 2 & hour(dateTime) < 10 ~ "day",
+        TRUE ~ "night"  # Any other time is night shift
+    )
+  )
+
+# Display the first few rows to check the result
+head(flowWeek4)
+
+# Write new flow csv
+write.csv(flowWeek4, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek4.csv", row.names = FALSE )
+
+```
+```{r add day and night shift differentiation into the flow week 5}
+# Read in the flow data
+flowWeek5 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek5.csv")
+
+# Convert the localEndTime column into a DateTime column
+flowWeek5$dateTime <- as.POSIXct(flowWeek5$localEndTime, format = "%Y-%m-%d %H:%M:%S")
+
+# Add Shift column based on the time ranges
+# Day shifts were from 7:00 EST to 13:00 EST
+flowWeek5 <- flowWeek5 %>%
+  mutate(
+    shift = case_when(
+        hour(dateTime) >= 6 & hour(dateTime) < 14 ~ "day",
+        TRUE ~ "night"  # Any other time is night shift
+    )
+  )
+
+# Display the first few rows to check the result
+head(flowWeek5)
+
+# Write new flow csv
+write.csv(flowWeek5, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek5.csv", row.names = FALSE )
+
+```
+```{r add day and night shift differentiation into the flow week 6}
+# Read in the flow data
+flowWeek6 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek6.csv")
+
+# Convert the localEndTime column into a DateTime column
+flowWeek6$dateTime <- as.POSIXct(flowWeek6$localEndTime, format = "%Y-%m-%d %H:%M:%S")
+
+# Add Shift column based on the time ranges
+# Day shifts were from 3:00 EST to 9:00 EST
+flowWeek6 <- flowWeek6 %>%
+  mutate(
+    shift = case_when(
+        hour(dateTime) >= 2 & hour(dateTime) < 10 ~ "day",
+        TRUE ~ "night"  # Any other time is night shift
+    )
+  )
+
+# Display the first few rows to check the result
+head(flowWeek6)
+
+# Write new flow csv
+write.csv(flowWeek6, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek6.csv", row.names = FALSE )
+
+```
+```{r add day and night shift differentiation into the flow week 7}
+# Read in the flow data
+flowWeek7 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek7.csv")
+
+# Convert the localEndTime column into a DateTime column
+flowWeek7$dateTime <- as.POSIXct(flowWeek7$localEndTime, format = "%Y-%m-%d %H:%M:%S")
+
+# Add Shift column based on the time ranges
+# Day shifts were from 7:00 EST to 13:00 EST
+flowWeek7 <- flowWeek7 %>%
+  mutate(
+    shift = case_when(
+        hour(dateTime) >= 6 & hour(dateTime) < 14 ~ "day",
+        TRUE ~ "night"  # Any other time is night shift
+    )
+  )
+
+# Display the first few rows to check the result
+head(flowWeek7)
+
+# Write new flow csv
+write.csv(flowWeek7, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek7.csv", row.names = FALSE )
+
+```
+```{r add day and night shift differentiation into the flow week 8}
+# Read in the flow data
+flowWeek8 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek8.csv")
+
+# Convert the localEndTime column into a DateTime column
+flowWeek8$dateTime <- as.POSIXct(flowWeek8$localEndTime, format = "%Y-%m-%d %H:%M:%S")
+
+# Add Shift column based on the time ranges
+# Day shifts were from 3:30 EST to 9:30 EST
+flowWeek8 <- flowWeek8 %>%
+  mutate(
+    shift = case_when(
+        hour(dateTime) >= 2 & hour(dateTime) < 11 ~ "day",
+        TRUE ~ "night"  # Any other time is night shift
+    )
+  )
+
+# Display the first few rows to check the result
+head(flowWeek8)
+
+# Write new flow csv
+write.csv(flowWeek8, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek8.csv", row.names = FALSE )
+
+```
+```{r add day and night shift differentiation into the flow week 9}
+# Read in the flow data
+flowWeek9 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek9.csv")
+
+# Convert the localEndTime column into a DateTime column
+flowWeek9$dateTime <- as.POSIXct(flowWeek9$localEndTime, format = "%Y-%m-%d %H:%M:%S")
+
+# Add Shift column based on the time ranges
+# Day shifts were from 7:00 EST to 13:00 EST
+flowWeek9 <- flowWeek9 %>%
+  mutate(
+    shift = case_when(
+        hour(dateTime) >= 6 & hour(dateTime) < 14 ~ "day",
+        TRUE ~ "night"  # Any other time is night shift
+    )
+  )
+
+# Display the first few rows to check the result
+head(flowWeek9)
+
+# Write new flow csv
+write.csv(flowWeek9, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek9.csv", row.names = FALSE )
+
+```
+```{r add day and night shift differentiation into the flow week 10}
+# Read in the flow data
+flowWeek10 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek10.csv")
+
+# Convert the localEndTime column into a DateTime column
+flowWeek10$dateTime <- as.POSIXct(flowWeek10$localEndTime, format = "%Y-%m-%d %H:%M:%S")
+
+# Add Shift column based on the time ranges
+# Day shifts were from 4:00 EST to 10:00 EST
+flowWeek10 <- flowWeek10 %>%
+  mutate(
+    shift = case_when(
+        hour(dateTime) >= 3 & hour(dateTime) < 11 ~ "day",
+        TRUE ~ "night"  # Any other time is night shift
+    )
+  )
+
+# Display the first few rows to check the result
+head(flowWeek10)
+
+# Write new flow csv
+write.csv(flowWeek10, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek10.csv", row.names = FALSE )
+
+```
+```{r add day and night shift differentiation into the flow week 11}
+# Read in the flow data
+flowWeek11 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek11.csv")
+
+# Convert the localEndTime column into a DateTime column
+flowWeek11$dateTime <- as.POSIXct(flowWeek11$localEndTime, format = "%Y-%m-%d %H:%M:%S")
+
+# Add Shift column 
+# All shifts in week 11 were day shifts
+flowWeek11 <- flowWeek11 %>%
+  mutate(shift = "day")
+
+# Display the first few rows to check the result
+head(flowWeek11)
+
+# Write new flow csv
+write.csv(flowWeek11, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek11.csv", row.names = FALSE )
+
+```
+```{r add day and night shift differentiation into the flow week 12}
+# Read in the flow data
+flowWeek12 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek12.csv")
+
+# Convert the localEndTime column into a DateTime column
+flowWeek12$dateTime <- as.POSIXct(flowWeek12$localEndTime, format = "%Y-%m-%d %H:%M:%S")
+
+# Add Shift column
+# All shifts in week 12 were day shifts
+flowWeek12 <- flowWeek12 %>%
+  mutate(shift = "day")
+
+# Display the first few rows to check the result
+head(flowWeek12)
+
+# Write new flow csv
+write.csv(flowWeek12, file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek12.csv", row.names = FALSE )
+
+```
+
+```{r processing stream surveys}
+# Define file names
+flow_file_names <- c("flowWeek1.csv", "flowWeek2.csv", "flowWeek3.csv", "flowWeek4.csv", "flowWeek5.csv", "flowWeek6.csv", "flowWeek7.csv", "flowWeek8.csv", "flowWeek9.csv", "flowWeek10.csv", "flowWeek11.csv", "flowWeek12.csv") 
+
+# Create an empty list to store the processed datasets
+processed_flow_data_list <- list()
+
+# Loop through each stream survey file
+for (file_name in flow_file_names) {
+  # Read in the stream survey data
+  rawFlowData <- read.csv(file_name)
+  
+  # Step 1: Process the data
+  flowData <- rawFlowData %>%
+    
+    # Step 2: Select specific columns
+    select(river, totalDischarge, meanTemp, dateTime, shift) %>%
+
+    # Step 3: Rename columns
+    rename(flowTime = dateTime) 
+  
+  # Store the processed data in the list
+  processed_flow_data_list[[file_name]] <- flowData
+  
+  # Overwrite the original file with the processed data
+  write.csv(flowData, file_name, row.names = FALSE)
+}
+
+# Display the first few rows of each processed dataset
+for (i in 1:length(processed_flow_data_list)) {
+  cat("\nData for", flow_file_names[i], ":\n")
+  print(head(processed_flow_data_list[[i]]))
 }
 
 ```
 
 
+
+# Combine fishStream and flow data
+
+```{r combine fishStream and flow week 1 surveys}
+# Read in the fishStream and flow survey data for week 1
+fishStream1 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishStream1.csv")
+flowWeek1 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek1.csv")
+
+# Combine the datasets by shift and river columns
+combined1 <- left_join(fishStream1, flowWeek1, by = c("shift", "river"))
+
+# Save the combined data to a new CSV file
+write.csv(combined1, "combined1.csv", row.names = FALSE)
+
+# Display the first few rows of the combined data
+print(head(combined1))
+
+```
+
+```{r combine fishStream and flow week 2 surveys}
+# Read in the fishStream and flow survey data for week 2
+fishStream2 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishStream2.csv")
+flowWeek2 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek2.csv")
+
+# Combine the datasets by shift and river columns
+combined2 <- left_join(fishStream2, flowWeek2, by = c("shift", "river"))
+
+# Save the combined data to a new CSV file
+write.csv(combined2, "combined2.csv", row.names = FALSE)
+
+# Display the first few rows of the combined data
+print(head(combined2))
+
+```
+
+```{r combine fishStream and flow week 3 surveys}
+# Read in the fishStream and flow survey data for week 3
+fishStream3 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishStream3.csv")
+flowWeek3 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek3.csv")
+
+# Combine the datasets by shift and river columns
+combined3 <- left_join(fishStream3, flowWeek3, by = c("shift", "river"))
+
+# Save the combined data to a new CSV file
+write.csv(combined3, "combined3.csv", row.names = FALSE)
+
+# Display the first few rows of the combined data
+print(head(combined3))
+
+```
+```{r combine fishStream and flow week 4 surveys}
+# Read in the fishStream and flow survey data for week 4
+fishStream4 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishStream4.csv")
+flowWeek4 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek4.csv")
+
+# Combine the datasets by shift and river columns
+combined4 <- left_join(fishStream4, flowWeek4, by = c("shift", "river"))
+
+# Save the combined data to a new CSV file
+write.csv(combined4, "combined4.csv", row.names = FALSE)
+
+# Display the first few rows of the combined data
+print(head(combined4))
+
+```
+
+```{r combine fishStream and flow week 5 surveys}
+# Read in the fishStream and flow survey data for week 5
+fishStream5 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishStream5.csv")
+flowWeek5 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek5.csv")
+
+# Combine the datasets by shift and river columns
+combined5 <- left_join(fishStream5, flowWeek5, by = c("shift", "river"))
+
+# Save the combined data to a new CSV file
+write.csv(combined5, "combined5.csv", row.names = FALSE)
+
+# Display the first few rows of the combined data
+print(head(combined5))
+
+```
+
+```{r combine fishStream and flow week 6 surveys}
+# Read in the fishStream and flow survey data for week 6
+fishStream6 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishStream6.csv")
+flowWeek6 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek6.csv")
+
+# Combine the datasets by shift and river columns
+combined6 <- left_join(fishStream6, flowWeek6, by = c("shift", "river"))
+
+# Save the combined data to a new CSV file
+write.csv(combined6, "combined6.csv", row.names = FALSE)
+
+# Display the first few rows of the combined data
+print(head(combined6))
+
+```
+
+```{r combine fishStream and flow week 7 surveys}
+# Read in the fishStream and flow survey data for week 7
+fishStream7 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishStream7.csv")
+flowWeek7 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek7.csv")
+
+# Combine the datasets by shift and river columns
+combined7 <- left_join(fishStream7, flowWeek7, by = c("shift", "river"))
+
+# Save the combined data to a new CSV file
+write.csv(combined7, "combined7.csv", row.names = FALSE)
+
+# Display the first few rows of the combined data
+print(head(combined7))
+
+```
+
+```{r combine fishStream and flow week 8 surveys}
+# Read in the fishStream and flow survey data for week 8
+fishStream8 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishStream8.csv")
+flowWeek8 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek8.csv")
+
+# Combine the datasets by shift and river columns
+combined8 <- left_join(fishStream8, flowWeek8, by = c("shift", "river"))
+
+# Save the combined data to a new CSV file
+write.csv(combined8, "combined8.csv", row.names = FALSE)
+
+# Display the first few rows of the combined data
+print(head(combined8))
+
+```
+
+```{r combine fishStream and flow week 9 surveys}
+# Read in the fishStream and flow survey data for week 9
+fishStream9 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishStream9.csv")
+flowWeek9 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek9.csv")
+
+# Combine the datasets by shift and river columns
+combined9 <- left_join(fishStream9, flowWeek9, by = c("shift", "river"))
+
+# Save the combined data to a new CSV file
+write.csv(combined9, "combined9.csv", row.names = FALSE)
+
+# Display the first few rows of the combined data
+print(head(combined9))
+
+```
+
+```{r combine fishStream and flow week 10 surveys}
+# Read in the fishStream and flow survey data for week 10
+fishStream10 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishStream10.csv")
+flowWeek10 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek10.csv")
+
+# Combine the datasets by shift and river columns
+combined10 <- left_join(fishStream10, flowWeek10, by = c("shift", "river"))
+
+# Save the combined data to a new CSV file
+write.csv(combined10, "combined10.csv", row.names = FALSE)
+
+# Display the first few rows of the combined data
+print(head(combined10))
+
+```
+
+```{r combine fishStream and flow week 11 surveys}
+# Read in the fishStream and flow survey data for week 11
+fishStream11 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishStream11.csv")
+flowWeek11 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek11.csv")
+
+# Combine the datasets by shift and river columns
+combined11 <- left_join(fishStream11, flowWeek11, by = c("shift", "river"))
+
+# Save the combined data to a new CSV file
+write.csv(combined11, "combined11.csv", row.names = FALSE)
+
+# Display the first few rows of the combined data
+print(head(combined11))
+
+```
+
+```{r combine fishStream and flow week 12 surveys}
+# Read in the fishStream and flow survey data for week 12
+fishStream12 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishStream12.csv")
+flowWeek12 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/flowWeek12.csv")
+
+# Combine the datasets by shift and river columns
+combined12 <- left_join(fishStream12, flowWeek12, by = c("shift", "river"))
+
+# Save the combined data to a new CSV file
+write.csv(combined12, "combined12.csv", row.names = FALSE)
+
+# Display the first few rows of the combined data
+print(head(combined12))
+
+```
+
+# Combine all weekly datasets
+
+```{r}
+# Define file names
+file_names <- c("combined1.csv", "combined2.csv", "combined3.csv", "combined4.csv", "combined5.csv", "combined6.csv", "combined7.csv", "combined8.csv", "combined9.csv", "combined10.csv", "combined11.csv", "combined12.csv") 
+
+# Create an empty list to store the data from each file
+full_data_list <- list()
+
+# Loop through each file and read the data into the list
+for (file_name in file_names) {
+  all_data <- read.csv(file_name, stringsAsFactors = FALSE)
+  full_data_list[[file_name]] <- all_data
+}
+
+# Combine all datasets into a single data frame by stacking rows
+allData <- bind_rows(full_data_list)
+
+# Display the first few rows of the combined dataset
+head(allData)
+
+# Optionally, write the combined data to a new CSV file
+write.csv(allData, file = "allData.csv", row.names = FALSE)
+
+```
 

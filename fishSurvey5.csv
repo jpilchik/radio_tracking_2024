@@ -1,4 +1,4 @@
-"habitat","position","substrate","shade","fishNotes","habitatExtra","substrateExtra","signal","lon","lat","dateTime","shift","river","tagID","source"
+"habitat","position","substrate","shade","fishNotes","habitatExtra","substrateExtra","signal","lon","lat","trackedTime","shift","river","tagID","source"
 "Riffle","Center",NA,"Fully shaded","","","Rock",NA,-72.3244695,42.444884,"2024-07-09 07:30:00","day","UNDERHILL",41,"iPad"
 "Riffle","",NA,"Mostly shaded","","Woody_debris","Rock,Pebble",NA,-72.3251268333333,42.445103,"2024-07-09 07:49:00","day","UNDERHILL",40,"iPad"
 "Riffle","Center",NA,"","","","Rock",NA,-72.3264511666667,42.4453676666667,"2024-07-09 07:57:00","day","UNDERHILL",34,"iPad"

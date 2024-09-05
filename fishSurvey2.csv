@@ -1,4 +1,4 @@
-"habitat","position","substrate","shade","fishNotes","habitatExtra","substrateExtra","signal","lon","lat","dateTime","shift","river","tagID","source"
+"habitat","position","substrate","shade","fishNotes","habitatExtra","substrateExtra","signal","lon","lat","trackedTime","shift","river","tagID","source"
 "Pool","Center","Rock","Mostly shaded","","","",NA,-72.3708445,42.443939,"2024-06-17 11:33:00","day","DICKEY",31,"iPad"
 "Run","Right","Pebble","Lightly shaded","","","",NA,-72.3717323333333,42.444212,"2024-06-17 11:57:00","day","DICKEY",46,"iPad"
 "Riffle","Left","Rock","Fully shaded","","Woody_debris","",NA,-72.3719351666667,42.4443011666667,"2024-06-17 11:59:00","day","DICKEY",29,"iPad"

@@ -1,4 +1,4 @@
-"habitat","position","substrate","shade","fishNotes","habitatExtra","substrateExtra","signal","lon","lat","dateTime","shift","river","tagID","source"
+"habitat","position","substrate","shade","fishNotes","habitatExtra","substrateExtra","signal","lon","lat","trackedTime","shift","river","tagID","source"
 "Riffle","Center",NA,"Fully shaded","","","Rock",NA,-72.4608993333333,42.3815693333333,"2024-08-20 09:10:00","day","AMETHYST",19,"iPad"
 "Riffle","Left",NA,"Fully shaded","","","Boulder",NA,-72.4601585,42.3811605,"2024-08-20 09:39:00","day","AMETHYST",20,"iPad"
 "Riffle","Right",NA,"Fully shaded","","","Rock,Sand",NA,-72.4599993333333,42.381263,"2024-08-20 09:54:00","day","AMETHYST",14,"iPad"
