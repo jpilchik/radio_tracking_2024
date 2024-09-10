@@ -797,12 +797,12 @@ for (file_name in fish_file_names) {
     
     # Step 2: Select specific columns
     select(dckyID, habitat, position, substrate, shade, Notes, amthID, undhID, 
-           dryuID, habitatExtra, substrateExtra, signal, x, y, dateTime, shift) %>%
+           dryuID, habitatExtra, substrateExtra, signal, x, y, dateTime, shift, brookName) %>%
     
-    # Step 3: Pivot longer to create 'Brook' and 'tagID' columns
+    # Step 3: Pivot longer to create 'river' and 'tagID' columns
     pivot_longer(
       cols = c(dckyID, amthID, undhID, dryuID),  # Columns to combine
-      names_to = "river",                        # Create a new column 'Brook' from column names
+      names_to = "river",                        # Create a new column 'river' from column names
       values_to = "tagID",                      # Combine the tag IDs into a new column 'tagID'
       values_drop_na = FALSE                    # Ensure NA values are retained
     ) %>%
@@ -810,12 +810,12 @@ for (file_name in fish_file_names) {
     # Step _: Filter to keep all rows, even those with NA values
     #filter(!is.na(tagID) | is.na(tagID)) %>%
     
-    # Step 4: Create a new 'BrookName' column and extract the brook name and ID number
+    # Step 4: Create a new 'riverName' column and extract the river name and ID number
     mutate(
-      riverName = river,                         # Copy the brook name
+      riverName = river,                         # Copy the river name
       #tagID = as.numeric(gsub("[^0-9]", "", tagID)),  # Extract the numeric part as tagID
       tagID = ifelse(is.na(tagID), NA, as.numeric(tagID)),  # Convert tagID to numeric, keep NA values
-      river = gsub("ID", "", river)              # Remove 'ID' to keep only the brook name
+      river = gsub("ID", "", river)              # Remove 'ID' to keep only the river name
     ) %>%
     
     # Step 5: Join with the lookup table to replace abbreviations with full names
@@ -825,7 +825,12 @@ for (file_name in fish_file_names) {
     ) %>%
     select(-FullName) %>%  # Remove the FullName column as it's no longer needed
     
-    # Step 6: Rename columns
+    # Step 6: Combine the river and brookName logic
+    mutate(
+      river = ifelse(brookName %in% c("BUFFAM", "HARRIS"), brookName, river)  # Override river with brookName if Buffam or Harris
+    ) %>%
+    
+    # Step 7: Rename columns
     rename(
       fishNotes = Notes,
       lon = x,
@@ -833,19 +838,19 @@ for (file_name in fish_file_names) {
       trackedTime = dateTime
     ) %>%
     
-    # Step 7: Filter data to keep only rows where lat > 1
+    # Step 8: Filter data to keep only rows where lat > 1
     filter(lat > 1, !is.na(tagID)) %>%
     
     # Step _: Filter data to keep rows with lat > 1 or lat is NA
     #filter(lat > 1 | is.na(lat)) %>%
     
-    # Step 8: Remove unnecessary columns
-    select(-c(riverName)) %>%
+    # Step 9: Remove unnecessary columns
+    select(-c(riverName, brookName)) %>%
     
     # Step _: (Optional) Join with a tagBrook dataset if necessary
     #left_join(tagBrook, by = "tagID") %>%
     
-    # Step 9: Add a source column
+    # Step 10: Add a source column
     mutate(source = "iPad")
   
   # Store the processed data in the list
@@ -870,8 +875,18 @@ for (i in 1:length(processed_fish_data_list)) {
 fishSurvey1 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishSurvey1.csv")
 streamSurvey1 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/streamSurvey1.csv")
 
-# Combine the datasets by shift and river columns
-fishStream1 <- left_join(fishSurvey1, streamSurvey1, by = c("shift", "river"))
+# Adjust 'river' in fish survey to handle Buffam and Harris as part of Amethyst
+fishSurvey1 <- fishSurvey1 %>%
+  mutate(
+    # Create a new 'riverMatch' column for the join
+    riverMatch = ifelse(river %in% c("BUFFAM", "HARRIS"), "AMETHYST", river)
+  )
+
+# Perform the join on the 'shift' and the modified 'riverMatch' column in the fish survey
+fishStream1 <- left_join(fishSurvey1, streamSurvey1, by = c("shift", "riverMatch" = "river"))
+
+# Remove the 'riverMatch' column from the result
+fishStream1 <- fishStream1 %>% select(-riverMatch)
 
 # Save the combined data to a new CSV file
 write.csv(fishStream1, "fishStream1.csv", row.names = FALSE)
@@ -886,8 +901,18 @@ print(head(fishStream1))
 fishSurvey2 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishSurvey2.csv")
 streamSurvey2 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/streamSurvey2.csv")
 
-# Combine the datasets by shift and river columns
-fishStream2 <- left_join(fishSurvey2, streamSurvey2, by = c("shift", "river"))
+# Adjust 'river' in fish survey to handle Buffam and Harris as part of Amethyst
+fishSurvey2 <- fishSurvey2 %>%
+  mutate(
+    # Create a new 'riverMatch' column for the join
+    riverMatch = ifelse(river %in% c("BUFFAM", "HARRIS"), "AMETHYST", river)
+  )
+
+# Perform the join on the 'shift' and the modified 'riverMatch' column in the fish survey
+fishStream2 <- left_join(fishSurvey2, streamSurvey2, by = c("shift", "riverMatch" = "river"))
+
+# Remove the 'riverMatch' column from the result
+fishStream2 <- fishStream2 %>% select(-riverMatch)
 
 # Save the combined data to a new CSV file
 write.csv(fishStream2, "fishStream2.csv", row.names = FALSE)
@@ -902,8 +927,18 @@ print(head(fishStream2))
 fishSurvey3 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishSurvey3.csv")
 streamSurvey3 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/streamSurvey3.csv")
 
-# Combine the datasets by shift and river columns
-fishStream3 <- left_join(fishSurvey3, streamSurvey3, by = c("shift", "river"))
+# Adjust 'river' in fish survey to handle Buffam and Harris as part of Amethyst
+fishSurvey3 <- fishSurvey3 %>%
+  mutate(
+    # Create a new 'riverMatch' column for the join
+    riverMatch = ifelse(river %in% c("BUFFAM", "HARRIS"), "AMETHYST", river)
+  )
+
+# Perform the join on the 'shift' and the modified 'riverMatch' column in the fish survey
+fishStream3 <- left_join(fishSurvey3, streamSurvey3, by = c("shift", "riverMatch" = "river"))
+
+# Remove the 'riverMatch' column from the result
+fishStream3 <- fishStream3 %>% select(-riverMatch)
 
 # Save the combined data to a new CSV file
 write.csv(fishStream3, "fishStream3.csv", row.names = FALSE)
@@ -918,8 +953,18 @@ print(head(fishStream3))
 fishSurvey4 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishSurvey4.csv")
 streamSurvey4 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/streamSurvey4.csv")
 
-# Combine the datasets by shift and river columns
-fishStream4 <- left_join(fishSurvey4, streamSurvey4, by = c("shift", "river"))
+# Adjust 'river' in fish survey to handle Buffam and Harris as part of Amethyst
+fishSurvey4 <- fishSurvey4 %>%
+  mutate(
+    # Create a new 'riverMatch' column for the join
+    riverMatch = ifelse(river %in% c("BUFFAM", "HARRIS"), "AMETHYST", river)
+  )
+
+# Perform the join on the 'shift' and the modified 'riverMatch' column in the fish survey
+fishStream4 <- left_join(fishSurvey4, streamSurvey4, by = c("shift", "riverMatch" = "river"))
+
+# Remove the 'riverMatch' column from the result
+fishStream4 <- fishStream4 %>% select(-riverMatch)
 
 # Save the combined data to a new CSV file
 write.csv(fishStream4, "fishStream4.csv", row.names = FALSE)
@@ -934,8 +979,18 @@ print(head(fishStream4))
 fishSurvey5 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishSurvey5.csv")
 streamSurvey5 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/streamSurvey5.csv")
 
-# Combine the datasets by shift and river columns
-fishStream5 <- left_join(fishSurvey5, streamSurvey5, by = c("shift", "river"))
+# Adjust 'river' in fish survey to handle Buffam and Harris as part of Amethyst
+fishSurvey5 <- fishSurvey5 %>%
+  mutate(
+    # Create a new 'riverMatch' column for the join
+    riverMatch = ifelse(river %in% c("BUFFAM", "HARRIS"), "AMETHYST", river)
+  )
+
+# Perform the join on the 'shift' and the modified 'riverMatch' column in the fish survey
+fishStream5 <- left_join(fishSurvey5, streamSurvey5, by = c("shift", "riverMatch" = "river"))
+
+# Remove the 'riverMatch' column from the result
+fishStream5 <- fishStream5 %>% select(-riverMatch)
 
 # Save the combined data to a new CSV file
 write.csv(fishStream5, "fishStream5.csv", row.names = FALSE)
@@ -950,8 +1005,18 @@ print(head(fishStream5))
 fishSurvey6 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishSurvey6.csv")
 streamSurvey6 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/streamSurvey6.csv")
 
-# Combine the datasets by shift and river columns
-fishStream6 <- left_join(fishSurvey6, streamSurvey6, by = c("shift", "river"))
+# Adjust 'river' in fish survey to handle Buffam and Harris as part of Amethyst
+fishSurvey6 <- fishSurvey6 %>%
+  mutate(
+    # Create a new 'riverMatch' column for the join
+    riverMatch = ifelse(river %in% c("BUFFAM", "HARRIS"), "AMETHYST", river)
+  )
+
+# Perform the join on the 'shift' and the modified 'riverMatch' column in the fish survey
+fishStream6 <- left_join(fishSurvey6, streamSurvey6, by = c("shift", "riverMatch" = "river"))
+
+# Remove the 'riverMatch' column from the result
+fishStream6 <- fishStream6 %>% select(-riverMatch)
 
 # Save the combined data to a new CSV file
 write.csv(fishStream6, "fishStream6.csv", row.names = FALSE)
@@ -966,8 +1031,18 @@ print(head(fishStream6))
 fishSurvey7 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishSurvey7.csv")
 streamSurvey7 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/streamSurvey7.csv")
 
-# Combine the datasets by shift and river columns
-fishStream7 <- left_join(fishSurvey7, streamSurvey7, by = c("shift", "river"))
+# Adjust 'river' in fish survey to handle Buffam and Harris as part of Amethyst
+fishSurvey7 <- fishSurvey7 %>%
+  mutate(
+    # Create a new 'riverMatch' column for the join
+    riverMatch = ifelse(river %in% c("BUFFAM", "HARRIS"), "AMETHYST", river)
+  )
+
+# Perform the join on the 'shift' and the modified 'riverMatch' column in the fish survey
+fishStream7 <- left_join(fishSurvey7, streamSurvey7, by = c("shift", "riverMatch" = "river"))
+
+# Remove the 'riverMatch' column from the result
+fishStream7 <- fishStream7 %>% select(-riverMatch)
 
 # Save the combined data to a new CSV file
 write.csv(fishStream7, "fishStream7.csv", row.names = FALSE)
@@ -982,8 +1057,18 @@ print(head(fishStream7))
 fishSurvey8 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishSurvey8.csv")
 streamSurvey8 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/streamSurvey8.csv")
 
-# Combine the datasets by shift and river columns
-fishStream8 <- left_join(fishSurvey8, streamSurvey8, by = c("shift", "river"))
+# Adjust 'river' in fish survey to handle Buffam and Harris as part of Amethyst
+fishSurvey8 <- fishSurvey8 %>%
+  mutate(
+    # Create a new 'riverMatch' column for the join
+    riverMatch = ifelse(river %in% c("BUFFAM", "HARRIS"), "AMETHYST", river)
+  )
+
+# Perform the join on the 'shift' and the modified 'riverMatch' column in the fish survey
+fishStream8 <- left_join(fishSurvey8, streamSurvey8, by = c("shift", "riverMatch" = "river"))
+
+# Remove the 'riverMatch' column from the result
+fishStream8 <- fishStream8 %>% select(-riverMatch)
 
 # Save the combined data to a new CSV file
 write.csv(fishStream8, "fishStream8.csv", row.names = FALSE)
@@ -998,8 +1083,18 @@ print(head(fishStream8))
 fishSurvey9 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishSurvey9.csv")
 streamSurvey9 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/streamSurvey9.csv")
 
-# Combine the datasets by shift and river columns
-fishStream9 <- left_join(fishSurvey9, streamSurvey9, by = c("shift", "river"))
+# Adjust 'river' in fish survey to handle Buffam and Harris as part of Amethyst
+fishSurvey9 <- fishSurvey9 %>%
+  mutate(
+    # Create a new 'riverMatch' column for the join
+    riverMatch = ifelse(river %in% c("BUFFAM", "HARRIS"), "AMETHYST", river)
+  )
+
+# Perform the join on the 'shift' and the modified 'riverMatch' column in the fish survey
+fishStream9 <- left_join(fishSurvey9, streamSurvey9, by = c("shift", "riverMatch" = "river"))
+
+# Remove the 'riverMatch' column from the result
+fishStream9 <- fishStream9 %>% select(-riverMatch)
 
 # Save the combined data to a new CSV file
 write.csv(fishStream9, "fishStream9.csv", row.names = FALSE)
@@ -1014,8 +1109,18 @@ print(head(fishStream9))
 fishSurvey10 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishSurvey10.csv")
 streamSurvey10 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/streamSurvey10.csv")
 
-# Combine the datasets by shift and river columns
-fishStream10 <- left_join(fishSurvey10, streamSurvey10, by = c("shift", "river"))
+# Adjust 'river' in fish survey to handle Buffam and Harris as part of Amethyst
+fishSurvey10 <- fishSurvey10 %>%
+  mutate(
+    # Create a new 'riverMatch' column for the join
+    riverMatch = ifelse(river %in% c("BUFFAM", "HARRIS"), "AMETHYST", river)
+  )
+
+# Perform the join on the 'shift' and the modified 'riverMatch' column in the fish survey
+fishStream10 <- left_join(fishSurvey10, streamSurvey10, by = c("shift", "riverMatch" = "river"))
+
+# Remove the 'riverMatch' column from the result
+fishStream10 <- fishStream10 %>% select(-riverMatch)
 
 # Save the combined data to a new CSV file
 write.csv(fishStream10, "fishStream10.csv", row.names = FALSE)
@@ -1030,8 +1135,18 @@ print(head(fishStream10))
 fishSurvey11 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/fishSurvey11.csv")
 streamSurvey11 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/streamSurvey11.csv")
 
-# Combine the datasets by shift and river columns
-fishStream11 <- left_join(fishSurvey11, streamSurvey11, by = c("shift", "river"))
+# Adjust 'river' in fish survey to handle Buffam and Harris as part of Amethyst
+fishSurvey11 <- fishSurvey11 %>%
+  mutate(
+    # Create a new 'riverMatch' column for the join
+    riverMatch = ifelse(river %in% c("BUFFAM", "HARRIS"), "AMETHYST", river)
+  )
+
+# Perform the join on the 'shift' and the modified 'riverMatch' column in the fish survey
+fishStream11 <- left_join(fishSurvey11, streamSurvey11, by = c("shift", "riverMatch" = "river"))
+
+# Remove the 'riverMatch' column from the result
+fishStream11 <- fishStream11 %>% select(-riverMatch)
 
 # Save the combined data to a new CSV file
 write.csv(fishStream11, "fishStream11.csv", row.names = FALSE)
@@ -2063,6 +2178,19 @@ flowWeek1 <- flowWeek1 %>%
     )
   )
 
+# Create rows representing Amethyst brook discharge and temperature by combining Buffam and Harris measurements per shift
+amethyst_combined <- flowWeek1 %>%
+  filter(river %in% c("BUFFAM", "HARRIS")) %>%   # Filter BUFFAM and HARRIS
+  group_by(shift) %>%                            # Group by shift (day/night)
+  summarise(
+    river = "AMETHYST",                          # Set river to AMETHYST
+    totalDischarge = sum(totalDischarge, na.rm = TRUE), # Sum totalDischarge
+    meanTemp = mean(meanTemp, na.rm = TRUE)      # Average meanTemp
+  )
+
+# Bind the AMETHYST rows to the original dataset
+flowWeek1 <- bind_rows(flowWeek1, amethyst_combined)
+
 # Display the first few rows to check the result
 head(flowWeek1)
 
@@ -2086,6 +2214,19 @@ flowWeek2 <- flowWeek2 %>%
         TRUE ~ "night"  # Any other time is night shift
     )
   )
+
+# Create rows representing Amethyst brook discharge and temperature by combining Buffam and Harris measurements per shift
+amethyst_combined <- flowWeek2 %>%
+  filter(river %in% c("BUFFAM", "HARRIS")) %>%   # Filter BUFFAM and HARRIS
+  group_by(shift) %>%                            # Group by shift (day/night)
+  summarise(
+    river = "AMETHYST",                          # Set river to AMETHYST
+    totalDischarge = sum(totalDischarge, na.rm = TRUE), # Sum totalDischarge
+    meanTemp = mean(meanTemp, na.rm = TRUE)      # Average meanTemp
+  )
+
+# Bind the AMETHYST rows to the original dataset
+flowWeek2 <- bind_rows(flowWeek2, amethyst_combined)
 
 # Display the first few rows to check the result
 head(flowWeek2)
@@ -2111,6 +2252,19 @@ flowWeek3 <- flowWeek3 %>%
     )
   )
 
+# Create rows representing Amethyst brook discharge and temperature by combining Buffam and Harris measurements per shift
+amethyst_combined <- flowWeek3 %>%
+  filter(river %in% c("BUFFAM", "HARRIS")) %>%   # Filter BUFFAM and HARRIS
+  group_by(shift) %>%                            # Group by shift (day/night)
+  summarise(
+    river = "AMETHYST",                          # Set river to AMETHYST
+    totalDischarge = sum(totalDischarge, na.rm = TRUE), # Sum totalDischarge
+    meanTemp = mean(meanTemp, na.rm = TRUE)      # Average meanTemp
+  )
+
+# Bind the AMETHYST rows to the original dataset
+flowWeek3 <- bind_rows(flowWeek3, amethyst_combined)
+
 # Display the first few rows to check the result
 head(flowWeek3)
 
@@ -2134,6 +2288,19 @@ flowWeek4 <- flowWeek4 %>%
         TRUE ~ "night"  # Any other time is night shift
     )
   )
+
+# Create rows representing Amethyst brook discharge and temperature by combining Buffam and Harris measurements per shift
+amethyst_combined <- flowWeek4 %>%
+  filter(river %in% c("BUFFAM", "HARRIS")) %>%   # Filter BUFFAM and HARRIS
+  group_by(shift) %>%                            # Group by shift (day/night)
+  summarise(
+    river = "AMETHYST",                          # Set river to AMETHYST
+    totalDischarge = sum(totalDischarge, na.rm = TRUE), # Sum totalDischarge
+    meanTemp = mean(meanTemp, na.rm = TRUE)      # Average meanTemp
+  )
+
+# Bind the AMETHYST rows to the original dataset
+flowWeek4 <- bind_rows(flowWeek4, amethyst_combined)
 
 # Display the first few rows to check the result
 head(flowWeek4)
@@ -2159,6 +2326,19 @@ flowWeek5 <- flowWeek5 %>%
     )
   )
 
+# Create rows representing Amethyst brook discharge and temperature by combining Buffam and Harris measurements per shift
+amethyst_combined <- flowWeek5 %>%
+  filter(river %in% c("BUFFAM", "HARRIS")) %>%   # Filter BUFFAM and HARRIS
+  group_by(shift) %>%                            # Group by shift (day/night)
+  summarise(
+    river = "AMETHYST",                          # Set river to AMETHYST
+    totalDischarge = sum(totalDischarge, na.rm = TRUE), # Sum totalDischarge
+    meanTemp = mean(meanTemp, na.rm = TRUE)      # Average meanTemp
+  )
+
+# Bind the AMETHYST rows to the original dataset
+flowWeek5 <- bind_rows(flowWeek5, amethyst_combined)
+
 # Display the first few rows to check the result
 head(flowWeek5)
 
@@ -2182,6 +2362,19 @@ flowWeek6 <- flowWeek6 %>%
         TRUE ~ "night"  # Any other time is night shift
     )
   )
+
+# Create rows representing Amethyst brook discharge and temperature by combining Buffam and Harris measurements per shift
+amethyst_combined <- flowWeek6 %>%
+  filter(river %in% c("BUFFAM", "HARRIS")) %>%   # Filter BUFFAM and HARRIS
+  group_by(shift) %>%                            # Group by shift (day/night)
+  summarise(
+    river = "AMETHYST",                          # Set river to AMETHYST
+    totalDischarge = sum(totalDischarge, na.rm = TRUE), # Sum totalDischarge
+    meanTemp = mean(meanTemp, na.rm = TRUE)      # Average meanTemp
+  )
+
+# Bind the AMETHYST rows to the original dataset
+flowWeek6 <- bind_rows(flowWeek6, amethyst_combined)
 
 # Display the first few rows to check the result
 head(flowWeek6)
@@ -2207,6 +2400,19 @@ flowWeek7 <- flowWeek7 %>%
     )
   )
 
+# Create rows representing Amethyst brook discharge and temperature by combining Buffam and Harris measurements per shift
+amethyst_combined <- flowWeek7 %>%
+  filter(river %in% c("BUFFAM", "HARRIS")) %>%   # Filter BUFFAM and HARRIS
+  group_by(shift) %>%                            # Group by shift (day/night)
+  summarise(
+    river = "AMETHYST",                          # Set river to AMETHYST
+    totalDischarge = sum(totalDischarge, na.rm = TRUE), # Sum totalDischarge
+    meanTemp = mean(meanTemp, na.rm = TRUE)      # Average meanTemp
+  )
+
+# Bind the AMETHYST rows to the original dataset
+flowWeek7 <- bind_rows(flowWeek7, amethyst_combined)
+
 # Display the first few rows to check the result
 head(flowWeek7)
 
@@ -2230,6 +2436,19 @@ flowWeek8 <- flowWeek8 %>%
         TRUE ~ "night"  # Any other time is night shift
     )
   )
+
+# Create rows representing Amethyst brook discharge and temperature by combining Buffam and Harris measurements per shift
+amethyst_combined <- flowWeek8 %>%
+  filter(river %in% c("BUFFAM", "HARRIS")) %>%   # Filter BUFFAM and HARRIS
+  group_by(shift) %>%                            # Group by shift (day/night)
+  summarise(
+    river = "AMETHYST",                          # Set river to AMETHYST
+    totalDischarge = sum(totalDischarge, na.rm = TRUE), # Sum totalDischarge
+    meanTemp = mean(meanTemp, na.rm = TRUE)      # Average meanTemp
+  )
+
+# Bind the AMETHYST rows to the original dataset
+flowWeek8 <- bind_rows(flowWeek8, amethyst_combined)
 
 # Display the first few rows to check the result
 head(flowWeek8)
@@ -2255,6 +2474,19 @@ flowWeek9 <- flowWeek9 %>%
     )
   )
 
+# Create rows representing Amethyst brook discharge and temperature by combining Buffam and Harris measurements per shift
+amethyst_combined <- flowWeek9 %>%
+  filter(river %in% c("BUFFAM", "HARRIS")) %>%   # Filter BUFFAM and HARRIS
+  group_by(shift) %>%                            # Group by shift (day/night)
+  summarise(
+    river = "AMETHYST",                          # Set river to AMETHYST
+    totalDischarge = sum(totalDischarge, na.rm = TRUE), # Sum totalDischarge
+    meanTemp = mean(meanTemp, na.rm = TRUE)      # Average meanTemp
+  )
+
+# Bind the AMETHYST rows to the original dataset
+flowWeek9 <- bind_rows(flowWeek9, amethyst_combined)
+
 # Display the first few rows to check the result
 head(flowWeek9)
 
@@ -2279,6 +2511,19 @@ flowWeek10 <- flowWeek10 %>%
     )
   )
 
+# Create rows representing Amethyst brook discharge and temperature by combining Buffam and Harris measurements per shift
+amethyst_combined <- flowWeek10 %>%
+  filter(river %in% c("BUFFAM", "HARRIS")) %>%   # Filter BUFFAM and HARRIS
+  group_by(shift) %>%                            # Group by shift (day/night)
+  summarise(
+    river = "AMETHYST",                          # Set river to AMETHYST
+    totalDischarge = sum(totalDischarge, na.rm = TRUE), # Sum totalDischarge
+    meanTemp = mean(meanTemp, na.rm = TRUE)      # Average meanTemp
+  )
+
+# Bind the AMETHYST rows to the original dataset
+flowWeek10 <- bind_rows(flowWeek10, amethyst_combined)
+
 # Display the first few rows to check the result
 head(flowWeek10)
 
@@ -2297,6 +2542,19 @@ flowWeek11$dateTime <- as.POSIXct(flowWeek11$localEndTime, format = "%Y-%m-%d %H
 # All shifts in week 11 were day shifts
 flowWeek11 <- flowWeek11 %>%
   mutate(shift = "day")
+
+# Create rows representing Amethyst brook discharge and temperature by combining Buffam and Harris measurements per shift
+amethyst_combined <- flowWeek11 %>%
+  filter(river %in% c("BUFFAM", "HARRIS")) %>%   # Filter BUFFAM and HARRIS
+  group_by(shift) %>%                            # Group by shift (day/night)
+  summarise(
+    river = "AMETHYST",                          # Set river to AMETHYST
+    totalDischarge = sum(totalDischarge, na.rm = TRUE), # Sum totalDischarge
+    meanTemp = mean(meanTemp, na.rm = TRUE)      # Average meanTemp
+  )
+
+# Bind the AMETHYST rows to the original dataset
+flowWeek11 <- bind_rows(flowWeek11, amethyst_combined)
 
 # Display the first few rows to check the result
 head(flowWeek11)
@@ -2577,7 +2835,7 @@ allData <- bind_rows(full_data_list)
 # Display the first few rows of the combined dataset
 head(allData)
 
-# Optionally, write the combined data to a new CSV file
+# Write the combined data to a new CSV file
 write.csv(allData, file = "allData.csv", row.names = FALSE)
 
 ```
