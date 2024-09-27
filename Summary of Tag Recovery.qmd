@@ -1,0 +1,44 @@
+---
+title: "Summary of Tag Recovery"
+---
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(readxl)
+
+# Read the Excel file and specify the range or skip rows until the second table
+collectionSummary <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/taggingData/collectionData.xlsx", skip = 37)
+
+# Assuming 'collectionSummary' has "Category", "Type", and "Percentage"
+# Filter out the first row (which is the "total")
+collectionSummary <- collectionSummary %>%
+  slice(-1)  # This removes the first row
+
+# Calculate the rounded percentage for each category
+collectionSummary <- collectionSummary %>%
+  mutate(rounded_percentage = round(Percentage, 1))  # Round to 1 decimal place
+
+# Define custom colors
+custom_colors <- c("Tag (Radio + Temp)" = "#FF69B4",  # Replace with actual category names and desired colors
+                   "Tag (Radio Only)" = "#97FFFF",
+                   "Fish (Radio + Temp)" = "#FFD700",
+                   "Fish (Radio Only)" = "#B23AEE",
+                   "Fish (Shed Tag)" = "#98FB98",
+                   "Unrecovered" = "#436EEE"
+                   )
+
+# Assuming your filtered data has "Category", "Percentage", and "Type" columns
+# You can select only "Category" and "Percentage" for the pie chart
+ggplot(collectionSummary, aes(x = "", y = Percentage, fill = Category)) +
+  geom_bar(width = 1, stat = "identity") +
+  coord_polar("y", start = 0) +
+  theme_void() +   # Removes axis labels and ticks
+  labs(title = "Summary of Tag Recovery") +
+  geom_text(aes(label = paste0(rounded_percentage, "%")), 
+            position = position_stack(vjust = 0.5), 
+            size = 4) + # Adjust size as needed
+  scale_fill_manual(values = custom_colors)  # Apply custom colors
+
+```
+
