@@ -4234,6 +4234,15 @@ fish_flow_receiver_stream_tagging_all <- fish_flow_receiver_stream_tagging_all %
 # Combine the datasets by binding rows horizontally
 tracking_data_all <- bind_rows(fish_flow_receiver_stream_tagging_all, collection_data)
 
+tracking_data_all <- tracking_data_all %>%
+  rename(radioID = tagID)
+
+tracking_data_all <- tracking_data_all %>%
+  select(date, trackedTime_EST, river, shift, radioID, tempID, power, source, fishNotes, lon, lat, habitat, habitatExtra, position, substrate, substrateExtra, shade, airTemp, cloud, precip, totalDischarge, flowTime_EST, startTime_EST, endTime_EST, streamNotes, downstreamGPS, downstreamGain, upstreamGPS, upstreamGain, isoID, isoTime_EST, length, weight, sex, type, geneticSam, blood, section, collectionNotes)
+
+# Display the first few rows to check the result
+head(tracking_data_all)
+
 # Write new tagging data csv
 write.csv(tracking_data_all, 
           file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/combined_data/tracking_data_all.csv", 

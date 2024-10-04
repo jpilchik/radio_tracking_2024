@@ -348,13 +348,13 @@ ggplot(data = proportional_habitat_use, aes(x = totalDischarge, y = habitat_prop
 
 # Filter for fish that have exactly two length measurements using tagID and length
 fish_with_two_lengths <- tracking_data_all %>%
-  filter(!is.na(tagID)) %>%  # Ensure there are valid (non-NA) tagID values
-  group_by(tagID) %>%
+  filter(!is.na(radioID)) %>%  # Ensure there are valid (non-NA) tagID values
+  group_by(radioID) %>%
   filter(!is.na(length)) %>%  # Ensure there are valid (non-NA) length values
   filter(n() == 2) # Only keep fish with exactly two length measurements
 
-# Ensure tagID is treated as a categorical variable
-fish_with_two_lengths$tagID <- as.factor(fish_with_two_lengths$tagID)
+# Ensure radioID is treated as a categorical variable
+fish_with_two_lengths$radioID <- as.factor(fish_with_two_lengths$radioID)
 
 # Create a new river column where buffam and amethyst are both labeled as amethyst
 fish_with_two_lengths <- fish_with_two_lengths %>%
@@ -365,9 +365,9 @@ fish_with_two_lengths <- fish_with_two_lengths %>%
   mutate(date = as.Date(date))
 
 # Plot the growth figure using length
-length_gr <- ggplot(fish_with_two_lengths, aes(x = date, y = length, group = tagID)) +
+length_gr <- ggplot(fish_with_two_lengths, aes(x = date, y = length, group = radioID)) +
   geom_point(aes(color = river_grouped), size = 3) +  # Add points for initial and final sizes, and color points by tagID
-  geom_line(aes(color = river_grouped)) +  # Add lines connecting the points for each fish and color lines by tagID
+  geom_line(aes(color = river_grouped)) +  # Add lines connecting the points for each fish and color lines by radioID
   labs(x = "Date", y = "Length (mm)", title = "Fish Growth Over Time") +
   scale_color_discrete(name = "River") +  # Add a legend with the new river groups
   theme_minimal()
@@ -379,15 +379,15 @@ print(length_gr)
 
 ```{r plot fish growth over time using weight}
 
-# Filter for fish that have exactly two weight measurements using tagID and length
+# Filter for fish that have exactly two weight measurements using radioID and length
 fish_with_two_weights <- tracking_data_all %>%
-  filter(!is.na(tagID)) %>%  # Ensure there are valid (non-NA) tagID values
-  group_by(tagID) %>%
+  filter(!is.na(radioID)) %>%  # Ensure there are valid (non-NA) radioID values
+  group_by(radioID) %>%
   filter(!is.na(weight)) %>%  # Ensure there are valid (non-NA) weight values
   filter(n() == 2) # Only keep fish with exactly two weight measurements
 
-# Ensure tagID is treated as a categorical variable
-fish_with_two_weights$tagID <- as.factor(fish_with_two_weights$tagID)
+# Ensure radioID is treated as a categorical variable
+fish_with_two_weights$radioID <- as.factor(fish_with_two_weights$radioID)
 
 # Create a new river column where buffam and amethyst are both labeled as amethyst
 fish_with_two_weights <- fish_with_two_weights %>%
@@ -398,9 +398,9 @@ fish_with_two_weights <- fish_with_two_weights %>%
   mutate(date = as.Date(date))
 
 # Plot the growth figure using length
-weight_gr <- ggplot(fish_with_two_weights, aes(x = date, y = weight, group = tagID)) +
+weight_gr <- ggplot(fish_with_two_weights, aes(x = date, y = weight, group = radioID)) +
   geom_point(aes(color = river_grouped), size = 3) +  # Add points for initial and final sizes, and color points by tagID
-  geom_line(aes(color = river_grouped)) +  # Add lines connecting the points for each fish and color lines by tagID
+  geom_line(aes(color = river_grouped)) +  # Add lines connecting the points for each fish and color lines by radioID
   labs(x = "Date", y = "Weight (g)", title = "Fish Growth Over Time") +
   scale_color_discrete(name = "River") +  # Add a legend with the new river groups
   theme_minimal()
