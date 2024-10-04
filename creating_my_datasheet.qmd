@@ -1,4 +1,6 @@
-# Creating my Datasheet
+---
+title: "Creating my Datasheet"
+---
 
 ## Prep
 

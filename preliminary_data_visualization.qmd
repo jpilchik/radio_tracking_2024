@@ -61,7 +61,7 @@ print(sum_habitat_use_hourly)
 
 ```
 
-```{r}
+```{r create a histogram representing scaled habitat use throughout the 24 hour day}
 
 # Filter to only include 'iPad' as source and remove NA or blank habitats
 iPad_data <- tracking_data_all %>%
@@ -338,6 +338,173 @@ ggplot(data = proportional_habitat_use, aes(x = totalDischarge, y = habitat_prop
        y = "Proportion of Habitat Use") +
   theme_minimal() +
   theme(legend.title = element_blank())
+
+```
+
+```{r create a line plot comparing habitat use by mean total discharge}
+
+# Filter to only include 'iPad' as source and remove NA or blank habitats
+iPad_data <- tracking_data_all %>%
+  filter(source == "iPad" & !is.na(habitat) & habitat != "")
+
+# Summarize the data by habitat, calculating the average total discharge
+habitat_summary <- iPad_data %>%
+  group_by(habitat) %>%
+  summarise(mean_discharge = mean(totalDischarge, na.rm = TRUE))
+
+# Create the line plot using ggplot2
+mean_flow_habitat_use <- ggplot(habitat_summary, aes(x = habitat, y = mean_discharge, group = 1)) +
+  geom_line() +  # Add the line
+  geom_point() +  # Add points at each habitat
+  labs(title = "Mean Total Discharge by Habitat",
+       x = "Habitat",
+       y = "Mean Total Discharge") +
+  theme_minimal() 
+
+# Print the plot
+print(mean_flow_habitat_use)
+
+```
+
+```{r create a line plot comparing habitat use by median total discharge}
+
+# Filter to only include 'iPad' as source and remove NA or blank habitats
+iPad_data <- tracking_data_all %>%
+  filter(source == "iPad" & !is.na(habitat) & habitat != "")
+
+# Summarize the data by habitat, calculating the median total discharge
+habitat_summary <- iPad_data %>%
+  group_by(habitat) %>%
+  summarise(median_discharge = median(totalDischarge, na.rm = TRUE)) 
+
+# Create the line plot using ggplot2
+median_flow_habitat_use <- ggplot(habitat_summary, aes(x = habitat, y = median_discharge, group = 1)) +
+  geom_line() +  # Add the line
+  geom_point() +  # Add points at each habitat
+  labs(title = "Median Total Discharge by Habitat",
+       x = "Habitat",
+       y = "Median Total Discharge") +
+  theme_minimal()  
+
+# Print the plot
+print(median_flow_habitat_use)
+
+```
+```{r arrange habitat use by total discharge plots}
+
+# Adjust theme settings
+mean_flow_habitat_use <- mean_flow_habitat_use +
+  theme(
+    plot.title = element_text(size = 22),   # Increase title size
+    axis.title.x = element_text(size = 18), # Increase x-axis label size
+    axis.title.y = element_text(size = 18), # Increase y-axis label size
+    axis.text = element_text(size = 16),    # Increase tick label size
+    legend.title = element_text(size = 18), # Increase legend title size
+    legend.text = element_text(size = 16)   # Increase legend text size
+  )
+
+median_flow_habitat_use <- median_flow_habitat_use +
+  theme(
+    plot.title = element_text(size = 22),   # Increase title size
+    axis.title.x = element_text(size = 18), # Increase x-axis label size
+    axis.title.y = element_text(size = 18), # Increase y-axis label size
+    axis.text = element_text(size = 16),    # Increase tick label size
+    legend.title = element_text(size = 18), # Increase legend title size
+    legend.text = element_text(size = 16)   # Increase legend text size
+  )
+
+# Arrange the plots into a 2x1 grid
+flow_habitat_use <- grid.arrange(mean_flow_habitat_use, median_flow_habitat_use, nrow = 1, ncol = 2)
+
+# Save the enlarged plot
+ggsave("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/plots/flow_habitat_use.png",
+       flow_habitat_use, 
+       width = 20, height = 12) 
+
+```
+```{r create a line plot comparing habitat use by mean total discharge and river}
+
+# Filter to only include 'iPad' as source and remove NA or blank habitats
+iPad_data <- tracking_data_all %>%
+  filter(source == "iPad" & !is.na(habitat) & habitat != "")
+
+# Summarize the data by habitat and river, calculating the average total discharge
+habitat_river_summary <- iPad_data %>%
+  group_by(habitat, river) %>%
+  summarise(mean_discharge = mean(totalDischarge, na.rm = TRUE))
+
+# Create the line plot, separating by river using color
+mean_flow_river_habitat_use <- ggplot(habitat_river_summary, aes(x = habitat, y = mean_discharge, color = river, group = river)) +
+  geom_line() +  # Add the lines, one for each river
+  geom_point() +  # Add points for each river at each habitat
+  labs(title = "Mean Total Discharge by Habitat and River",
+       x = "Habitat",
+       y = "Mean Total Discharge",
+       color = "River") +  # Add a legend for river
+  theme_minimal() 
+
+# Print the plot
+print(mean_flow_river_habitat_use)
+
+```
+```{r create a line plot comparing habitat use by median total discharge and river}
+
+# Filter to only include 'iPad' as source and remove NA or blank habitats
+iPad_data <- tracking_data_all %>%
+  filter(source == "iPad" & !is.na(habitat) & habitat != "")
+
+# Summarize the data by habitat and river, calculating the median total discharge
+habitat_river_summary <- iPad_data %>%
+  group_by(habitat, river) %>%
+  summarise(median_discharge = median(totalDischarge, na.rm = TRUE))
+
+# Create the line plot, separating by river using color
+median_flow_river_habitat_use <- ggplot(habitat_river_summary, aes(x = habitat, y = median_discharge, color = river, group = river)) +
+  geom_line() +  # Add the lines, one for each river
+  geom_point() +  # Add points for each river at each habitat
+  labs(title = "Median Total Discharge by Habitat and River",
+       x = "Habitat",
+       y = "Median Total Discharge",
+       color = "River") +  # Add a legend for river
+  theme_minimal() 
+
+# Print the plot
+print(median_flow_river_habitat_use)
+
+```
+
+```{r arrange habitat use by total discharge and river plots}
+
+# Adjust theme settings
+mean_flow_river_habitat_use <- mean_flow_river_habitat_use +
+  theme(
+    plot.title = element_text(size = 22),   # Increase title size
+    axis.title.x = element_text(size = 18), # Increase x-axis label size
+    axis.title.y = element_text(size = 18), # Increase y-axis label size
+    axis.text = element_text(size = 16),    # Increase tick label size
+    legend.title = element_text(size = 18), # Increase legend title size
+    legend.text = element_text(size = 16)   # Increase legend text size
+  )
+
+median_flow_river_habitat_use <- median_flow_river_habitat_use +
+  theme(
+    plot.title = element_text(size = 22),   # Increase title size
+    axis.title.x = element_text(size = 18), # Increase x-axis label size
+    axis.title.y = element_text(size = 18), # Increase y-axis label size
+    axis.text = element_text(size = 16),    # Increase tick label size
+    legend.title = element_text(size = 18), # Increase legend title size
+    legend.text = element_text(size = 16)   # Increase legend text size
+  )
+
+# Arrange the plots into a 2x1 grid
+flow_river_habitat_use <- grid.arrange(mean_flow_river_habitat_use, 
+                                       median_flow_river_habitat_use, 
+                                       nrow = 1, ncol = 2)
+
+# Save the enlarged plot
+ggsave("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/plots/flow_river_habitat_use.png",
+       flow_river_habitat_use, 
+       width = 20, height = 12)
 
 ```
 
