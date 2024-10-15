@@ -4,7 +4,7 @@ title: "Create TAME File"
 
 ```{r read in the data}
 # Read in the data
-tracking_data_all <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/combined_data/tracking_data_all.csv")
+tracking_data_all <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/combined_data/tracking_data_all.csv")
 ```
 
 

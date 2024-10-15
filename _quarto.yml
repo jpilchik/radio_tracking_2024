@@ -19,6 +19,7 @@ book:
     - index.qmd
     - creatingMyDatasheet.qmd
     - preliminary_data_visualization.qmd
+    - QAQC_receiver_iPad_data.qmd
 
 format:
   html:

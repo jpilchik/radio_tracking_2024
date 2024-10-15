@@ -1,0 +1,496 @@
+---
+title: "Example Temp Tag Data"
+---
+
+```{r load packages}
+library(lubridate)
+library(dplyr)
+library(ggplot2)
+library(patchwork)
+library(gridExtra)
+```
+
+
+```{r temp by time visualization for fish 16}
+
+# Read the Excel file
+tag16_323 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTempTagData/16_323.xlsx")
+
+# Rename columns
+tag16_323 <- tag16_323 %>%
+  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+
+# Separate dateTime into date and time columns
+tag16_323 <- tag16_323 %>%
+  separate(dateTime, into = c("date", "time"), sep = " ") %>%
+  mutate(date = as.Date(date, format = "%Y-%m-%d"),
+         time = as.POSIXct(time, format = "%H:%M:%S", tz = "EST"))  # Use `POSIXct` for time manipulation
+
+# Adjust time from EDT to EST by subtracting 1 hour
+tag16_323 <- tag16_323 %>%
+  mutate(time = time - hours(1))
+
+# Combine date and adjusted time back into a single dateTime column
+tag16_323 <- tag16_323 %>%
+  mutate(dateTime = as.POSIXct(paste(date, format(time, "%H:%M:%S")), format = "%Y-%m-%d %H:%M:%S", tz = "EST"))
+
+# Define the start time as the first day of tracking at Dry Upper
+start_datetime <- as.POSIXct("2024-06-14 00:00:00", tz = "EST")
+
+# Define the last known alive point as a POSIXct object
+last_alive_datetime <- as.POSIXct("2024-08-22 09:00:00", tz = "EST")
+
+# Filter dataset up to and including the last known alive point
+tag16_323 <- tag16_323 %>%
+  filter(dateTime >= start_datetime & dateTime <= last_alive_datetime)
+
+# Filter to only the needed columns going forward
+tag16_323 <- tag16_323 %>%
+    select(temp, dateTime)
+
+# Ensure dateTime is POSIXct and temp is numeric
+tag16_323 <- tag16_323 %>%
+  mutate(dateTime = as.POSIXct(dateTime, tz = "EST"),
+         temp = as.numeric(temp))
+
+# Set a common color gradient across all plots (10 to 25 degrees Celsius)
+colorMin <- 10
+colorMax <- 25
+
+# Plot the temperature data
+tag16Plot <- ggplot(tag16_323, aes(x = dateTime, y = temp, color = temp)) +
+  geom_line() +
+  scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
+  labs(title = "Fish 16's Internal Temperature Over Time in Dry Upper", 
+       x = "DateTime", y = "Internal Fish Temperature (°C)") +
+  theme_minimal() +
+  ylim(10, 25)  # Set y-axis limits
+
+# View plot
+tag16Plot
+
+```
+```{r temp by time visualization for a depth logger in dry upper}
+
+#######################################################
+# Prepare data for Dry 6/5/2024 through 9/5/2024
+#######################################################
+
+# Read the file
+dryDepth0605_0905 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/DU Sec 5 21350753 2024-09-05 17_06_55 EDT (Data EDT).csv")
+
+# Get the column names
+names(dryDepth0605_0905)
+
+# Rename columns
+dryDepth0605_0905 <- dryDepth0605_0905 %>%
+  rename(dateTime = `Date.Time..EDT.`, 
+         temp = `Temperature.....C.`)
+
+# Convert character dateTime to POSIXct format in EDT
+dryDepth0605_0905 <- dryDepth0605_0905 %>%
+  mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%Y %H:%M:%S", tz = "America/New_York"))
+
+# Forcefully convert POSIXct dateTime to EST (without DST adjustments)
+dryDepth0605_0905 <- dryDepth0605_0905 %>%
+  mutate(dateTime = format(dateTime, tz = "EST", usetz = TRUE))
+
+#######################################################
+# Filter data to tracking dates only
+#######################################################
+
+# Define the start time as the first day of tracking at Dry Upper
+start_datetime <- as.POSIXct("2024-06-14 00:00:00")
+
+# Define the last known alive point for tag 16 as a POSIXct object
+last_alive_datetime <- as.POSIXct("2024-08-22 09:00:00")
+
+# Filter dataset up to and including the last known alive point
+dryDepth <- dryDepth0605_0905 %>%
+  filter(dateTime >= start_datetime & dateTime <= last_alive_datetime)
+
+# Filter to only the needed columns going forward
+dryDepth <- dryDepth %>%
+    select(temp, dateTime)
+
+# Ensure dateTime is POSIXct and temp is numeric
+dryDepth <- dryDepth %>%
+  mutate(dateTime = as.POSIXct(dateTime, tz = "EST"),
+         temp = as.numeric(temp))
+
+#######################################################
+# Plot
+#######################################################
+
+# Set a common color gradient across all plots (10 to 25 degrees Celsius)
+colorMin <- 10
+colorMax <- 25
+
+# Plot the temperature data
+dryDepthPlot <- ggplot(dryDepth, aes(x = dateTime, y = temp, color = temp)) +
+  geom_line() +
+  scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
+  labs(title = "Depth Logger Temperature Over Time in Dry Upper", 
+       x = "DateTime", y = "Water Temperature (°C)") +
+  theme_minimal() +
+  ylim(10, 25)  # Set y-axis limits
+
+# View plot
+dryDepthPlot
+
+```
+
+```{r visualize dry tag temp and depth logger temp together}
+
+# Combine the underhill plots vertically
+dryPlot <- tag16Plot / dryDepthPlot
+
+# Display the combined plot
+dryPlot
+
+```
+```{r plot combined logger and tag data on one figure for tag 16 and dry}
+
+# Add a column to each dataset to indicate its source
+dryDepth <- dryDepth %>%
+  mutate(source = "logger")
+
+tag16_323 <- tag16_323 %>%
+  mutate(source = "tag")
+
+# Combine datasets
+dryData <- bind_rows(dryDepth, tag16_323)
+
+# Set common color gradient limits
+colorMin <- 10
+colorMax <- 25
+
+# Plot the combined data
+dryPlot <- ggplot() +
+  # Plot data from tag16_323 with a color gradient
+  geom_line(data = tag16_323, aes(x = dateTime, y = temp, color = temp), size = 1) +
+  scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +
+  
+  # Plot data from dryDepth with a fixed color (e.g., black)
+  geom_line(data = dryDepth, aes(x = dateTime, y = temp), color = "black", size = 1) +
+  
+  # Add labels and themes
+  labs(title = "Temperature Over Time for Tag 16 and an Dry Upper Logger", 
+       x = "DateTime", y = "Temperature (°C)") +
+  theme_minimal() +
+  ylim(10, 25) # Adjust y-axis limits as needed
+
+# Print the plot
+print(dryPlot)
+
+```
+
+
+```{r temp by time visualization for fish 33}
+
+#######################################################
+# Prepare data for Underhill radio tag 33, temp tag 305
+#######################################################
+
+# Read the Excel file
+tag33_305 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTempTagData/33_305.xlsx")
+
+# Rename columns
+tag33_305 <- tag33_305 %>%
+  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+
+# Separate dateTime into date and time columns
+tag33_305 <- tag33_305 %>%
+  separate(dateTime, into = c("date", "time"), sep = " ") %>%
+  mutate(date = as.Date(date, format = "%Y-%m-%d"),
+         time = as.POSIXct(time, format = "%H:%M:%S", tz = "EST"))  # Use `POSIXct` for time manipulation
+
+# Adjust time from EDT to EST by subtracting 1 hour
+tag33_305 <- tag33_305 %>%
+  mutate(time = time - hours(1))
+
+# Combine date and adjusted time back into a single dateTime column
+tag33_305 <- tag33_305 %>%
+  mutate(dateTime = as.POSIXct(paste(date, format(time, "%H:%M:%S")), format = "%Y-%m-%d %H:%M:%S", tz = "EST"))
+
+#######################################################
+# Filter data to tracking dates only
+#######################################################
+
+# Define the start time as the first day of tracking at Underhill
+start_datetime <- as.POSIXct("2024-06-12 00:00:00", tz = "EST")
+  
+# Define the last known alive point as a POSIXct object
+last_alive_datetime <- as.POSIXct("2024-08-21 08:30:00", tz = "EST")
+
+# Filter dataset up to and including the last known alive point
+tag33_305 <- tag33_305 %>%
+  filter(dateTime >= start_datetime & dateTime <= last_alive_datetime)
+
+# Filter to only the needed columns going forward
+tag33_305 <- tag33_305 %>%
+    select(temp, dateTime)
+
+# Ensure dateTime is POSIXct and temp is numeric
+tag33_305 <- tag33_305 %>%
+  mutate(dateTime = as.POSIXct(dateTime, tz = "EST"),
+         temp = as.numeric(temp))
+
+#######################################################
+# Plot
+#######################################################
+
+# Set a common color gradient across all plots (10 to 25 degrees Celsius)
+colorMin <- 10
+colorMax <- 25
+
+# Plot the temperature data
+tag33Plot <- ggplot(tag33_305, aes(x = dateTime, y = temp, color = temp)) +
+  geom_line() +
+  scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
+  labs(title = "Fish 33's Internal Temperature Over Time in Underhill", 
+       x = "DateTime", y = "Internal Fish Temperature (°C)") +
+  theme_minimal() +
+  ylim(10, 25)  # Set y-axis limits
+
+# View plot
+tag33Plot
+
+```
+
+```{r temp by time visualization for a depth logger in underhill}
+
+#######################################################
+# Prepare data for Underhill 8/1/2024 through 9/5/2024
+#######################################################
+
+# Read the file
+underhillDepth0801_0905 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/Underhill_Depth_20240801_to_20240905.csv")
+
+# Get the column names
+names(underhillDepth0801_0905)
+
+# Rename columns
+underhillDepth0801_0905 <- underhillDepth0801_0905 %>%
+  rename(dateTime = `Date.Time..GMT.04.00`, 
+         temp = `Temp...C..LGR.S.N..21340801..SEN.S.N..21340801.`)
+
+# Convert character dateTime to POSIXct format in GMT
+underhillDepth0801_0905 <- underhillDepth0801_0905 %>%
+  mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y %H:%M", tz = "GMT"))
+
+# Forcefully convert POSIXct dateTime to EST (without DST adjustments)
+underhillDepth0801_0905 <- underhillDepth0801_0905 %>%
+  mutate(dateTime = format(dateTime, tz = "EST", usetz = TRUE))
+
+# Filter to only the needed columns going forward
+underhillDepth0801_0905 <- underhillDepth0801_0905 %>%
+    select(temp, dateTime)
+
+#######################################################
+# Prepare data for Underhill 6/4/2024 through 8/1/2024
+#######################################################
+
+# Read the file, skip the first row, and use the second row as headers
+underhillDepth0604_0801 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/Underhill_Depth_USGS__20240604_to_20240801_21340801.csv", skip = 1, header = TRUE)
+
+# Get the column names
+names(underhillDepth0604_0801)
+
+# Rename columns
+underhillDepth0604_0801 <- underhillDepth0604_0801 %>%
+  rename(dateTime = `Date.Time..GMT.04.00`, 
+         temp = `Temp...F..LGR.S.N..21340801..SEN.S.N..21340801.`)
+
+# Convert character dateTime to POSIXct format in GMT
+underhillDepth0604_0801 <- underhillDepth0604_0801 %>%
+  mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y %H:%M", tz = "GMT"))
+
+# Forcefully convert POSIXct dateTime to EST (without DST adjustments)
+underhillDepth0604_0801 <- underhillDepth0604_0801 %>%
+  mutate(dateTime = format(dateTime, tz = "EST", usetz = TRUE))
+
+# Filter to only the needed columns going forward
+underhillDepth0604_0801 <- underhillDepth0604_0801 %>%
+    select(temp, dateTime)
+
+# Convert from fahrenheit into celsius
+underhillDepth0604_0801 <- underhillDepth0604_0801 %>%
+  mutate(temp = (temp - 32) * 5 / 9)
+
+#######################################################
+# Combine both Underhill datasets
+#######################################################
+
+# Combine the two final dataframes horizontally
+underhillDepth <- bind_rows(underhillDepth0604_0801, underhillDepth0801_0905)
+
+#######################################################
+# Filter data to tracking dates only
+#######################################################
+
+# Define the start time as the first day of tracking at Dry Upper
+start_datetime <- as.POSIXct("2024-06-12 00:00:00")
+
+# Define the last known alive point for tag 33 as a POSIXct object
+last_alive_datetime <- as.POSIXct("2024-08-21 08:30:00")
+
+# Filter dataset up to and including the last known alive point
+underhillDepth <- underhillDepth %>%
+  filter(dateTime >= start_datetime & dateTime <= last_alive_datetime)
+
+# Ensure dateTime is POSIXct and temp is numeric
+underhillDepth <- underhillDepth %>%
+  mutate(dateTime = as.POSIXct(dateTime, tz = "EST"),
+         temp = as.numeric(temp))
+
+#######################################################
+# Plot
+#######################################################
+
+# Set a common color gradient across all plots (10 to 25 degrees Celsius)
+colorMin <- 10
+colorMax <- 25
+
+# Plot the temperature data
+underhillDepthPlot <- ggplot(underhillDepth, aes(x = dateTime, y = temp, color = temp)) +
+  geom_line() +
+  scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
+  labs(title = "Depth Logger Temperature Over Time in Underhill", 
+       x = "DateTime", y = "Water Temperature (°C)") +
+  theme_minimal() +
+  ylim(10, 25) # Set y-axis limits
+
+# View plot
+underhillDepthPlot
+
+```
+```{r visualize underhill tag temp and depth logger temp together}
+
+# Combine the underhill plots vertically
+underhillPlot <- tag33Plot / underhillDepthPlot
+
+# Display the combined plot
+underhillPlot
+
+```
+
+```{r plot combined logger and tag data on one figure for tag 33 and underhill}
+
+# Add a column to each dataset to indicate its source
+underhillDepth <- underhillDepth %>%
+  mutate(source = "logger")
+
+tag33_305 <- tag33_305 %>%
+  mutate(source = "tag")
+
+# Combine datasets
+underhillData <- bind_rows(underhillDepth, tag33_305)
+
+# Set common color gradient limits
+colorMin <- 10
+colorMax <- 25
+
+# Plot the combined data
+underhillPlot <- ggplot() +
+  # Plot data from tag33_305 with a color gradient
+  geom_line(data = tag33_305, aes(x = dateTime, y = temp, color = temp), size = 1) +
+  scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +
+  
+  # Plot data from underhillDepth with a fixed color (e.g., black)
+  geom_line(data = underhillDepth, aes(x = dateTime, y = temp), color = "black", size = 1) +
+  
+  # Add labels and themes
+  labs(title = "Temperature Over Time for Tag 33 and an Underhill Logger", 
+       x = "DateTime", y = "Temperature (°C)") +
+  theme_minimal() +
+  ylim(10, 25) # Adjust y-axis limits as needed
+
+# Print the plot
+print(underhillPlot)
+
+```
+```{r}
+# Arrange the plots into a 2x1 grid
+grid.arrange(dryPlot, underhillPlot, nrow = 1, ncol = 2)
+
+# Save the enlarged plot
+ggsave("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/dry_underhill.png",
+       arrangeGrob(dryPlot, underhillPlot, nrow = 1, ncol = 2), 
+       width = 20, height = 12)  # Adjust width and height as needed
+```
+
+
+
+
+
+
+
+```{r combine underhill and dry plots}
+# Arrange the plots into a 2x2 grid
+grid.arrange(tag16Plot, tag33Plot, dryDepthPlot, underhillDepthPlot, nrow = 2, ncol = 2)
+
+# Save the enlarged plot
+ggsave("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/fish16_33.png",
+       arrangeGrob(tag16Plot, tag33Plot, dryDepthPlot, underhillDepthPlot, nrow = 2, ncol = 2), 
+       width = 12, height = 12)  # Adjust width and height as needed
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+
+## upper Lyons
+ 
+# 2021
+ 
+ul1 <- ggplot(thermalTagsFinalMean5MinuteTemp[thermalTagsFinalMean5MinuteTemp $year == 2021 & thermalTagsFinalMean5MinuteTemp $river == 'LYONS UPPER',], 
+              aes(meanTemp, tagTemp))+
+  geom_point(aes(color=(dayOfYear.x)), size = .1)+
+  scale_color_gradient2(low = "red",mid = "green", high = "blue", midpoint = 210)+
+  geom_abline(intercept = 0, slope = 1, size = 2)+
+  xlab("Mean Stream Temperature")+
+  ylab("Tag Temperature")+
+  # scale_x_continuous(limits = c(10, 30), breaks = seq(10,30, by = 2))+
+  # scale_y_continuous(limits = c(10, 30), breaks = seq(10,30, by = 2))+
+  theme(axis.text=element_text(size=10), axis.title = element_text(size=15), panel.background = element_rect(fill = 'white', color = 'black')        ,
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(), legend.position = "none")+
+  facet_grid(~tempTag)
+ 
+ul2 <- ggplot(finalStreamTemps[finalStreamTemps $year == 2021 & finalStreamTemps $river == 'LYONS UPPER',], 
+              aes(dateTime, temp, color= dayOfYear))+
+  geom_line()+
+  scale_color_gradient2(low = "red",mid = "green", high = "blue", midpoint = 210)+
+  xlab("DateTime")+
+  ylab("Stream Temperature Range")+
+  # scale_y_continuous(limits = c(10, 30), breaks = seq(10,30, by = 2))+
+  theme(axis.text=element_text(size=10), axis.title = element_text(size=15), panel.background = element_rect(fill = 'white', color = 'black')        ,
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+ 
+grid.arrange(ul1, ul2,
+             ncol = 1,
+             top = "upper Lyons Brook - 2021")
+ 
+
+```
+
