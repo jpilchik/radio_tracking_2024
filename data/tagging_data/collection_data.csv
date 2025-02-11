@@ -1,34 +1,55 @@
-"river","date","tagID","tempID","length","weight","blood","type","collectionNotes"
-"DICKEY","2024-06-28","46","317",NA,NA,NA,"TAG",NA
-"DICKEY","2024-07-01","29","304",NA,NA,NA,"TAG","Recovered on 7/1/2024 but confirmed dead on 6/17/2024"
-"DRY UPPER","2024-07-12","42","325",NA,NA,NA,"TAG",NA
-"DRY UPPER","2024-07-12","24","319",NA,NA,NA,"TAG",NA
-"DRY UPPER","2024-07-18","22","320",NA,NA,NA,"TAG",NA
-"UNDERHILL","2024-07-19","36","301",NA,NA,NA,"TAG",NA
-"DRY UPPER","2024-07-23","53","0",NA,NA,NA,"TAG","Recovered on 7/23/2024 but confirmed dead on 6/30/2024"
-"DRY UPPER","2024-07-23","46.1","317",NA,NA,NA,"TAG",NA
-"DRY UPPER","2024-07-23","55","0",NA,NA,NA,"TAG",NA
-"DICKEY","2024-07-24","28","306",NA,NA,NA,"TAG",NA
-"UNDERHILL","2024-07-26","27","303",NA,NA,NA,"TAG",NA
-"UNDERHILL","2024-07-26","40","312",NA,NA,NA,"TAG",NA
-"DICKEY","2024-07-30","32","298",NA,NA,NA,"TAG",NA
-"BUFFAM","2024-07-31","57","337",NA,NA,NA,"TAG",NA
-"UNDERHILL","2024-08-01","34","296",NA,NA,NA,"TAG",NA
-"DRY UPPER","2024-08-02","52","326",NA,NA,NA,"TAG","Recovered on 8/2/2024 but confirmed dead on 6/30/2024"
-"DICKEY","2024-08-09","37","308",NA,NA,NA,"TAG",NA
-"DICKEY","2024-08-15","31","302",NA,NA,NA,"TAG",NA
-"DICKEY","2024-08-15","38","315",NA,NA,NA,"TAG",NA
-"BUFFAM","2024-08-20","60","338","175","55","Y","FISH","Weight taken with tag still in body"
-"UNDERHILL","2024-08-21","33","305","158","42.16","N","FISH","Weight taken with tag still in body"
-"UNDERHILL","2024-08-21","43","309","183","58.6","N","FISH","Weight taken with tag still in body"
-"DRY UPPER","2024-08-22","16","323","170","54.46","N","FISH","Weight taken with tag still in body"
-"DRY UPPER","2024-08-22","21","0","171","58.96","N","FISH","Weight taken with tag still in body"
-"DRY UPPER","2024-08-22","39.1","304","189","78.7","N","FISH","Weight taken with tag still in body. Unable to find temp tag in the body cavity in the field, being checked more thoroughly by Amy when she does her sample."
-"DRY UPPER","2024-08-22","30.1","319","153","42.56","N","FISH","Weight taken with tag still in body"
-"DRY UPPER","2024-08-22","29.1","325",NA,NA,NA,"TAG",NA
-"DRY UPPER","2024-08-22","54","328",NA,NA,NA,"TAG",NA
-"AMETHYST","2024-08-23",NA,NA,"206","96.5","N","FISH","Fish found with scars indicating being a tagged fish, but with no antenna. May have shed tag, or may have broken antenna off of tag. Unable to find tag in the body cavity in the field, being checked more thoroughly by Amy when she does her sample. If a tag is found, the weight was taken with the tag still in the body."
-"AMETHYST","2024-08-23","19","329",NA,NA,NA,"TAG",NA
-"HARRIS","2024-08-23","20","0",NA,NA,NA,"TAG",NA
-"HARRIS","2024-08-23","62","334",NA,NA,NA,"TAG",NA
-"DICKEY","2024-08-29",NA,NA,"168","45.3","N","FISH","Fish found with scars indicating being a tagged fish, but with no antenna. May have shed tag, or may have broken antenna off of tag. Unable to find tag in the body cavity in the field, being checked more thoroughly by Amy when she does her sample. If a tag is found, the weight was taken with the tag still in the body."
+"river","date","radioID","tempID","length","weight","blood","type","sex","collectionNotes"
+"DICKEY","2024-06-28","46","317",NA,NA,NA,"TAG","M",NA
+"DICKEY","2024-07-01","29","304",NA,NA,NA,"TAG","M","Recovered on 7/1/2024 but confirmed dead on 6/17/2024"
+"DRY UPPER","2024-07-12","42","325",NA,NA,NA,"TAG","M",NA
+"DRY UPPER","2024-07-12","24","319",NA,NA,NA,"TAG","F",NA
+"DRY UPPER","2024-07-18","22","320",NA,NA,NA,"TAG","M",NA
+"UNDERHILL","2024-07-19","36","301",NA,NA,NA,"TAG","M",NA
+"DRY UPPER","2024-07-23","53","0",NA,NA,NA,"TAG","M","Recovered on 7/23/2024 but confirmed dead on 6/30/2024"
+"DRY UPPER","2024-07-23","46.1","317",NA,NA,NA,"TAG",NA,NA
+"DRY UPPER","2024-07-23","23","322",NA,NA,NA,"TAG","F","Changed from 55 to 23 because of data logging error"
+"DICKEY","2024-07-24","28","306",NA,NA,NA,"TAG","M",NA
+"UNDERHILL","2024-07-26","27","303",NA,NA,NA,"TAG","F",NA
+"UNDERHILL","2024-07-26","40","312",NA,NA,NA,"TAG","M",NA
+"DICKEY","2024-07-30","32","298",NA,NA,NA,"TAG","M",NA
+"BUFFAM","2024-07-31","57","337",NA,NA,NA,"TAG","M",NA
+"UNDERHILL","2024-08-01","34","296",NA,NA,NA,"TAG","M",NA
+"DRY UPPER","2024-08-02","52","326",NA,NA,NA,"TAG","F","Recovered on 8/2/2024 but confirmed dead on 7/3/2024"
+"DICKEY","2024-08-09","37","308",NA,NA,NA,"TAG","M",NA
+"DICKEY","2024-08-15","31","302",NA,NA,NA,"TAG","M",NA
+"DICKEY","2024-08-15","38","315",NA,NA,NA,"TAG","F",NA
+"BUFFAM","2024-08-20","60","338","175","55","Y","FISH","M","Weight taken with tag still in body"
+"UNDERHILL","2024-08-21","33","305","158","42.16","N","FISH","M","Weight taken with tag still in body"
+"UNDERHILL","2024-08-21","43","309","183","58.6","N","FISH","F","Weight taken with tag still in body"
+"DRY UPPER","2024-08-22","16","323","170","54.46","N","FISH","F","Weight taken with tag still in body"
+"DRY UPPER","2024-08-22","21","0","171","58.96","N","FISH","F","Weight taken with tag still in body"
+"DRY UPPER","2024-08-22","39.1","304","189","78.7","N","FISH",NA,"Weight taken with tag still in body. Unable to find temp tag in the body cavity in the field, being checked more thoroughly by Amy when she does her sample."
+"DRY UPPER","2024-08-22","30.1","319","153","42.56","N","FISH",NA,"Weight taken with tag still in body"
+"DRY UPPER","2024-08-22","29.1","325",NA,NA,NA,"TAG",NA,NA
+"DRY UPPER","2024-08-22","54","328",NA,NA,NA,"TAG","M",NA
+"AMETHYST","2024-08-23","UNKNOWN","UNKNOWN","206","96.5","N","FISH",NA,"Fish found with scars indicating being a tagged fish, but with no antenna. May have shed tag, or may have broken antenna off of tag. Unable to find tag in the body cavity in the field, being checked more thoroughly by Amy when she does her sample. If a tag is found, the weight was taken with the tag still in the body."
+"AMETHYST","2024-08-23","19","329",NA,NA,NA,"TAG","F",NA
+"HARRIS","2024-08-23","20","0",NA,NA,NA,"TAG","M",NA
+"HARRIS","2024-08-23","62","334",NA,NA,NA,"TAG","M",NA
+"DICKEY","2024-08-29","UNKNOWN","UNKNOWN","168","45.3","N","FISH",NA,"Fish found with scars indicating being a tagged fish, but with no antenna. May have shed tag, or may have broken antenna off of tag. Unable to find tag in the body cavity in the field, being checked more thoroughly by Amy when she does her sample. If a tag is found, the weight was taken with the tag still in the body."
+"BUFFAM","2024-10-21","CONTROL",NA,"181","66.4","N","FISH","M","All collected above the waterfall. No brookies in Amethyst or Harris, only Buffam. 5 biggest fish taken."
+"BUFFAM","2024-10-21","CONTROL",NA,"164","46.7","N","FISH","M","All collected above the waterfall. No brookies in Amethyst or Harris, only Buffam. 5 biggest fish taken."
+"BUFFAM","2024-10-21","CONTROL",NA,"155","33","N","FISH",NA,"All collected above the waterfall. No brookies in Amethyst or Harris, only Buffam. 5 biggest fish taken."
+"BUFFAM","2024-10-21","CONTROL",NA,"149","33.2","N","FISH","M","All collected above the waterfall. No brookies in Amethyst or Harris, only Buffam. 5 biggest fish taken."
+"BUFFAM","2024-10-21","CONTROL",NA,"183","63","N","FISH","M","All collected above the waterfall. No brookies in Amethyst or Harris, only Buffam. 5 biggest fish taken."
+"UNDERHILL","2024-10-22","CONTROL",NA,"149","31.7","N","FISH","F","100 meter stretch upstream from culvert. All fish were collected from the pool below the culvert to 100m above the culvert."
+"UNDERHILL","2024-10-22","CONTROL",NA,"166","49","N","FISH","M","101 meter stretch upstream from culvert. All fish were collected from the pool below the culvert to 100m above the culvert."
+"UNDERHILL","2024-10-22","CONTROL",NA,"173","48.8","N","FISH","M","102 meter stretch upstream from culvert. All fish were collected from the pool below the culvert to 100m above the culvert."
+"UNDERHILL","2024-10-22","CONTROL",NA,"177","57.3","N","FISH","M","103 meter stretch upstream from culvert. All fish were collected from the pool below the culvert to 100m above the culvert."
+"UNDERHILL","2024-10-22","CONTROL",NA,"152","33.4","N","FISH","F","104 meter stretch upstream from culvert. All fish were collected from the pool below the culvert to 100m above the culvert."
+"DICKEY","2024-10-22","CONTROL",NA,"204","73.5","N","FISH","M","Shocked from the pool below the culvert up to 400m upstream and then in the pool below the upper culvert."
+"DICKEY","2024-10-22","CONTROL",NA,"187","62.9","N","FISH","F","Shocked from the pool below the culvert up to 400m upstream and then in the pool below the upper culvert."
+"DICKEY","2024-10-22","CONTROL",NA,"170","44.4","N","FISH","M","Shocked from the pool below the culvert up to 400m upstream and then in the pool below the upper culvert."
+"DICKEY","2024-10-22","CONTROL",NA,"159","42.6","N","FISH","F","Shocked from the pool below the culvert up to 400m upstream and then in the pool below the upper culvert."
+"DICKEY","2024-10-22","CONTROL",NA,"133","23.6","N","FISH","F","Shocked from the pool below the culvert up to 400m upstream and then in the pool below the upper culvert."
+"DRY UPPER","2024-10-23","CONTROL",NA,"181","53.7","N","FISH","F","Upper part of upper dry - pool with fish 16"
+"DRY UPPER","2024-10-23","CONTROL",NA,"203","90.1","N","FISH","F","Upper part of upper dry - pool with fish 17"
+"DRY UPPER","2024-10-23","CONTROL",NA,"194","69.8","N","FISH","M","Upper part of upper dry - pool with fish 18"
+"DRY UPPER","2024-10-23","CONTROL",NA,"181","57.8","N","FISH","M","Lower part of upper dry - run where the 3 20-something fish were"
+"DRY UPPER","2024-10-23","CONTROL",NA,"163","39.8","N","FISH","F","Lower part of upper dry - run where the 3 20-something fish were"
+"DRY UPPER","2024-10-23","CONTROL",NA,"164","47.5","N","FISH","M","Lower part of upper dry - run where the 3 20-something fish were"

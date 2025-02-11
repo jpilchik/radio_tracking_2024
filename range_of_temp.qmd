@@ -1,0 +1,30 @@
+---
+title: "range_of_temp"
+---
+
+```{r temperature data}
+
+logger_data_summer <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/logger_data_summer.csv")
+
+# Find the temperature ranges
+temperature_summary_HOBO <- logger_data_summer %>%
+  group_by(river) %>%  # Group by stream
+  summarize(
+    p2_5 = quantile(temperature..degC., probs = 0.025, na.rm = TRUE),  # 2.5th percentile
+    p97_5 = quantile(temperature..degC., probs = 0.975, na.rm = TRUE),  # 97.5th percentile
+    min_temp = min(temperature..degC., na.rm = TRUE),  # Find the minimum value
+    max_temp = max(temperature..degC., na.rm = TRUE),   # Find the maximum value
+    start_date = min(date, na.rm = TRUE),
+    end_date = max(date, na.rm = TRUE),
+    .groups = "drop"  # Ensures the result is not grouped
+  )
+
+# Display the first few rows of the dataset
+head(temperature_summary_HOBO)
+
+# Write the data to a new CSV file
+write.csv(temperature_summary_HOBO, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/temperature_summary_HOBO.csv", 
+          row.names = FALSE)
+
+```

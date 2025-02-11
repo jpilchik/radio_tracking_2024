@@ -1,0 +1,512 @@
+---
+title: "distance_moved"
+---
+
+```{r load libraries}
+# Load required libraries
+library(dplyr)
+library(geosphere)
+```
+
+```{r read in the data}
+# Read in the data
+fish_flow_receiver_stream_corrected <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/combined_data/fish_flow_receiver_stream_corrected.csv")
+
+head(fish_flow_receiver_stream_corrected)
+```
+
+```{r distance moved 1.0}
+
+# Convert `datetime` to POSIXct
+fish_flow_receiver_stream_corrected <- fish_flow_receiver_stream_corrected %>%
+  mutate(trackedTime_EST = as.POSIXct(trackedTime_EST, format = "%Y-%m-%d %H:%M:%S"))
+
+# Select iPad points or receiver with highest power when no iPad exists for the day/shift
+filtered_data <- fish_flow_receiver_stream_corrected %>%
+  group_by(radioID, date, shift) %>%
+  filter(
+    (source == "iPad") | # Keep iPad points
+    (!any(source == "iPad") & source == "receiver" & power == max(power, na.rm = TRUE)) # Receiver only if no iPad
+  ) %>%
+  ungroup()
+
+# Calculate distances
+filtered_data <- filtered_data %>%
+  arrange(radioID, trackedTime_EST) %>% # Ensure proper order
+  group_by(radioID) %>%
+  mutate(
+    # Add debugging print statements
+    distance_m = {
+      if (n() > 1) {
+        print(paste("Calculating distance for radioID:", first(radioID))) # Debugging info
+        c(
+          NA, # First point has no previous point
+          distHaversine(
+            cbind(lon[-n()], lat[-n()]), # Previous points
+            cbind(lon[-1], lat[-1])      # Next points
+          )
+        )
+      } else {
+        print(paste("Skipping radioID:", first(radioID), "as it has only one point")) # Debugging
+        NA_real_
+      }
+    }
+  ) %>%
+  ungroup()
+
+# View results
+print(filtered_data)
+
+```
+
+
+
+
+```{r distance moved 2.0}
+
+# Convert `datetime` to POSIXct
+fish_flow_receiver_stream_corrected <- fish_flow_receiver_stream_corrected %>%
+  mutate(trackedTime_EST = as.POSIXct(trackedTime_EST, format = "%Y-%m-%d %H:%M:%S"))
+
+# Select iPad points or receiver with highest power when no iPad exists for the day/shift
+#filtered_data <- fish_flow_receiver_stream_corrected %>%
+  #group_by(radioID, date, shift) %>%
+  #filter(
+    #(source == "iPad") | # Keep iPad points
+    #(!any(source == "iPad") & source == "receiver" & power == max(power, na.rm = TRUE)) # Receiver only if no #iPad
+  #) %>%
+  #ungroup()
+
+# Identify all day+shift combinations that contain "OUT OF WATER"
+out_of_water_days <- fish_flow_receiver_stream_corrected %>%
+  filter(status == "OUT OF WATER") %>%
+  select(radioID, date, shift) %>%
+  distinct()
+
+# Filter out points from any day+shift where "OUT OF WATER" occurs, while keeping "RECOVERED" points
+filtered_data <- filtered_data %>%
+  anti_join(out_of_water_days, by = c("radioID", "date", "shift")) %>%
+  group_by(radioID, date, shift) %>%
+  filter(
+    (source == "iPad") | # Keep iPad points
+    (!any(source == "iPad") & source == "receiver" & power == max(power, na.rm = TRUE)) # Receiver only if no iPad
+  ) %>%
+  ungroup()
+
+# Calculate distances
+filtered_data <- filtered_data %>%
+  arrange(radioID, trackedTime_EST) %>% # Ensure proper order
+  group_by(radioID) %>%
+  mutate(
+    # Add debugging print statements
+    distance_m = {
+      if (n() > 1) {
+        print(paste("Calculating distance for radioID:", first(radioID))) # Debugging info
+        c(
+          NA, # First point has no previous point
+          distHaversine(
+            cbind(lon[-n()], lat[-n()]), # Previous points
+            cbind(lon[-1], lat[-1])      # Next points
+          )
+        )
+      } else {
+        print(paste("Skipping radioID:", first(radioID), "as it has only one point")) # Debugging
+        NA_real_
+      }
+    }
+  ) %>%
+  ungroup()
+
+# View results
+print(filtered_data)
+
+```
+
+
+
+##################################################
+
+# Karli RiverDist Script
+
+## Load your libraries (You might not need them all right now)
+
+```{r setup libraries}
+# Required packages for script
+require(tidyverse) # Used for Data Wrangling and Clean-up
+require(data.table) # Used for Data Wrangling and Clean-up
+require(riverdist) # Used for Individual Movement
+require(RMark) # Used for Mark-Recapture Data (Survival and Detection Rates)
+library(readxl)
+library(gridExtra)
+library(moments)
+
+# Convert points to UTMs from decimal degrees
+library(sf)
+#library(rgdal) # package no longer exists
+
+# For the coordinates function???
+library(sp)
+```
+## Load dataset
+
+```{r load and filter fish data}
+fish_flow_receiver_stream_corrected <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/combined_data/fish_flow_receiver_stream_corrected.csv")
+
+# Select iPad points or receiver with highest power when no iPad exists for the day/shift
+fish_data_filtered <- fish_flow_receiver_stream_corrected %>%
+  group_by(radioID, date, shift) %>%
+  mutate(has_iPad = any(source == "iPad"), 
+         has_receiver = any(source == "receiver")) %>%  # Check if any receiver points exist
+  filter(
+    (has_iPad & source == "iPad") |  # Keep iPad points if they exist
+    (has_receiver & !has_iPad & source == "receiver" & power == max(power, na.rm = TRUE))  # Only filter receiver points with max power if receiver exists
+  ) %>%
+  ungroup()
+```
+
+
+## Underhill Brook
+
+1. Load your flowline shapefiles (do this for each watershed separately)
+
+```{r Load in watershed flowlines}
+
+underhill_flowlines <- lines <- st_read("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles/NHDFlowline_UnderhillBrook.shp") # Reads shapefile, these shapefiles are already in geographic coordinate system NAD83
+st_crs(underhill_flowlines) # This just checks to make sure that your lines are in GCS NAD83
+underhill_flowlines <- st_transform(underhill_flowlines, 26918) # Projects to UTM Zone 18N (the code for this is 26918)
+
+## Please read note before running next line! Comment the next line out if you already reprojected the raw shapefile.
+#st_write(underhill_flowlines, "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles/NHDFlowline_UnderhillBrook_UTMZONE18N.shp") #Once you run this, it will add a new shapefile to your "shapefiles" folder! It will give you a warning if it's already done. I did it for underhill already, but you'll need to repeat this process for each watershed. 
+
+
+underhill_flowlines_UTMZONE18N <- line2network(path = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles", # Points to the folder in your R Project folder
+                                    layer = "NHDFlowline_UnderhillBrook_UTMZONE18N", # Identifies the shapefile you want to pull from folder
+                                    tolerance = 10) # This is the spatial tolerance used to determine connectivity between line segments) 
+
+
+plot(x=underhill_flowlines_UTMZONE18N) # checks imported line
+topologydots(rivers = underhill_flowlines_UTMZONE18N) # checks line topology
+
+# Setting the MOUTH of your watershed allows you to look at directional movement. The "seg = " value will be the segment that includes your mouth, which you can observe in the plot function above. In Underhill, it's segment 46. The "vert = " value identifies the correct node of that segment. Using "showends" on the segment you want will show you what vertex to select.
+plot(x=underhill_flowlines_UTMZONE18N)
+showends(seg = 46, rivers = underhill_flowlines_UTMZONE18N) # identifies the true mouth of your watershed
+underhill_mouth <- setmouth(seg = 46, vert = 4, rivers = underhill_flowlines_UTMZONE18N) # sets the mouth to the segment and vertex you need.
+
+```
+
+2. Load your fish points for the watershed you are analyzing (do this for each watershed separately)
+```{r Load in fish points}
+
+# read in your fish points and filter by the watershed you're looking at. Make sure to have X and Y columns available in decimal degrees
+
+#fish_flow_receiver_stream_corrected <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/combined_data/fish_flow_receiver_stream_corrected.csv")
+
+# Keep only points from "UNDERHILL" and also remove rows where lat or lon are NA
+underhill_points <- fish_data_filtered %>%
+  filter(river == "UNDERHILL" & !is.na(lon) & !is.na(lat))
+
+# Make Lat Lon columns numeric
+
+underhill_points_spatial <- underhill_points %>% 
+  mutate(POINT_Y = as.numeric(lat)) %>% # change to whatever your Y coord column is
+  mutate(POINT_X = as.numeric(lon)) # change to whatever your X coord column is
+coordinates(underhill_points_spatial) <- c("POINT_X","POINT_Y") # identifies the coordinate columns
+proj4string(underhill_points_spatial) <- CRS("+proj=longlat +datum=WGS84") 
+res <- spTransform(underhill_points_spatial, CRS("+proj=utm +zone=18 +ellps=WGS84")) # reprojects the points to UTM ZONE 18
+as(res, "SpatialPoints")
+res <- as.data.frame(res)
+res <- res %>% 
+  rename(POINT_X = coords.x1, POINT_Y = coords.x2) %>%  # Rename coords.x1 and coords.x2
+  mutate(Rownumber =row_number())
+underhill_segvert <- xy2segvert(x = res$POINT_X, y = res$POINT_Y, rivers = underhill_flowlines_UTMZONE18N) # change the "res$" to your X and Y coord columns
+  
+## Display raw points (red dots) and snapped points (blue). Run these three lines all at once
+plot(x= underhill_flowlines_UTMZONE18N)
+points(res$POINT_X, res$POINT_Y, pch=16, col="red") # shows raw points
+riverpoints(seg = underhill_segvert$seg, vert = underhill_segvert$vert, rivers = underhill_flowlines_UTMZONE18N, pch = 15, col="blue")
+
+
+```
+
+```{r snapping distance}
+hist(underhill_segvert$snapdist, main="snapping distance (m)")
+```
+```{r displaying point data in river locations}
+zoomtoseg(seg=c(6, 44, 18), rivers= underhill_flowlines_UTMZONE18N)
+points(res$POINT_X, res$POINT_Y, pch=16, col="red")
+riverpoints(seg=underhill_segvert$seg, vert=underhill_segvert$vert, rivers= underhill_flowlines_UTMZONE18N, 
+            pch=15, 
+            col="blue")
+```
+
+```{r}
+
+nrow(res)  # Total points before snapping
+nrow(underhill_segvert)  # Total points successfully snapped
+
+
+
+
+
+# Merge the snapped data with the original dataset using row numbers
+underhill_segvert <- underhill_segvert %>%
+  mutate(Rownumber = row_number()) # Assign row numbers if not already there
+
+# Ensure `res` also has row numbers
+#res <- res %>%
+  #mutate(Rownumber = row_number())
+
+# Merge snapped points back with the original dataset to retain radioID and trackedTime_EST
+underhill_snapped <- left_join(res %>% select(Rownumber, radioID, trackedTime_EST), 
+                               underhill_segvert, 
+                               by = "Rownumber")
+
+# Arrange data by fish ID and datetime to ensure chronological order
+underhill_snapped <- underhill_snapped %>%
+  arrange(radioID, trackedTime_EST)
+
+duplicates <- underhill_snapped %>%
+  group_by(radioID, trackedTime_EST) %>%
+  filter(n() > 1)
+
+print(duplicates)
+
+# Compute distances using `riverdistance()`
+underhill_snapped <- underhill_snapped %>%
+  group_by(radioID) %>%
+  mutate(
+    network_distance = c(NA, # First point has no previous distance
+      riverdistance(
+        startseg = seg[-n()], startvert = vert[-n()], 
+        endseg = seg[-1], endvert = vert[-1], 
+        rivers = underhill_flowlines_UTMZONE18N
+      )
+    )
+  ) %>%
+  ungroup()
+
+```
+
+
+```{r computing network distances between sequential observations of individuals}
+riverdistanceseq(unique=res$radioID, survey=res$trackedTime_EST, seg=res$seg, 
+                   vert=res$vert, rivers=underhill_flowlines_UTMZONE18N)
+```
+
+
+
+### Dickey Brook
+
+1. Load your flowline shapefiles (do this for each watershed separately)
+
+```{r Load in watershed flowlines}
+
+dickey_flowlines <- lines <- st_read("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles/NHDFlowline_DickeyBrook.shp") # Reads shapefile, these shapefiles are already in geographic coordinate system NAD83
+st_crs(dickey_flowlines) # This just checks to make sure that your lines are in GCS NAD83
+dickey_flowlines <- st_transform(dickey_flowlines, 26918) # Projects to UTM Zone 18N (the code for this is 26918)
+
+## Please read note before running next line! Comment the next line out if you already reprojected the raw shapefile.
+#st_write(dickey_flowlines, "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles/NHDFlowline_DickeyBrook_UTMZONE18N.shp") #Once you run this, it will add a new shapefile to your "shapefiles" folder! It will give you a warning if it's already done. I did it for underhill already, but you'll need to repeat this process for each watershed. 
+
+
+dickey_flowlines_UTMZONE18N <- line2network(path = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles", # Points to the folder in your R Project folder
+                                    layer = "NHDFlowline_DickeyBrook_UTMZONE18N", # Identifies the shapefile you want to pull from folder
+                                    tolerance = 10) # This is the spatial tolerance used to determine connectivity between line segments) 
+
+
+plot(x=dickey_flowlines_UTMZONE18N) # checks imported line
+topologydots(rivers = dickey_flowlines_UTMZONE18N) # checks line topology
+
+# Setting the MOUTH of your watershed allows you to look at directional movement. The "seg = " value will be the segment that includes your mouth, which you can observe in the plot function above. In Underhill, it's segment 46. The "vert = " value identifies the correct node of that segment. Using "showends" on the segment you want will show you what vertex to select.
+plot(x=dickey_flowlines_UTMZONE18N)
+showends(seg = 42, rivers = dickey_flowlines_UTMZONE18N) # identifies the true mouth of your watershed
+dickey_mouth <- setmouth(seg = 42, vert = 19, rivers = dickey_flowlines_UTMZONE18N) # sets the mouth to the segment and vertex you need.
+
+```
+
+2. Load your fish points for the watershed you are analyzing (do this for each watershed separately)
+```{r Load in fish points}
+
+# read in your fish points and filter by the watershed you're looking at. Make sure to have X and Y columns available in decimal degrees
+
+fish_flow_receiver_stream_corrected <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/combined_data/fish_flow_receiver_stream_corrected.csv")
+
+# Keep only points from "DICKEY" and also remove rows where lat or lon are NA
+dickey_points <- fish_flow_receiver_stream_corrected %>%
+  filter(river == "DICKEY" & !is.na(lon) & !is.na(lat))
+
+# Make Lat Lon columns numeric
+
+dickey_points_spatial <- dickey_points %>% 
+  mutate(POINT_Y = as.numeric(lat)) %>% # change to whatever your Y coord column is
+  mutate(POINT_X = as.numeric(lon)) # change to whatever your X coord column is
+coordinates(dickey_points_spatial) <- c("POINT_X","POINT_Y") # identifies the coordinate columns
+proj4string(dickey_points_spatial) <- CRS("+proj=longlat +datum=WGS84") 
+res <- spTransform(dickey_points_spatial, CRS("+proj=utm +zone=18 +ellps=WGS84")) # reprojects the points to UTM ZONE 18
+as(res, "SpatialPoints")
+res <- as.data.frame(res)
+res <- res %>% 
+  rename(POINT_X = coords.x1, POINT_Y = coords.x2) %>%  # Rename coords.x1 and coords.x2
+  mutate(Rownumber =row_number())
+dickey_segvert <- xy2segvert(x = res$POINT_X, y = res$POINT_Y, rivers = dickey_flowlines_UTMZONE18N) # change the "res$" to your X and Y coord columns
+  
+## Display raw points (red dots) and snapped points (blue). Run these three lines all at once
+plot(x= dickey_flowlines_UTMZONE18N)
+points(res$POINT_X, res$POINT_Y, pch=16, col="red") # shows raw points
+riverpoints(seg = dickey_segvert$seg, vert = dickey_segvert$vert, rivers = dickey_flowlines_UTMZONE18N, pch = 15, col="blue")
+
+
+```
+```{r snapping distance}
+hist(dickey_segvert$snapdist, main="snapping distance (m)")
+```
+
+```{r displaying point data in river locations}
+zoomtoseg(seg=c(42, 8, 83), rivers= dickey_flowlines_UTMZONE18N)
+points(res$POINT_X, res$POINT_Y, pch=16, col="red")
+riverpoints(seg=dickey_segvert$seg, vert=dickey_segvert$vert, rivers= dickey_flowlines_UTMZONE18N, 
+            pch=15, 
+            col="blue")
+```
+
+### Dry Brook
+
+1. Load your flowline shapefiles (do this for each watershed separately)
+
+```{r Load in watershed flowlines}
+
+dry_flowlines <- lines <- st_read("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles/NHDFlowline_DryBrook.shp") # Reads shapefile, these shapefiles are already in geographic coordinate system NAD83
+st_crs(dry_flowlines) # This just checks to make sure that your lines are in GCS NAD83
+dry_flowlines <- st_transform(dry_flowlines, 26918) # Projects to UTM Zone 18N (the code for this is 26918)
+
+## Please read note before running next line! Comment the next line out if you already reprojected the raw shapefile.
+#st_write(dry_flowlines, "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles/NHDFlowline_DryBrook_UTMZONE18N.shp") #Once you run this, it will add a new shapefile to your "shapefiles" folder! It will give you a warning if it's already done. I did it for underhill already, but you'll need to repeat this process for each watershed. 
+
+
+dry_flowlines_UTMZONE18N <- line2network(path = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles", # Points to the folder in your R Project folder
+                                    layer = "NHDFlowline_DryBrook_UTMZONE18N", # Identifies the shapefile you want to pull from folder
+                                    tolerance = 10) # This is the spatial tolerance used to determine connectivity between line segments) 
+
+
+plot(x=dry_flowlines_UTMZONE18N) # checks imported line
+topologydots(rivers = dry_flowlines_UTMZONE18N) # checks line topology
+
+# Setting the MOUTH of your watershed allows you to look at directional movement. The "seg = " value will be the segment that includes your mouth, which you can observe in the plot function above. In Underhill, it's segment 46. The "vert = " value identifies the correct node of that segment. Using "showends" on the segment you want will show you what vertex to select.
+plot(x=dry_flowlines_UTMZONE18N)
+showends(seg = 9, rivers = dry_flowlines_UTMZONE18N) # identifies the true mouth of your watershed
+dry_mouth <- setmouth(seg = 9, vert = 19, rivers = dry_flowlines_UTMZONE18N) # sets the mouth to the segment and vertex you need.
+
+```
+
+2. Load your fish points for the watershed you are analyzing (do this for each watershed separately)
+```{r Load in fish points}
+
+# read in your fish points and filter by the watershed you're looking at. Make sure to have X and Y columns available in decimal degrees
+
+fish_flow_receiver_stream_corrected <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/combined_data/fish_flow_receiver_stream_corrected.csv")
+
+# Keep only points from "DICKEY" and also remove rows where lat or lon are NA
+dry_points <- fish_flow_receiver_stream_corrected %>%
+  filter(river == "DRY UPPER" & !is.na(lon) & !is.na(lat))
+
+# Make Lat Lon columns numeric
+
+dry_points_spatial <- dry_points %>% 
+  mutate(POINT_Y = as.numeric(lat)) %>% # change to whatever your Y coord column is
+  mutate(POINT_X = as.numeric(lon)) # change to whatever your X coord column is
+coordinates(dry_points_spatial) <- c("POINT_X","POINT_Y") # identifies the coordinate columns
+proj4string(dry_points_spatial) <- CRS("+proj=longlat +datum=WGS84") 
+res <- spTransform(dry_points_spatial, CRS("+proj=utm +zone=18 +ellps=WGS84")) # reprojects the points to UTM ZONE 18
+as(res, "SpatialPoints")
+res <- as.data.frame(res)
+res <- res %>% 
+  rename(POINT_X = coords.x1, POINT_Y = coords.x2) %>%  # Rename coords.x1 and coords.x2
+  mutate(Rownumber =row_number())
+dry_segvert <- xy2segvert(x = res$POINT_X, y = res$POINT_Y, rivers = dry_flowlines_UTMZONE18N) # change the "res$" to your X and Y coord columns
+  
+## Display raw points (red dots) and snapped points (blue). Run these three lines all at once
+plot(x= dry_flowlines_UTMZONE18N)
+points(res$POINT_X, res$POINT_Y, pch=16, col="red") # shows raw points
+riverpoints(seg = dry_segvert$seg, vert = dry_segvert$vert, rivers = dry_flowlines_UTMZONE18N, pch = 15, col="blue")
+
+
+```
+
+```{r snapping distance}
+hist(dry_segvert$snapdist, main="snapping distance (m)")
+```
+
+### Amethyst Brook
+
+1. Load your flowline shapefiles (do this for each watershed separately)
+
+```{r Load in watershed flowlines}
+
+amethyst_flowlines <- lines <- st_read("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles/NHDFlowline_AmethystBrook.shp") # Reads shapefile, these shapefiles are already in geographic coordinate system NAD83
+st_crs(amethyst_flowlines) # This just checks to make sure that your lines are in GCS NAD83
+amethyst_flowlines <- st_transform(amethyst_flowlines, 26918) # Projects to UTM Zone 18N (the code for this is 26918)
+
+## Please read note before running next line! Comment the next line out if you already reprojected the raw shapefile.
+#st_write(amethyst_flowlines, "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles/NHDFlowline_AmethystBrook_UTMZONE18N.shp") #Once you run this, it will add a new shapefile to your "shapefiles" folder! It will give you a warning if it's already done. I did it for underhill already, but you'll need to repeat this process for each watershed. 
+
+
+amethyst_flowlines_UTMZONE18N <- line2network(path = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles", # Points to the folder in your R Project folder
+                                    layer = "NHDFlowline_AmethystBrook_UTMZONE18N", # Identifies the shapefile you want to pull from folder
+                                    tolerance = 10) # This is the spatial tolerance used to determine connectivity between line segments) 
+
+
+plot(x=amethyst_flowlines_UTMZONE18N) # checks imported line
+topologydots(rivers = amethyst_flowlines_UTMZONE18N) # checks line topology
+
+# Setting the MOUTH of your watershed allows you to look at directional movement. The "seg = " value will be the segment that includes your mouth, which you can observe in the plot function above. In Underhill, it's segment 46. The "vert = " value identifies the correct node of that segment. Using "showends" on the segment you want will show you what vertex to select.
+plot(x=amethyst_flowlines_UTMZONE18N)
+showends(seg = 404, rivers = amethyst_flowlines_UTMZONE18N) # identifies the true mouth of your watershed
+amethyst_mouth <- setmouth(seg = 404, vert = 81, rivers = amethyst_flowlines_UTMZONE18N) # sets the mouth to the segment and vertex you need.
+
+```
+
+2. Load your fish points for the watershed you are analyzing (do this for each watershed separately)
+```{r Load in fish points}
+
+# read in your fish points and filter by the watershed you're looking at. Make sure to have X and Y columns available in decimal degrees
+
+fish_flow_receiver_stream_corrected <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/combined_data/fish_flow_receiver_stream_corrected.csv")
+
+# Keep only points from "DICKEY" and also remove rows where lat or lon are NA
+amethyst_points <- fish_flow_receiver_stream_corrected %>%
+  filter((river == "AMETHYST" | river == "BUFFAM" | river == "HARRIS") & !is.na(lon) & !is.na(lat))
+
+# Make Lat Lon columns numeric
+
+amethyst_points_spatial <- amethyst_points %>% 
+  mutate(POINT_Y = as.numeric(lat)) %>% # change to whatever your Y coord column is
+  mutate(POINT_X = as.numeric(lon)) # change to whatever your X coord column is
+coordinates(amethyst_points_spatial) <- c("POINT_X","POINT_Y") # identifies the coordinate columns
+proj4string(amethyst_points_spatial) <- CRS("+proj=longlat +datum=WGS84") 
+res <- spTransform(amethyst_points_spatial, CRS("+proj=utm +zone=18 +ellps=WGS84")) # reprojects the points to UTM ZONE 18
+as(res, "SpatialPoints")
+res <- as.data.frame(res)
+res <- res %>% 
+  rename(POINT_X = coords.x1, POINT_Y = coords.x2) %>%  # Rename coords.x1 and coords.x2
+  mutate(Rownumber =row_number())
+amethyst_segvert <- xy2segvert(x = res$POINT_X, y = res$POINT_Y, rivers = amethyst_flowlines_UTMZONE18N) # change the "res$" to your X and Y coord columns
+  
+## Display raw points (red dots) and snapped points (blue). Run these three lines all at once
+plot(x= amethyst_flowlines_UTMZONE18N)
+points(res$POINT_X, res$POINT_Y, pch=16, col="red") # shows raw points
+riverpoints(seg = amethyst_segvert$seg, vert = amethyst_segvert$vert, rivers = amethyst_flowlines_UTMZONE18N, pch = 15, col="blue")
+
+
+```
+
+
+
+```{r snapping distance}
+hist(amethyst_segvert$snapdist, main="snapping distance (m)")
+```
+
+
+
+
+
+

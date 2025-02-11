@@ -28,7 +28,7 @@ fish_survey_1$date <- as.Date(fish_survey_1$date,
                               format = "%m/%d/%Y")
 
 # Combine the date and time into a DateTime column
-fish_survey_1$dateTime_EST <- as.POSIXct(paste(fish_survey_1$date, 
+fish_survey_1$trackedTime_EST <- as.POSIXct(paste(fish_survey_1$date, 
                                                fish_survey_1$time), 
                                          format="%Y-%m-%d %H:%M",
                                          tz = "EST")
@@ -38,7 +38,7 @@ fish_survey_1$dateTime_EST <- as.POSIXct(paste(fish_survey_1$date,
 fish_survey_1 <- fish_survey_1 %>%
   mutate(
     shift = case_when(
-        hour(dateTime_EST) >= 4 & hour(dateTime_EST) < 12 ~ "day",
+        hour(trackedTime_EST) >= 4 & hour(trackedTime_EST) < 12 ~ "day",
         TRUE ~ "night"  # Any other time is night shift
     )
   )
@@ -63,7 +63,7 @@ fish_survey_2$date <- as.Date(fish_survey_2$date,
                               format = "%m/%d/%Y")
 
 # Combine the date and time into a DateTime column
-fish_survey_2$dateTime_EST <- as.POSIXct(paste(fish_survey_2$date, 
+fish_survey_2$trackedTime_EST <- as.POSIXct(paste(fish_survey_2$date, 
                                                fish_survey_2$time), 
                                          format="%Y-%m-%d %H:%M",
                                          tz = "EST")
@@ -73,7 +73,7 @@ fish_survey_2$dateTime_EST <- as.POSIXct(paste(fish_survey_2$date,
 fish_survey_2 <- fish_survey_2 %>%
   mutate(
     shift = case_when(
-        hour(dateTime_EST) >= 10 & hour(dateTime_EST) < 18 ~ "day",
+        hour(trackedTime_EST) >= 10 & hour(trackedTime_EST) < 18 ~ "day",
         TRUE ~ "night"  # Any other time is night shift
     )
   )
@@ -98,7 +98,7 @@ fish_survey_3$date <- as.Date(fish_survey_3$date,
                               format = "%m/%d/%Y")
 
 # Combine the date and time into a DateTime column
-fish_survey_3$dateTime_EST <- as.POSIXct(paste(fish_survey_3$date, 
+fish_survey_3$trackedTime_EST <- as.POSIXct(paste(fish_survey_3$date, 
                                                fish_survey_3$time), 
                                          format="%Y-%m-%d %H:%M",
                                          tz = "EST")
@@ -108,7 +108,7 @@ fish_survey_3$dateTime_EST <- as.POSIXct(paste(fish_survey_3$date,
 fish_survey_3 <- fish_survey_3 %>%
   mutate(
     shift = case_when(
-        hour(dateTime_EST) >= 4 & hour(dateTime_EST) < 12 ~ "day",
+        hour(trackedTime_EST) >= 4 & hour(trackedTime_EST) < 12 ~ "day",
         TRUE ~ "night"  # Any other time is night shift
     )
   )
@@ -133,7 +133,7 @@ fish_survey_4$date <- as.Date(fish_survey_4$date,
                               format = "%m/%d/%Y")
 
 # Combine the date and time into a DateTime column
-fish_survey_4$dateTime_EST <- as.POSIXct(paste(fish_survey_4$date, 
+fish_survey_4$trackedTime_EST <- as.POSIXct(paste(fish_survey_4$date, 
                                                fish_survey_4$time), 
                                          format="%Y-%m-%d %H:%M",
                                          tz = "EST")
@@ -143,7 +143,7 @@ fish_survey_4$dateTime_EST <- as.POSIXct(paste(fish_survey_4$date,
 fish_survey_4 <- fish_survey_4 %>%
   mutate(
     shift = case_when(
-        hour(dateTime_EST) >= 2 & hour(dateTime_EST) < 10 ~ "day",
+        hour(trackedTime_EST) >= 2 & hour(trackedTime_EST) < 10 ~ "day",
         TRUE ~ "night"  # Any other time is night shift
     )
   )
@@ -168,7 +168,7 @@ fish_survey_5$date <- as.Date(fish_survey_5$date,
                               format = "%m/%d/%Y")
 
 # Combine the date and time into a DateTime column
-fish_survey_5$dateTime_EST <- as.POSIXct(paste(fish_survey_5$date, 
+fish_survey_5$trackedTime_EST <- as.POSIXct(paste(fish_survey_5$date, 
                                                fish_survey_5$time), 
                                          format="%Y-%m-%d %H:%M",
                                          tz = "EST")
@@ -178,7 +178,7 @@ fish_survey_5$dateTime_EST <- as.POSIXct(paste(fish_survey_5$date,
 fish_survey_5 <- fish_survey_5 %>%
   mutate(
     shift = case_when(
-        hour(dateTime_EST) >= 6 & hour(dateTime_EST) < 14 ~ "day",
+        hour(trackedTime_EST) >= 6 & hour(trackedTime_EST) < 14 ~ "day",
         TRUE ~ "night"  # Any other time is night shift
     )
   )
@@ -203,7 +203,7 @@ fish_survey_6$date <- as.Date(fish_survey_6$date,
                               format = "%m/%d/%Y")
 
 # Combine the date and time into a DateTime column
-fish_survey_6$dateTime_EST <- as.POSIXct(paste(fish_survey_6$date, 
+fish_survey_6$trackedTime_EST <- as.POSIXct(paste(fish_survey_6$date, 
                                                fish_survey_6$time), 
                                          format="%Y-%m-%d %H:%M",
                                          tz = "EST")
@@ -213,7 +213,7 @@ fish_survey_6$dateTime_EST <- as.POSIXct(paste(fish_survey_6$date,
 fish_survey_6 <- fish_survey_6 %>%
   mutate(
     shift = case_when(
-        hour(dateTime_EST) >= 2 & hour(dateTime_EST) < 10 ~ "day",
+        hour(trackedTime_EST) >= 2 & hour(trackedTime_EST) < 10 ~ "day",
         TRUE ~ "night"  # Any other time is night shift
     )
   )
@@ -238,7 +238,7 @@ fish_survey_7$date <- as.Date(fish_survey_7$date,
                               format = "%m/%d/%Y")
 
 # Combine the date and time into a DateTime column
-fish_survey_7$dateTime_EST <- as.POSIXct(paste(fish_survey_7$date, 
+fish_survey_7$trackedTime_EST <- as.POSIXct(paste(fish_survey_7$date, 
                                                fish_survey_7$time), 
                                          format="%Y-%m-%d %H:%M",
                                          tz = "EST")
@@ -248,7 +248,7 @@ fish_survey_7$dateTime_EST <- as.POSIXct(paste(fish_survey_7$date,
 fish_survey_7 <- fish_survey_7 %>%
   mutate(
     shift = case_when(
-        hour(dateTime_EST) >= 6 & hour(dateTime_EST) < 14 ~ "day",
+        hour(trackedTime_EST) >= 6 & hour(trackedTime_EST) < 14 ~ "day",
         TRUE ~ "night"  # Any other time is night shift
     )
   )
@@ -273,7 +273,7 @@ fish_survey_8$date <- as.Date(fish_survey_8$date,
                               format = "%m/%d/%Y")
 
 # Combine the date and time into a DateTime column
-fish_survey_8$dateTime_EST <- as.POSIXct(paste(fish_survey_8$date, 
+fish_survey_8$trackedTime_EST <- as.POSIXct(paste(fish_survey_8$date, 
                                                fish_survey_8$time), 
                                          format="%Y-%m-%d %H:%M",
                                          tz = "EST")
@@ -283,7 +283,7 @@ fish_survey_8$dateTime_EST <- as.POSIXct(paste(fish_survey_8$date,
 fish_survey_8 <- fish_survey_8 %>%
   mutate(
     shift = case_when(
-        hour(dateTime_EST) >= 2 & hour(dateTime_EST) < 11 ~ "day",
+        hour(trackedTime_EST) >= 2 & hour(trackedTime_EST) < 11 ~ "day",
         TRUE ~ "night"  # Any other time is night shift
     )
   )
@@ -308,7 +308,7 @@ fish_survey_9$date <- as.Date(fish_survey_9$date,
                               format = "%m/%d/%Y")
 
 # Combine the date and time into a DateTime column
-fish_survey_9$dateTime_EST <- as.POSIXct(paste(fish_survey_9$date, 
+fish_survey_9$trackedTime_EST <- as.POSIXct(paste(fish_survey_9$date, 
                                                fish_survey_9$time), 
                                          format="%Y-%m-%d %H:%M",
                                          tz = "EST")
@@ -320,11 +320,11 @@ fish_survey_9 <- fish_survey_9 %>%
   mutate(
     shift = case_when(
       # Define shift for August 5, 2024
-      date(dateTime_EST) == ymd("2024-08-05") ~ "day",
+      date(trackedTime_EST) == ymd("2024-08-05") ~ "day",
       
       # Define shift for regular tracking schedule for week 9
-      date(dateTime_EST) >= ymd("2024-08-06") & date(dateTime_EST) <= ymd("2024-08-09") 
-      & hour(dateTime_EST) >= 6 & hour(dateTime_EST) < 14 ~ "day",
+      date(trackedTime_EST) >= ymd("2024-08-06") & date(trackedTime_EST) <= ymd("2024-08-09") 
+      & hour(trackedTime_EST) >= 6 & hour(trackedTime_EST) < 14 ~ "day",
       
       TRUE ~ "night"  # Any other time is night shift
     )
@@ -350,7 +350,7 @@ fish_survey_10$date <- as.Date(fish_survey_10$date,
                                format = "%m/%d/%Y")
 
 # Combine the date and time into a DateTime column
-fish_survey_10$dateTime_EST <- as.POSIXct(paste(fish_survey_10$date, 
+fish_survey_10$trackedTime_EST <- as.POSIXct(paste(fish_survey_10$date, 
                                                 fish_survey_10$time), 
                                           format="%Y-%m-%d %H:%M",
                                           tz = "EST")
@@ -360,7 +360,7 @@ fish_survey_10$dateTime_EST <- as.POSIXct(paste(fish_survey_10$date,
 fish_survey_10 <- fish_survey_10 %>%
   mutate(
     shift = case_when(
-        hour(dateTime_EST) >= 3 & hour(dateTime_EST) < 11 ~ "day",
+        hour(trackedTime_EST) >= 3 & hour(trackedTime_EST) < 11 ~ "day",
         TRUE ~ "night"  # Any other time is night shift
     )
   )
@@ -385,7 +385,7 @@ fish_survey_11$date <- as.Date(fish_survey_11$date,
                                format = "%m/%d/%Y")
 
 # Combine the date and time into a DateTime column
-fish_survey_11$dateTime_EST <- as.POSIXct(paste(fish_survey_11$date, 
+fish_survey_11$trackedTime_EST <- as.POSIXct(paste(fish_survey_11$date, 
                                                 fish_survey_11$time), 
                                           format="%Y-%m-%d %H:%M",
                                           tz = "EST")
@@ -415,7 +415,7 @@ fish_survey_12$date <- as.Date(fish_survey_12$date,
                                format = "%m/%d/%Y")
 
 # Combine the date and time into a DateTime column
-fish_survey_12$dateTime_EST <- as.POSIXct(paste(fish_survey_12$date, 
+fish_survey_12$trackedTime_EST <- as.POSIXct(paste(fish_survey_12$date, 
                                                 fish_survey_12$time), 
                                           format="%Y-%m-%d %H:%M",
                                           tz = "EST")
@@ -464,15 +464,15 @@ for (file_name in fish_file_names) {
   tracking_data <- raw_tracking_data %>%
     
     # Step 2: Select specific columns
-    select(dateTime_EST, shift, dckyID, amthID, undhID, dryuID, 
+    select(date, trackedTime_EST, shift, dckyID, amthID, undhID, dryuID, 
            signal, habitat, habitatExtra, position, substrate, substrateExtra, 
-           shade, x, y, Notes, brookName) %>%
+           shade, x, y, Notes, status, brookName) %>%
     
     # Step 3: Pivot longer to create 'river' and 'tagID' columns
     pivot_longer(
       cols = c(dckyID, amthID, undhID, dryuID),  # Columns to combine
       names_to = "river",                        # Create a new column 'river' from column names
-      values_to = "tagID",                       # Combine the tag IDs into a new column 'tagID'
+      values_to = "radioID",                       # Combine the tag IDs into a new column 'tagID'
       values_drop_na = FALSE                     # Ensure NA values are retained
     ) %>%
     
@@ -480,7 +480,7 @@ for (file_name in fish_file_names) {
     mutate(
       riverName = river,                                    # Copy the river name
       #tagID = as.numeric(gsub("[^0-9]", "", tagID)),       # Extract the numeric part as tagID
-      tagID = ifelse(is.na(tagID), NA, as.numeric(tagID)),  # Convert tagID to numeric, keep NA values
+      radioID = ifelse(is.na(radioID), NA, as.numeric(radioID)),  # Convert tagID to numeric, keep NA values
       river = gsub("ID", "", river)                         # Remove 'ID' to keep only the river name
     ) %>%
     
@@ -501,25 +501,21 @@ for (file_name in fish_file_names) {
       fishNotes = Notes,
       lon = x,
       lat = y,
-      trackedTime_EST = dateTime_EST,
       power = signal
     ) %>%
     
     ##############################################################
     
     # Step 8: Filter data to keep only rows where lat > 1
-    filter(lat > 1, !is.na(tagID)) %>%
+    filter(lat > 1, !is.na(radioID)) %>%
     
     # Step _: Filter data to keep rows with lat > 1 or lat is NA
     #filter(lat > 1 | is.na(lat)) %>%
     
     #############################################################
     
-    # Step _: Remove unnecessary columns
-    #select(-c(riverName, brookName)) %>%
-    
     # Step 9: Select specific columns
-    select(trackedTime_EST, river, shift, tagID, power, habitat, habitatExtra, position, substrate, substrateExtra, shade, lon, lat, fishNotes) %>%
+    select(date, trackedTime_EST, river, shift, radioID, power, status, habitat, habitatExtra, position, substrate, substrateExtra, shade, lon, lat, fishNotes) %>%
     
     #############################################################
     
@@ -1634,12 +1630,12 @@ write.csv(flow_tracker_12,
 flow_tracker_1 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/flow_tracker_data/flow_tracker_1.csv")
 
 # Convert the localEndTime column into a DateTime column
-flow_tracker_1$dateTime_EDT <- as.POSIXct(flow_tracker_1$localEndTime, 
+flow_tracker_1$ftTime_EDT <- as.POSIXct(flow_tracker_1$localEndTime, 
                                           format = "%Y-%m-%d %H:%M:%S",
                                           tz = "America/New_York")
 
 # Force the DateTime column from EDT to EST
-flow_tracker_1$dateTime_EST <- as.POSIXct(format(flow_tracker_1$dateTime_EDT, 
+flow_tracker_1$ftTime_EST <- as.POSIXct(format(flow_tracker_1$ftTime_EDT, 
                                                   tz = "EST", 
                                                   usetz = TRUE), 
                                            tz = "EST")
@@ -1649,7 +1645,7 @@ flow_tracker_1$dateTime_EST <- as.POSIXct(format(flow_tracker_1$dateTime_EDT,
 flow_tracker_1 <- flow_tracker_1 %>%
   mutate(
     shift = case_when(
-        hour(dateTime_EST) >= 4 & hour(dateTime_EST) < 12 ~ "day",
+        hour(ftTime_EST) >= 4 & hour(ftTime_EST) < 12 ~ "day",
         TRUE ~ "night"  # Any other time is night shift
     )
   )
@@ -1682,7 +1678,7 @@ write.csv(flow_tracker_1,
 flow_tracker_2 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/flow_tracker_data/flow_tracker_2.csv")
 
 # Convert the localEndTime column into a DateTime column
-flow_tracker_2$dateTime_EST <- as.POSIXct(flow_tracker_2$localEndTime, 
+flow_tracker_2$ftTime_EST <- as.POSIXct(flow_tracker_2$localEndTime, 
                                           format = "%Y-%m-%d %H:%M:%S",
                                           tz = "EST")
 
@@ -1691,7 +1687,7 @@ flow_tracker_2$dateTime_EST <- as.POSIXct(flow_tracker_2$localEndTime,
 flow_tracker_2 <- flow_tracker_2 %>%
   mutate(
     shift = case_when(
-        hour(dateTime_EST) >= 10 & hour(dateTime_EST) < 18 ~ "day",
+        hour(ftTime_EST) >= 10 & hour(ftTime_EST) < 18 ~ "day",
         TRUE ~ "night"  # Any other time is night shift
     )
   )
@@ -1724,7 +1720,7 @@ write.csv(flow_tracker_2,
 flow_tracker_3 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/flow_tracker_data/flow_tracker_3.csv")
 
 # Convert the localEndTime column into a DateTime column
-flow_tracker_3$dateTime_EST <- as.POSIXct(flow_tracker_3$localEndTime, 
+flow_tracker_3$ftTime_EST <- as.POSIXct(flow_tracker_3$localEndTime, 
                                           format = "%Y-%m-%d %H:%M:%S",
                                           tz = "EST")
 
@@ -1733,7 +1729,7 @@ flow_tracker_3$dateTime_EST <- as.POSIXct(flow_tracker_3$localEndTime,
 flow_tracker_3 <- flow_tracker_3 %>%
   mutate(
     shift = case_when(
-        hour(dateTime_EST) >= 4 & hour(dateTime_EST) < 12 ~ "day",
+        hour(ftTime_EST) >= 4 & hour(ftTime_EST) < 12 ~ "day",
         TRUE ~ "night"  # Any other time is night shift
     )
   )
@@ -1766,7 +1762,7 @@ write.csv(flow_tracker_3,
 flow_tracker_4 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/flow_tracker_data/flow_tracker_4.csv")
 
 # Convert the localEndTime column into a DateTime column
-flow_tracker_4$dateTime_EST <- as.POSIXct(flow_tracker_4$localEndTime, 
+flow_tracker_4$ftTime_EST <- as.POSIXct(flow_tracker_4$localEndTime, 
                                           format = "%Y-%m-%d %H:%M:%S",
                                           tz = "EST")
 
@@ -1775,7 +1771,7 @@ flow_tracker_4$dateTime_EST <- as.POSIXct(flow_tracker_4$localEndTime,
 flow_tracker_4 <- flow_tracker_4 %>%
   mutate(
     shift = case_when(
-        hour(dateTime_EST) >= 2 & hour(dateTime_EST) < 10 ~ "day",
+        hour(ftTime_EST) >= 2 & hour(ftTime_EST) < 10 ~ "day",
         TRUE ~ "night"  # Any other time is night shift
     )
   )
@@ -1808,7 +1804,7 @@ write.csv(flow_tracker_4,
 flow_tracker_5 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/flow_tracker_data/flow_tracker_5.csv")
 
 # Convert the localEndTime column into a DateTime column
-flow_tracker_5$dateTime_EST <- as.POSIXct(flow_tracker_5$localEndTime, 
+flow_tracker_5$ftTime_EST <- as.POSIXct(flow_tracker_5$localEndTime, 
                                           format = "%Y-%m-%d %H:%M:%S",
                                           tz = "EST")
 
@@ -1817,7 +1813,7 @@ flow_tracker_5$dateTime_EST <- as.POSIXct(flow_tracker_5$localEndTime,
 flow_tracker_5 <- flow_tracker_5 %>%
   mutate(
     shift = case_when(
-        hour(dateTime_EST) >= 6 & hour(dateTime_EST) < 14 ~ "day",
+        hour(ftTime_EST) >= 6 & hour(ftTime_EST) < 14 ~ "day",
         TRUE ~ "night"  # Any other time is night shift
     )
   )
@@ -1850,7 +1846,7 @@ write.csv(flow_tracker_5,
 flow_tracker_6 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/flow_tracker_data/flow_tracker_6.csv")
 
 # Convert the localEndTime column into a DateTime column
-flow_tracker_6$dateTime_EST <- as.POSIXct(flow_tracker_6$localEndTime, 
+flow_tracker_6$ftTime_EST <- as.POSIXct(flow_tracker_6$localEndTime, 
                                           format = "%Y-%m-%d %H:%M:%S",
                                           tz = "EST")
 
@@ -1859,7 +1855,7 @@ flow_tracker_6$dateTime_EST <- as.POSIXct(flow_tracker_6$localEndTime,
 flow_tracker_6 <- flow_tracker_6 %>%
   mutate(
     shift = case_when(
-        hour(dateTime_EST) >= 2 & hour(dateTime_EST) < 10 ~ "day",
+        hour(ftTime_EST) >= 2 & hour(ftTime_EST) < 10 ~ "day",
         TRUE ~ "night"  # Any other time is night shift
     )
   )
@@ -1892,7 +1888,7 @@ write.csv(flow_tracker_6,
 flow_tracker_7 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/flow_tracker_data/flow_tracker_7.csv")
 
 # Convert the localEndTime column into a DateTime column
-flow_tracker_7$dateTime_EST <- as.POSIXct(flow_tracker_7$localEndTime, 
+flow_tracker_7$ftTime_EST <- as.POSIXct(flow_tracker_7$localEndTime, 
                                           format = "%Y-%m-%d %H:%M:%S",
                                           tz = "EST")
 
@@ -1901,7 +1897,7 @@ flow_tracker_7$dateTime_EST <- as.POSIXct(flow_tracker_7$localEndTime,
 flow_tracker_7 <- flow_tracker_7 %>%
   mutate(
     shift = case_when(
-        hour(dateTime_EST) >= 6 & hour(dateTime_EST) < 14 ~ "day",
+        hour(ftTime_EST) >= 6 & hour(ftTime_EST) < 14 ~ "day",
         TRUE ~ "night"  # Any other time is night shift
     )
   )
@@ -1934,7 +1930,7 @@ write.csv(flow_tracker_7,
 flow_tracker_8 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/flow_tracker_data/flow_tracker_8.csv")
 
 # Convert the localEndTime column into a DateTime column
-flow_tracker_8$dateTime_EST <- as.POSIXct(flow_tracker_8$localEndTime, 
+flow_tracker_8$ftTime_EST <- as.POSIXct(flow_tracker_8$localEndTime, 
                                           format = "%Y-%m-%d %H:%M:%S",
                                           tz = "EST")
 
@@ -1943,7 +1939,7 @@ flow_tracker_8$dateTime_EST <- as.POSIXct(flow_tracker_8$localEndTime,
 flow_tracker_8 <- flow_tracker_8 %>%
   mutate(
     shift = case_when(
-        hour(dateTime_EST) >= 2 & hour(dateTime_EST) < 11 ~ "day",
+        hour(ftTime_EST) >= 2 & hour(ftTime_EST) < 11 ~ "day",
         TRUE ~ "night"  # Any other time is night shift
     )
   )
@@ -1976,7 +1972,7 @@ write.csv(flow_tracker_8,
 flow_tracker_9 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/flow_tracker_data/flow_tracker_9.csv")
 
 # Convert the localEndTime column into a DateTime column
-flow_tracker_9$dateTime_EST <- as.POSIXct(flow_tracker_9$localEndTime, 
+flow_tracker_9$ftTime_EST <- as.POSIXct(flow_tracker_9$localEndTime, 
                                           format = "%Y-%m-%d %H:%M:%S",
                                           tz = "EST")
 
@@ -1985,7 +1981,7 @@ flow_tracker_9$dateTime_EST <- as.POSIXct(flow_tracker_9$localEndTime,
 flow_tracker_9 <- flow_tracker_9 %>%
   mutate(
     shift = case_when(
-        hour(dateTime_EST) >= 6 & hour(dateTime_EST) < 14 ~ "day",
+        hour(ftTime_EST) >= 6 & hour(ftTime_EST) < 14 ~ "day",
         TRUE ~ "night"  # Any other time is night shift
     )
   )
@@ -2018,7 +2014,7 @@ write.csv(flow_tracker_9,
 flow_tracker_10 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/flow_tracker_data/flow_tracker_10.csv")
 
 # Convert the localEndTime column into a DateTime column
-flow_tracker_10$dateTime_EST <- as.POSIXct(flow_tracker_10$localEndTime, 
+flow_tracker_10$ftTime_EST <- as.POSIXct(flow_tracker_10$localEndTime, 
                                            format = "%Y-%m-%d %H:%M:%S",
                                            tz = "EST")
 
@@ -2027,7 +2023,7 @@ flow_tracker_10$dateTime_EST <- as.POSIXct(flow_tracker_10$localEndTime,
 flow_tracker_10 <- flow_tracker_10 %>%
   mutate(
     shift = case_when(
-        hour(dateTime_EST) >= 3 & hour(dateTime_EST) < 11 ~ "day",
+        hour(ftTime_EST) >= 3 & hour(ftTime_EST) < 11 ~ "day",
         TRUE ~ "night"  # Any other time is night shift
     )
   )
@@ -2060,7 +2056,7 @@ write.csv(flow_tracker_10,
 flow_tracker_11 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/flow_tracker_data/flow_tracker_11.csv")
 
 # Convert the localEndTime column into a DateTime column
-flow_tracker_11$dateTime_EST <- as.POSIXct(flow_tracker_11$localEndTime, 
+flow_tracker_11$ftTime_EST <- as.POSIXct(flow_tracker_11$localEndTime, 
                                            format = "%Y-%m-%d %H:%M:%S",
                                            tz = "EST")
 
@@ -2097,7 +2093,7 @@ write.csv(flow_tracker_11,
 flow_tracker_12 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/flow_tracker_data/flow_tracker_12.csv")
 
 # Convert the localEndTime column into a DateTime column
-flow_tracker_12$dateTime_EST <- as.POSIXct(flow_tracker_12$localEndTime, 
+flow_tracker_12$ftTime_EST <- as.POSIXct(flow_tracker_12$localEndTime, 
                                            format = "%Y-%m-%d %H:%M:%S",
                                            tz = "EST")
 
@@ -2138,10 +2134,7 @@ for (file_name in flow_file_names) {
   flow_data <- raw_flow_data %>%
     
     # Step 2: Select specific columns
-    select(river, totalDischarge, dateTime_EST, shift) %>%
-
-    # Step 3: Rename columns
-    rename(flowTime_EST = dateTime_EST) 
+    select(river, totalDischarge, ftTime_EST, shift) 
   
   # Store the processed data in the list
   processed_flow_data_list[[file_name]] <- flow_data
@@ -2435,7 +2428,7 @@ receiver_000900_ID_data <- receiver_000900_ID_data %>%
   select("Date", "Time", "Tag ID", "Power") 
 
 # Combine the date and time into a DateTime column
-receiver_000900_ID_data$dateTime_EST <- as.POSIXct(paste(receiver_000900_ID_data$Date, 
+receiver_000900_ID_data$trackedTime_EST <- as.POSIXct(paste(receiver_000900_ID_data$Date, 
                                                          receiver_000900_ID_data$Time), 
                                                    format="%m/%d/%y %H:%M:%S",
                                                    tz = "EST")
@@ -2445,8 +2438,8 @@ receiver_000900_ID_data$dateTime_EST <- as.POSIXct(paste(receiver_000900_ID_data
   #mutate(dateTime = mdy_hms(paste(Date, Time))) 
   
 receiver_000900_ID_data <- receiver_000900_ID_data %>% 
-  # Rename "Tag ID' column as "tagID"
-  rename_with(~ "tagID", .cols = `Tag ID`) %>%
+  # Rename "Tag ID' column as "radioID"
+  rename_with(~ "radioID", .cols = `Tag ID`) %>%
   
   # Rename "Date' column as "date"
   rename_with(~ "date", .cols = `Date`) %>%
@@ -2456,11 +2449,11 @@ receiver_000900_ID_data <- receiver_000900_ID_data %>%
   
 receiver_000900_ID_data <- receiver_000900_ID_data %>% 
   # Select the columns for further processing
-  select("date", "tagID", "power", "dateTime_EST") 
+  select("date", "radioID", "power", "trackedTime_EST") 
 
 receiver_000900_ID_data <- receiver_000900_ID_data %>%
   # Clean and format the data
-  mutate(tagID = as.numeric(tagID),
+  mutate(radioID = as.numeric(radioID),
          power = as.numeric(power),
          date = mdy(date),
          source = "lotek")
@@ -2476,7 +2469,7 @@ days_to_exclude <- ymd(c("2024-06-21", "2024-06-24", "2024-07-04", "2024-07-05",
   
 receiver_000900_ID_data <- receiver_000900_ID_data %>% 
   # Filter by tagID range
-  filter(tagID > 10 & tagID < 63) %>%
+  filter(radioID > 10 & radioID < 63) %>%
   
   # Filter by the date range
   filter(date >= start_date & date <= end_date) %>%
@@ -2489,7 +2482,7 @@ receiver_000900_ID_data <- receiver_000900_ID_data %>%
 river_date_ranges <- tibble(
   river = c("AMETHYST", "UNDERHILL", "DICKEY", "DICKEY", 
             "DRY UPPER", "DRY UPPER"),
-  tagID_range = list(c(59, 60, 56, 14, 61, 20, 12, 15, 
+  radioID_range = list(c(59, 60, 56, 14, 61, 20, 12, 15, 
                        13, 57, 19, 62, 11, 58, 18), 
                      c(41, 43, 40, 44, 33, 34, 45, 35, 27, 36), 
                      c(50, 37, 38, 46, 26, 28, 51, 32, 29, 31),
@@ -2504,10 +2497,10 @@ river_date_ranges <- tibble(
 )
 
 # Function to determine river based on tagID and date
-assign_river <- function(tagID, date) {
+assign_river <- function(radioID, date) {
   # Filter the river_date_ranges for matching tagID and date range
   river_info <- river_date_ranges %>%
-    filter(map_lgl(tagID_range, ~ tagID %in% .) & date >= start_date & date <= end_date)
+    filter(map_lgl(radioID_range, ~ radioID %in% .) & date >= start_date & date <= end_date)
   
   if (nrow(river_info) > 0) {
     return(river_info$river[1])  # Return the matching river
@@ -2521,7 +2514,7 @@ receiver_000900_ID_data$date <- ymd(receiver_000900_ID_data$date)
 
 # Apply the function to the data frame
 receiver_000900_ID_data <- receiver_000900_ID_data %>%
-  mutate(river = mapply(assign_river, tagID, date))
+  mutate(river = mapply(assign_river, radioID, date))
 
 # Remove rows where river is "Unknown"
 receiver_000900_ID_data <- receiver_000900_ID_data %>%
@@ -2529,7 +2522,7 @@ receiver_000900_ID_data <- receiver_000900_ID_data %>%
 
 receiver_000900_ID_data <- receiver_000900_ID_data %>% 
   # Select the columns for the final dataframe
-  select("tagID", "power", "dateTime_EST", "river", "date") 
+  select("radioID", "power", "trackedTime_EST", "river", "date") 
 
 # View dataframe
 head(receiver_000900_ID_data)
@@ -2578,27 +2571,26 @@ receiver_000900_GPS_data <- receiver_000900_GPS_data %>%
   select("Date", "Time", "Tag ID", "power", "lon", "lat") 
   
 # Combine the date and time into a DateTime column
-receiver_000900_GPS_data$dateTime_EST <- as.POSIXct(paste(receiver_000900_GPS_data$Date, 
+receiver_000900_GPS_data$trackedTime_EST <- as.POSIXct(paste(receiver_000900_GPS_data$Date, 
                                                           receiver_000900_GPS_data$Time), 
                                                     format="%m/%d/%y %H:%M:%S",
                                                     tz = "EST")
   
 receiver_000900_GPS_data <- receiver_000900_GPS_data %>% 
-  # Rename "Tag ID' column as "tagID"
-  rename_with(~ "tagID", .cols = `Tag ID`) %>%
+  # Rename "Tag ID' column as "radioID"
+  rename_with(~ "radioID", .cols = `Tag ID`) %>%
   
   # Rename "Date' column as "date"
   rename_with(~ "date", .cols = `Date`) 
   
 receiver_000900_GPS_data <- receiver_000900_GPS_data %>% 
   # Select the columns for further processing
-  select("date", "tagID", "power","lon", "lat", "dateTime_EST") 
+  select("date", "radioID", "power","lon", "lat", "trackedTime_EST") 
 
 receiver_000900_GPS_data <- receiver_000900_GPS_data %>%
   # Clean and format the data
   mutate(lat = as.numeric(lat), 
-         lon = as.numeric(lon),
-         tagID = as.numeric(tagID),
+         radioID = as.numeric(radioID),
          power = as.numeric(power),
          date = mdy(date),
          source = "lotek")
@@ -2614,7 +2606,7 @@ days_to_exclude <- ymd(c("2024-06-21", "2024-06-24", "2024-07-04", "2024-07-05",
   
 receiver_000900_GPS_data <- receiver_000900_GPS_data %>% 
   # Filter by tagID range
-  filter(tagID > 10 & tagID < 63) %>%
+  filter(radioID > 10 & radioID < 63) %>%
   
   # Filter by the date range
   filter(date >= start_date & date <= end_date) %>%
@@ -2626,7 +2618,7 @@ receiver_000900_GPS_data <- receiver_000900_GPS_data %>%
 river_date_ranges <- tibble(
   river = c("AMETHYST", "UNDERHILL", "DICKEY", "DICKEY", 
             "DRY UPPER", "DRY UPPER"),
-  tagID_range = list(c(59, 60, 56, 14, 61, 20, 12, 15, 
+  radioID_range = list(c(59, 60, 56, 14, 61, 20, 12, 15, 
                        13, 57, 19, 62, 11, 58, 18), 
                      c(41, 43, 40, 44, 33, 34, 45, 35, 27, 36), 
                      c(50, 37, 38, 46, 26, 28, 51, 32, 29, 31),
@@ -2641,10 +2633,10 @@ river_date_ranges <- tibble(
 )
 
 # Function to determine river based on tagID and date
-assign_river <- function(tagID, date) {
+assign_river <- function(radioID, date) {
   # Filter the river_date_ranges for matching tagID and date range
   river_info <- river_date_ranges %>%
-    filter(map_lgl(tagID_range, ~ tagID %in% .) & date >= start_date & date <= end_date)
+    filter(map_lgl(radioID_range, ~ radioID %in% .) & date >= start_date & date <= end_date)
   
   if (nrow(river_info) > 0) {
     return(river_info$river[1])  # Return the matching river
@@ -2658,7 +2650,7 @@ receiver_000900_GPS_data$date <- ymd(receiver_000900_GPS_data$date)
 
 # Apply the function to the data frame
 receiver_000900_GPS_data <- receiver_000900_GPS_data %>%
-  mutate(river = mapply(assign_river, tagID, date))
+  mutate(river = mapply(assign_river, radioID, date))
 
 # Remove rows where river is "Unknown"
 receiver_000900_GPS_data <- receiver_000900_GPS_data %>%
@@ -2666,7 +2658,7 @@ receiver_000900_GPS_data <- receiver_000900_GPS_data %>%
 
 receiver_000900_GPS_data <- receiver_000900_GPS_data %>% 
   # Select the columns for the final dataframe
-  select("tagID", "power","lon", "lat", "dateTime_EST", "river", "date")
+  select("radioID", "power","lon", "lat", "trackedTime_EST", "river", "date")
 
 # View dataframe
 head(receiver_000900_GPS_data)
@@ -2675,8 +2667,6 @@ head(receiver_000900_GPS_data)
 
 
 ```{r combining the lotek receiver 000900 data back into one dataframe}
-
-# Combine back into one dataframe ###########################################################
 
 # Combine the two final dataframes horizontally 
 receiver_000900_data <- bind_rows(receiver_000900_ID_data, receiver_000900_GPS_data)
@@ -2730,14 +2720,14 @@ receiver_000517_ID_data <- receiver_000517_ID_data %>%
   select("Date", "Time", "Tag ID", "Power") 
   
 # Combine the date and time into a DateTime column
-receiver_000517_ID_data$dateTime_EST <- as.POSIXct(paste(receiver_000517_ID_data$Date, 
+receiver_000517_ID_data$trackedTime_EST <- as.POSIXct(paste(receiver_000517_ID_data$Date, 
                                                          receiver_000517_ID_data$Time), 
                                                    format="%m/%d/%y %H:%M:%S",
                                                    tz = "EST") 
   
 receiver_000517_ID_data <- receiver_000517_ID_data %>% 
-  # Rename "Tag ID' column as "tagID"
-  rename_with(~ "tagID", .cols = `Tag ID`) %>%
+  # Rename "Tag ID' column as "radioID"
+  rename_with(~ "radioID", .cols = `Tag ID`) %>%
   
   # Rename "Date' column as "date"
   rename_with(~ "date", .cols = `Date`) %>%
@@ -2747,11 +2737,11 @@ receiver_000517_ID_data <- receiver_000517_ID_data %>%
   
 receiver_000517_ID_data <- receiver_000517_ID_data %>% 
   # Select the columns for further processing
-  select("date", "tagID", "power", "dateTime_EST") 
+  select("date", "radioID", "power", "trackedTime_EST") 
 
 receiver_000517_ID_data <- receiver_000517_ID_data %>%
   # Clean and format the data
-  mutate(tagID = as.numeric(tagID),
+  mutate(radioID = as.numeric(radioID),
          power = as.numeric(power),
          date = mdy(date),
          source = "lotek")
@@ -2767,7 +2757,7 @@ days_to_exclude <- ymd(c("2024-06-21", "2024-06-24", "2024-07-04", "2024-07-05",
   
 receiver_000517_ID_data <- receiver_000517_ID_data %>% 
   # Filter by tagID range
-  filter(tagID > 10 & tagID < 63) %>%
+  filter(radioID > 10 & radioID < 63) %>%
   
   # Filter by the date range
   filter(date >= start_date & date <= end_date) %>%
@@ -2779,7 +2769,7 @@ receiver_000517_ID_data <- receiver_000517_ID_data %>%
 river_date_ranges <- tibble(
   river = c("AMETHYST", "UNDERHILL", "DICKEY", "DICKEY", 
             "DRY UPPER", "DRY UPPER"),
-  tagID_range = list(c(59, 60, 56, 14, 61, 20, 12, 15, 
+  radioID_range = list(c(59, 60, 56, 14, 61, 20, 12, 15, 
                        13, 57, 19, 62, 11, 58, 18), 
                      c(41, 43, 40, 44, 33, 34, 45, 35, 27, 36), 
                      c(50, 37, 38, 46, 26, 28, 51, 32, 29, 31),
@@ -2794,10 +2784,10 @@ river_date_ranges <- tibble(
 )
 
 # Function to determine river based on tagID and date
-assign_river <- function(tagID, date) {
+assign_river <- function(radioID, date) {
   # Filter the river_date_ranges for matching tagID and date range
   river_info <- river_date_ranges %>%
-    filter(map_lgl(tagID_range, ~ tagID %in% .) & date >= start_date & date <= end_date)
+    filter(map_lgl(radioID_range, ~ radioID %in% .) & date >= start_date & date <= end_date)
   
   if (nrow(river_info) > 0) {
     return(river_info$river[1])  # Return the matching river
@@ -2811,7 +2801,7 @@ receiver_000517_ID_data$date <- ymd(receiver_000517_ID_data$date)
 
 # Apply the function to the data frame
 receiver_000517_ID_data <- receiver_000517_ID_data %>%
-  mutate(river = mapply(assign_river, tagID, date))
+  mutate(river = mapply(assign_river, radioID, date))
 
 # Remove rows where river is "Unknown"
 receiver_000517_ID_data <- receiver_000517_ID_data %>%
@@ -2819,7 +2809,7 @@ receiver_000517_ID_data <- receiver_000517_ID_data %>%
 
 receiver_000517_ID_data <- receiver_000517_ID_data %>% 
   # Select the columns for the final dataframe
-  select("tagID", "power", "dateTime_EST", "river", "date") 
+  select("radioID", "power", "trackedTime_EST", "river", "date") 
 
 # Clean workspace by removing excess variables
 rm(receiver_000517_raw_data, river_date_ranges)
@@ -2854,12 +2844,12 @@ cutoff_date <- ymd("2024-07-18")
 
 receiver_data_all <- receiver_data_all %>%
   mutate(
-    tagID = case_when(
-      tagID == 30 & date >= cutoff_date ~ 30.1,
-      tagID == 39 & date >= cutoff_date ~ 39.1,
-      tagID == 46 & date >= cutoff_date ~ 46.1,
-      tagID == 29 & date >= cutoff_date ~ 29.1,
-      TRUE ~ as.numeric(tagID)  # Keep the original radioID for other cases
+    radioID = case_when(
+      radioID == 30 & date >= cutoff_date ~ 30.1,
+      radioID == 39 & date >= cutoff_date ~ 39.1,
+      radioID == 46 & date >= cutoff_date ~ 46.1,
+      radioID == 29 & date >= cutoff_date ~ 29.1,
+      TRUE ~ as.numeric(radioID)  # Keep the original radioID for other cases
     )
   )
 
@@ -2876,53 +2866,65 @@ receiver_data_all <- receiver_data_all %>%
   mutate(
     shift = case_when(
       # Define shift for week 1
-      date(dateTime_EST) >= ymd("2024-06-11") & date(dateTime_EST) <= ymd("2024-06-14") &
-      hour(dateTime_EST) >= 4 & hour(dateTime_EST) < 12 ~ "day",
+      date(trackedTime_EST) >= ymd("2024-06-11") & 
+        date(trackedTime_EST) <= ymd("2024-06-14") &
+        hour(trackedTime_EST) >= 4 & hour(trackedTime_EST) < 12 ~ "day",
       
       # Define shift for week 2
-      date(dateTime_EST) >= ymd("2024-06-17") & date(dateTime_EST) <= ymd("2024-06-20") &
-      hour(dateTime_EST) >= 10 & hour(dateTime_EST) < 18 ~ "day",
+      date(trackedTime_EST) >= ymd("2024-06-17") & 
+        date(trackedTime_EST) <= ymd("2024-06-20") &
+      hour(trackedTime_EST) >= 10 & hour(trackedTime_EST) < 18 ~ "day",
       
       # Define shift for week 3
-      date(dateTime_EST) >= ymd("2024-06-25") & date(dateTime_EST) <= ymd("2024-06-28") &
-      hour(dateTime_EST) >= 4 & hour(dateTime_EST) < 12 ~ "day",
+      date(trackedTime_EST) >= ymd("2024-06-25") & 
+        date(trackedTime_EST) <= ymd("2024-06-28") &
+      hour(trackedTime_EST) >= 4 & hour(trackedTime_EST) < 12 ~ "day",
       
       # Define shift for week 4
-      date(dateTime_EST) >= ymd("2024-06-30") & date(dateTime_EST) <= ymd("2024-07-03") &
-      hour(dateTime_EST) >= 2 & hour(dateTime_EST) < 10 ~ "day",
+      date(trackedTime_EST) >= ymd("2024-06-30") & 
+        date(trackedTime_EST) <= ymd("2024-07-03") &
+      hour(trackedTime_EST) >= 2 & hour(trackedTime_EST) < 10 ~ "day",
       
       # Define shift for week 5
-      date(dateTime_EST) >= ymd("2024-07-09") & date(dateTime_EST) <= ymd("2024-07-12") &
-      hour(dateTime_EST) >= 6 & hour(dateTime_EST) < 14 ~ "day",
+      date(trackedTime_EST) >= ymd("2024-07-09") & 
+        date(trackedTime_EST) <= ymd("2024-07-12") &
+      hour(trackedTime_EST) >= 6 & hour(trackedTime_EST) < 14 ~ "day",
       
       # Define shift for week 6
-      date(dateTime_EST) >= ymd("2024-07-16") & date(dateTime_EST) <= ymd("2024-07-19") &
-      hour(dateTime_EST) >= 2 & hour(dateTime_EST) < 10 ~ "day",
+      date(trackedTime_EST) >= ymd("2024-07-16") & 
+        date(trackedTime_EST) <= ymd("2024-07-19") &
+      hour(trackedTime_EST) >= 2 & hour(trackedTime_EST) < 10 ~ "day",
       
       # Define shift for week 7
-      date(dateTime_EST) >= ymd("2024-07-23") & date(dateTime_EST) <= ymd("2024-07-26") &
-      hour(dateTime_EST) >= 6 & hour(dateTime_EST) < 14 ~ "day",
+      date(trackedTime_EST) >= ymd("2024-07-23") & 
+        date(trackedTime_EST) <= ymd("2024-07-26") &
+      hour(trackedTime_EST) >= 6 & hour(trackedTime_EST) < 14 ~ "day",
       
       # Define shift for week 8
-      date(dateTime_EST) >= ymd("2024-07-30") & date(dateTime_EST) <= ymd("2024-08-02") &
-      hour(dateTime_EST) >= 2 & hour(dateTime_EST) < 11 ~ "day",
+      date(trackedTime_EST) >= ymd("2024-07-30") & 
+        date(trackedTime_EST) <= ymd("2024-08-02") &
+      hour(trackedTime_EST) >= 2 & hour(trackedTime_EST) < 11 ~ "day",
       
       # Define shift for supplementary tracking on August 5, 2024
-      date(dateTime_EST) == ymd("2024-08-05") ~ "day",
+      date(trackedTime_EST) == ymd("2024-08-05") ~ "day",
       
       # Define shift for week 9
-      date(dateTime_EST) >= ymd("2024-08-06") & date(dateTime_EST) <= ymd("2024-08-09") &
-      hour(dateTime_EST) >= 6 & hour(dateTime_EST) < 14 ~ "day",
+      date(trackedTime_EST) >= ymd("2024-08-06") & 
+        date(trackedTime_EST) <= ymd("2024-08-09") &
+      hour(trackedTime_EST) >= 6 & hour(trackedTime_EST) < 14 ~ "day",
       
       # Define shift for week 10
-      date(dateTime_EST) >= ymd("2024-08-13") & date(dateTime_EST) <= ymd("2024-08-16") &
-      hour(dateTime_EST) >= 3 & hour(dateTime_EST) < 11 ~ "day",
+      date(trackedTime_EST) >= ymd("2024-08-13") & 
+        date(trackedTime_EST) <= ymd("2024-08-16") &
+      hour(trackedTime_EST) >= 3 & hour(trackedTime_EST) < 11 ~ "day",
       
       # Define shift for week 11
-      date(dateTime_EST) >= ymd("2024-08-20") & date(dateTime_EST) <= ymd("2024-08-23") ~ "day",
+      date(trackedTime_EST) >= ymd("2024-08-20") & 
+        date(trackedTime_EST) <= ymd("2024-08-23") ~ "day",
       
       # Define shift for week 12
-      date(dateTime_EST) >= ymd("2024-08-26") & date(dateTime_EST) <= ymd("2024-08-29") ~ "day",
+      date(trackedTime_EST) >= ymd("2024-08-26") & 
+        date(trackedTime_EST) <= ymd("2024-08-29") ~ "day",
       
       # Default to night shift for all other times
       TRUE ~ "night"
@@ -2930,13 +2932,12 @@ receiver_data_all <- receiver_data_all %>%
   )
 
 receiver_data_all <- receiver_data_all %>%
-  # Rename column
-  mutate(trackedTime_EST = dateTime_EST,
-         source = "receiver")
+  # Add source column
+  mutate(source = "receiver")
 
 receiver_data_all <- receiver_data_all %>% 
   # Select the columns for the final dataframe
-  select("date", "trackedTime_EST", "river", "shift", "tagID", "power", "lon", "lat", "source")
+  select("date", "trackedTime_EST", "river", "shift", "radioID", "power", "lon", "lat", "source")
 
 head(receiver_data_all)
 
@@ -2963,10 +2964,7 @@ counter <- 1
 for (i in 1:nrow(week_ranges)) {
   # Filter the dataset for each specified date range
   weekly_receiver_data <- receiver_data_all %>%
-    filter(date >= week_ranges$start_date[i] & date <= week_ranges$end_date[i]) %>%
-    
-    # Remove the 'date' column before saving the CSV
-    select(-date)
+    filter(date >= week_ranges$start_date[i] & date <= week_ranges$end_date[i])
   
   # Dynamically name each week's data (e.g., receiver_data_1, receiver_data_2, ...)
   assign(paste0("receiver_data_", counter), weekly_receiver_data)
@@ -4112,6 +4110,224 @@ write.csv(fish_flow_receiver_stream_all,
           row.names = FALSE)
 
 ```
+## Filter combined dataset
+
+```#{r filter tracking data by radioID}
+
+# Read in the data
+fish_flow_receiver_stream_all = read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/combined_data/fish_flow_receiver_stream_all.csv")
+
+# Reference table with end dates and correct streams
+reference_table <- data.frame(
+  radioID = c("27", "33", "34", "35", "36", 
+              "40", "41", "43", "44", "45",
+              "26", "28", "29", "31", "32",
+              "37", "38", "46", "50", "51",
+              "29.1", "30.1", "39.1", "46.1",
+              "16", "17", "21", "22", "23",
+              "24", "25", "42", "47", "48",
+              "49", "52", "53", "54", "55",
+              "11", "12",
+              "13", "14",
+              "15", "18",
+              "19", "20",
+              "56", "57",
+              "58", "59",
+              "60", "61",
+              "62"),
+  end_date = as.Date(c("2024-07-26", "2024-08-21", "2024-08-01", "2024-08-30", "2024-07-19",
+                       "2024-07-26", "2024-08-30", "2024-08-21", "2024-08-30", "2024-08-30",
+                       "2024-08-30", "2024-07-24", "2024-06-17", "2024-08-15", "2024-07-30",
+                       "2024-08-09", "2024-08-15", "2024-06-28", "2024-08-30", "2024-08-30",
+                       "2024-08-22", "2024-08-22", "2024-08-22", "2024-07-23",
+                       "2024-08-22", "2024-08-30", "2024-08-22", "2024-07-18", "2024-07-23",
+                       "2024-07-12", "2024-08-30", "2024-07-12", "2024-08-30", "2024-08-30",
+                       "2024-08-30", "2024-06-30", "2024-06-30", "2024-08-22", "2024-08-30",
+                       "2024-08-30", "2024-08-30",
+                       "2024-08-30", "2024-08-30",
+                       "2024-08-30", "2024-08-30",
+                       "2024-08-23", "2024-08-23",
+                       "2024-08-30", "2024-07-31",
+                       "2024-08-30", "2024-08-30",
+                       "2024-08-20", "2024-08-30",
+                       "2024-08-23")),
+  allowed_streams = c("UNDERHILL", "UNDERHILL", "UNDERHILL", "UNDERHILL", "UNDERHILL", 
+                     "UNDERHILL", "UNDERHILL", "UNDERHILL", "UNDERHILL", "UNDERHILL", 
+                     "DICKEY", "DICKEY", "DICKEY", "DICKEY", "DICKEY", 
+                     "DICKEY", "DICKEY", "DICKEY", "DICKEY", "DICKEY",
+                     "DRY UPPER", "DRY UPPER", "DRY UPPER", "DRY UPPER",
+                     "DRY UPPER", "DRY UPPER", "DRY UPPER", "DRY UPPER", "DRY UPPER",
+                     "DRY UPPER", "DRY UPPER", "DRY UPPER", "DRY UPPER", "DRY UPPER",
+                     "DRY UPPER", "DRY UPPER", "DRY UPPER", "DRY UPPER", "DRY UPPER",
+                     "AMETHYST,BUFFAM,HARRIS", "AMETHYST,BUFFAM,HARRIS",
+                     "AMETHYST,BUFFAM,HARRIS", "AMETHYST,BUFFAM,HARRIS",
+                     "AMETHYST,BUFFAM,HARRIS", "AMETHYST,BUFFAM,HARRIS",
+                     "AMETHYST,BUFFAM,HARRIS", "AMETHYST,BUFFAM,HARRIS",
+                     "AMETHYST,BUFFAM,HARRIS", "AMETHYST,BUFFAM,HARRIS",
+                     "AMETHYST,BUFFAM,HARRIS", "AMETHYST,BUFFAM,HARRIS",
+                     "AMETHYST,BUFFAM,HARRIS","AMETHYST,BUFFAM,HARRIS",
+                     "AMETHYST,BUFFAM,HARRIS")
+)
+
+# Ensure `radioID` in the reference table is numeric
+reference_table$radioID <- as.numeric(reference_table$radioID)
+
+# Join the reference table to add the filtering criteria
+fish_flow_receiver_stream_corrected <- fish_flow_receiver_stream_all %>%
+  left_join(reference_table, by = "radioID") %>%
+  # Split allowed_streams into a list column for matching
+  mutate(allowed_streams = strsplit(as.character(allowed_streams), ",")) %>%
+  # Use rowwise to evaluate stream match for each row
+  rowwise() %>%
+  filter(
+    date <= end_date,                                # Keep rows within the end date
+    any(river %in% allowed_streams)                # Check if stream is in the allowed list
+  ) %>%
+  ungroup() %>% # Return to a non-rowwise data frame
+  select(-end_date, -allowed_streams) # Drop unnecessary columns
+
+# View the filtered dataset
+head(fish_flow_receiver_stream_corrected)
+
+# Write the combined data to a new CSV file
+write.csv(fish_flow_receiver_stream_corrected, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/combined_data/fish_flow_receiver_stream_corrected.csv", 
+          row.names = FALSE)
+
+```
+
+```{r filter tracking data by radioID}
+
+# Read in the data
+fish_flow_receiver_stream_all = read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/combined_data/fish_flow_receiver_stream_all.csv")
+
+# Reference table with end dates
+reference_table <- data.frame(
+  radioID = c("27", "33", "34", "35", "36", 
+              "40", "41", "43", "44", "45",
+              "26", "28", "29", "31", "32",
+              "37", "38", "46", "50", "51",
+              "29.1", "30.1", "39.1", "46.1",
+              "16", "17", "21", "22", "23",
+              "24", "25", "42", "47", "48",
+              "49", "52", "53", "54", "55",
+              "11", "12",
+              "13", "14",
+              "15", "18",
+              "19", "20",
+              "56", "57",
+              "58", "59",
+              "60", "61",
+              "62"),
+  end_date = as.Date(c("2024-07-26", "2024-08-21", "2024-08-01", "2024-08-30", "2024-07-19",
+                       "2024-07-26", "2024-08-30", "2024-08-21", "2024-08-30", "2024-08-30",
+                       "2024-08-30", "2024-07-24", "2024-07-01", "2024-08-15", "2024-07-30",
+                       "2024-08-09", "2024-08-15", "2024-06-28", "2024-08-30", "2024-08-30",
+                       "2024-08-22", "2024-08-22", "2024-08-22", "2024-07-23",
+                       "2024-08-22", "2024-08-30", "2024-08-22", "2024-07-18", "2024-07-23",
+                       "2024-07-12", "2024-08-30", "2024-07-12", "2024-08-30", "2024-08-30",
+                       "2024-08-30", "2024-08-02", "2024-07-23", "2024-08-22", "2024-08-30",
+                       "2024-08-30", "2024-08-30",
+                       "2024-08-30", "2024-08-30",
+                       "2024-08-30", "2024-08-30",
+                       "2024-08-23", "2024-08-23",
+                       "2024-08-30", "2024-07-31",
+                       "2024-08-30", "2024-08-30",
+                       "2024-08-20", "2024-08-30",
+                       "2024-08-23"))
+)
+
+# Ensure `radioID` in the reference table is numeric
+reference_table$radioID <- as.numeric(reference_table$radioID)
+
+# Stream visit table: specify which streams were visited on which dates
+stream_visits <- data.frame(
+  river = c("DICKEY", "DICKEY", "DICKEY", "DICKEY", "DICKEY",
+             "DICKEY", "DICKEY", "DICKEY", "DICKEY", "DICKEY",
+             "DICKEY", "DICKEY", "DICKEY",
+             "UNDERHILL", "UNDERHILL", "UNDERHILL", "UNDERHILL", "UNDERHILL",
+             "UNDERHILL", "UNDERHILL", "UNDERHILL", "UNDERHILL", "UNDERHILL",
+             "UNDERHILL", "UNDERHILL", "UNDERHILL",
+             "DRY UPPER", "DRY UPPER", "DRY UPPER", "DRY UPPER", "DRY UPPER",
+             "DRY UPPER", "DRY UPPER", "DRY UPPER", "DRY UPPER", "DRY UPPER",
+             "DRY UPPER", "DRY UPPER", "DRY UPPER", "DRY UPPER",
+             "AMETHYST", "AMETHYST", "AMETHYST", "AMETHYST", "AMETHYST",
+             "AMETHYST", "AMETHYST", "AMETHYST", "AMETHYST", "AMETHYST",
+             "AMETHYST", "AMETHYST", "AMETHYST",
+             "BUFFAM", "BUFFAM", "BUFFAM", "BUFFAM", "BUFFAM",
+             "BUFFAM", "BUFFAM", "BUFFAM", "BUFFAM", "BUFFAM",
+             "BUFFAM", "BUFFAM", "BUFFAM",
+             "HARRIS", "HARRIS", "HARRIS", "HARRIS", "HARRIS",
+             "HARRIS", "HARRIS", "HARRIS", "HARRIS", "HARRIS",
+             "HARRIS", "HARRIS", "HARRIS"),
+  valid_date = as.Date(c("2024-06-13", "2024-06-17", "2024-06-18", "2024-06-28", "2024-07-01",
+                         "2024-07-10", "2024-07-16", "2024-07-24", "2024-07-30", "2024-08-09",
+                         "2024-08-15", "2024-08-29", "2024-06-21",
+                         "2024-06-12", "2024-06-20", "2024-06-21", "2024-06-27", "2024-07-03",
+                         "2024-07-09", "2024-07-19", "2024-07-26", "2024-08-01", "2024-08-06",
+                         "2024-08-14", "2024-08-21", "2024-08-27",
+                         "2024-06-14", "2024-06-19", "2024-06-20", "2024-06-25", "2024-06-30",
+                         "2024-07-12", "2024-07-18", "2024-07-23", "2024-08-02", "2024-08-05",
+                         "2024-08-07", "2024-08-16", "2024-08-22", "2024-08-26",
+                         "2024-06-11", "2024-06-18", "2024-06-19", "2024-06-26", "2024-07-02",
+                         "2024-07-11", "2024-07-17", "2024-07-25", "2024-07-31", "2024-08-08",
+                         "2024-08-13", "2024-08-20", "2024-08-23",
+                         "2024-06-11", "2024-06-18", "2024-06-19", "2024-06-26", "2024-07-02",
+                         "2024-07-11", "2024-07-17", "2024-07-25", "2024-07-31", "2024-08-08",
+                         "2024-08-13", "2024-08-20", "2024-08-23",
+                         "2024-06-11", "2024-06-18", "2024-06-19", "2024-06-26", "2024-07-02",
+                         "2024-07-11", "2024-07-17", "2024-07-25", "2024-07-31", "2024-08-08",
+                         "2024-08-13", "2024-08-20", "2024-08-23"))
+)
+
+# Convert `date` column in `fish_flow_receiver_stream_all` to Date type
+fish_flow_receiver_stream_all <- fish_flow_receiver_stream_all %>%
+  mutate(date = as.Date(date)) # Ensure it's in the correct format
+
+# Convert `trackedTime_EST` to POSIXct format
+fish_flow_receiver_stream_all <- fish_flow_receiver_stream_all %>%
+  mutate(trackedTime_EST = as.POSIXct(trackedTime_EST, format = "%Y-%m-%d %H:%M:%S"))
+
+# Find the first "RECOVERED" time for each radioID
+recovered_times <- fish_flow_receiver_stream_all %>%
+  filter(status == "RECOVERED") %>%
+  group_by(radioID) %>%
+  summarize(recovered_time = min(trackedTime_EST), .groups = "drop")
+
+# Join the reference table to add the filtering criteria
+fish_flow_receiver_stream_corrected <- fish_flow_receiver_stream_all %>%
+  left_join(reference_table, by = "radioID") %>%
+  rowwise() %>%
+  filter(
+    date <= end_date                                # Keep rows within the end date
+  ) %>%
+  ungroup() %>% # Return to a non-rowwise data frame
+  # Join with the stream_visits table to check valid dates
+  inner_join(stream_visits, by = c("river", "date" = "valid_date")) %>%
+  select(-end_date) %>% # Drop unnecessary columns
+  left_join(recovered_times, by = "radioID") %>%
+  # Filter out points after recovery
+  filter(is.na(recovered_time) | trackedTime_EST <= recovered_time) %>%
+  select(-recovered_time)  # Remove extra column after filtering
+
+# View the filtered dataset
+head(fish_flow_receiver_stream_corrected)
+
+# Come back and double check these are the values I want #############################
+fish_flow_receiver_stream_corrected <- fish_flow_receiver_stream_corrected %>%
+  mutate(
+    lat = ifelse(lat < 40, NA, lat),
+    lon = ifelse(lon > -70, NA, lon)
+  )
+
+# Write the combined data to a new CSV file
+write.csv(fish_flow_receiver_stream_corrected, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/combined_data/fish_flow_receiver_stream_corrected.csv", 
+          row.names = FALSE)
+
+```
+
+
 
 ## Preparing tagging data
 
@@ -4130,7 +4346,7 @@ tagging_data <- tagging_data %>%
     river = RIVER,
     date = DATE,
     section = SECTION,
-    tagID = RADIOTAG,
+    radioID = RADIOTAG,
     tempID = TEMPTAG,
     length = LENGTH,
     weight = WEIGHT,
@@ -4143,13 +4359,13 @@ tagging_data <- tagging_data %>%
   mutate(river = str_trim(river),
          date = str_trim(date),
          section = str_trim(section),
-         tagID = str_trim(tagID),
+         radioID = str_trim(radioID),
          tempID = str_trim(tempID),
          length = str_trim(length),
          weight = str_trim(weight),
          geneticSam = str_trim(geneticSam),
          sex = str_trim(sex)) %>%
-  filter(!(tagID == "44" & date == as.POSIXct("2024-06-04", format="%Y-%m-%d")))
+  filter(!(radioID == "44" & date == as.POSIXct("2024-06-04", format="%Y-%m-%d")))
 
 # Display the first few rows of the dataset
 head(tagging_data)
@@ -4167,27 +4383,27 @@ write.csv(tagging_data,
 
 # Read in the data
 tagging_data = read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/tagging_data/tagging_data.csv")
-fish_flow_receiver_stream_all = read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/combined_data/fish_flow_receiver_stream_all.csv")
+fish_flow_receiver_stream_corrected = read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/combined_data/fish_flow_receiver_stream_corrected.csv")
 
 # Create a mapping of radio tag ID to temp tag ID from tagging data
 radio_temp_mapping <- tagging_data %>%
-  select(tagID, tempID) %>%
+  select(radioID, tempID) %>%
   distinct()  # Ensures unique pairings
 
 # Merge this mapping into fish/stream/flow/receiver data
-fish_flow_receiver_stream_all <- fish_flow_receiver_stream_all %>%
-  left_join(radio_temp_mapping, by = "tagID")
+fish_flow_receiver_stream_corrected <- fish_flow_receiver_stream_corrected %>%
+  left_join(radio_temp_mapping, by = "radioID")
 
-# Create a new column 'date' with just the date part of 'dateTime'
-fish_flow_receiver_stream_all <- fish_flow_receiver_stream_all %>%
-  mutate(date = as.Date(trackedTime_EST))
+# Convert the date column into date format
+fish_flow_receiver_stream_corrected <- fish_flow_receiver_stream_corrected %>%
+  mutate(date = as.Date(date))
 
-# Convert the date column into a matching format as the other dataset
+# Convert the date column into date format
 tagging_data <- tagging_data %>%
   mutate(date = as.Date(date))
 
 # Combine the datasets by binding rows horizontally
-fish_flow_receiver_stream_tagging_all <- bind_rows(fish_flow_receiver_stream_all, tagging_data)
+fish_flow_receiver_stream_tagging_all <- bind_rows(fish_flow_receiver_stream_corrected, tagging_data)
 
 # Now the combined dataframe should have all tempTagIDs added where appropriate
 
@@ -4206,24 +4422,24 @@ write.csv(fish_flow_receiver_stream_tagging_all,
 ```{r processing collection data}
 
 # Read in the collection data
-collection_data <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/taggingData/collectionData.xlsx", 
-                              range = cell_rows(1:34))
+collection_data <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/taggingData/collectionData.xlsx")
 
 # Select specific columns
 collection_data <- collection_data %>%
-  select(RIVER, recoveryDate, RADIOTAG, TEMPTAG, LENGTH, WEIGHT, BLOOD, TYPE, COMMENTS)
+  select(RIVER, recoveryDate, RADIOTAG, TEMPTAG, LENGTH, WEIGHT, BLOOD, TYPE, SEX, COMMENTS)
 
 # Rename columns
 collection_data <- collection_data %>%
   rename(
     river = RIVER,
     date = recoveryDate,
-    tagID = RADIOTAG,
+    radioID = RADIOTAG,
     tempID = TEMPTAG,
     length = LENGTH,
     weight = WEIGHT,
     blood = BLOOD,
     type = TYPE,
+    sex = SEX,
     collectionNotes = COMMENTS
     )
 
@@ -4231,12 +4447,13 @@ collection_data <- collection_data %>%
 collection_data <- collection_data %>%
   mutate(river = str_trim(river),
          date = str_trim(date),
-         tagID = str_trim(tagID),
+         radioID = str_trim(radioID),
          tempID = str_trim(tempID),
          length = str_trim(length),
          weight = str_trim(weight),
          blood = str_trim(blood),
          type = str_trim(type),
+         sex = str_trim(sex),
          collectionNotes = str_trim(collectionNotes))
 
 # Display the first few rows of the dataset
@@ -4257,13 +4474,29 @@ write.csv(collection_data,
 collection_data = read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/tagging_data/collection_data.csv")
 fish_flow_receiver_stream_tagging_all = read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/combined_data/fish_flow_receiver_stream_tagging_all.csv")
 
-# Convert the date column into a matching format as the other dataset
+# Convert the date column into date format
 collection_data <- collection_data %>%
   mutate(date = as.Date(date))
 
-# Convert the date column into a matching format as the other dataset
+# Convert the date column into date format
 fish_flow_receiver_stream_tagging_all <- fish_flow_receiver_stream_tagging_all %>%
   mutate(date = as.Date(date))
+
+# Convert the radioID column into character format
+collection_data <- collection_data %>%
+  mutate(radioID = as.character(radioID))
+
+# Convert the radioID column into character format
+fish_flow_receiver_stream_tagging_all <- fish_flow_receiver_stream_tagging_all %>%
+  mutate(radioID = as.character(radioID))
+
+# Convert the tempID column into character format
+collection_data <- collection_data %>%
+  mutate(tempID = as.character(tempID))
+
+# Convert the tempID column into character format
+fish_flow_receiver_stream_tagging_all <- fish_flow_receiver_stream_tagging_all %>%
+  mutate(tempID = as.character(tempID))
 
 # Combine the datasets by binding rows horizontally
 tracking_data_all <- bind_rows(fish_flow_receiver_stream_tagging_all, collection_data)
@@ -4277,16 +4510,9 @@ head(tracking_data_all)
 
 ```{r organize and finalize dataset}
 
-tracking_data_all <- tracking_data_all %>%
-  rename(radioID = tagID)
-
-# Convert all radioID values to numeric with one decimal place
-tracking_data_all <- tracking_data_all %>%
-  mutate(radioID = format(as.numeric(radioID), nsmall = 1))
-
 # Select columns to keep
 tracking_data_all <- tracking_data_all %>%
-  select(date, trackedTime_EST, river, shift, radioID, tempID, power, source, fishNotes, lon, lat, habitat, habitatExtra, position, substrate, substrateExtra, shade, airTemp, cloud, precip, totalDischarge, flowTime_EST, startTime_EST, endTime_EST, streamNotes, downstreamGPS, downstreamGain, upstreamGPS, upstreamGain, isoID, isoTime_EST, length, weight, sex, type, geneticSam, blood, section, collectionNotes)
+  select(date, trackedTime_EST, river, shift, radioID, tempID, status, power, source, fishNotes, lon, lat, habitat, habitatExtra, position, substrate, substrateExtra, shade, airTemp, cloud, precip, totalDischarge, ftTime_EST, startTime_EST, endTime_EST, streamNotes, downstreamGPS, downstreamGain, upstreamGPS, upstreamGain, isoID, isoTime_EST, length, weight, sex, type, geneticSam, blood, section, collectionNotes)
 
 # Replace all blank ("") or whitespace-only values with NA
 tracking_data_all <- tracking_data_all %>%
@@ -4308,3 +4534,469 @@ write.csv(tracking_data_all,
           row.names = FALSE)
 ```
 
+
+
+## Preparing HOBO Logger Files
+
+```{r combine all underhill files}
+
+# Define the path to the folder
+UNDH_logger_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawLoggerData/Temperature/UNDH/"
+
+# Define file names
+file_names <- paste0(UNDH_logger_data, c("UNDH_1.csv", "UNDH_2.csv", 
+                                          "UNDH_3.csv", "UNDH_4.csv", 
+                                          "UNDH_5.csv", "UNDH_trib.csv", 
+                                          "UNDH_6.csv", "UNDH_7.csv", 
+                                          "UNDH_8.csv")) 
+
+# Create an empty list to store the data from each file
+full_data_list <- list()
+
+# Loop through each file and read the data into the list
+for (file_name in file_names) {
+  all_data <- read.csv(file_name, stringsAsFactors = FALSE)
+  full_data_list[[file_name]] <- all_data
+}
+
+# Combine all datasets into a single data frame by stacking rows
+UNDH_logger_data <- bind_rows(full_data_list)
+
+# Display the first few rows of the combined dataset
+head(UNDH_logger_data)
+
+# Write the combined data to a new CSV file
+write.csv(UNDH_logger_data, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/UNDH_logger_data.csv", 
+          row.names = FALSE)
+
+```
+
+```{r combine all harris files}
+
+# Define the path to the folder
+HARR_logger_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawLoggerData/Temperature/HARR/"
+
+# Define file names
+file_names <- paste0(HARR_logger_data, c("HARR_1.csv", "HARR_2.csv", 
+                                          "HARR_3.csv", "HARR_4.csv", 
+                                          "HARR_5.csv", "HARR_6.csv")) 
+
+# Create an empty list to store the data from each file
+full_data_list <- list()
+
+# Loop through each file and read the data into the list
+for (file_name in file_names) {
+  all_data <- read.csv(file_name, stringsAsFactors = FALSE)
+  full_data_list[[file_name]] <- all_data
+}
+
+# Combine all datasets into a single data frame by stacking rows
+HARR_logger_data <- bind_rows(full_data_list)
+
+# Display the first few rows of the combined dataset
+head(HARR_logger_data)
+
+# Write the combined data to a new CSV file
+write.csv(HARR_logger_data, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/HARR_logger_data.csv", 
+          row.names = FALSE)
+
+```
+
+```{r combine all buffam files}
+
+# Define the path to the folder
+BUFF_logger_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawLoggerData/Temperature/BUFF/"
+
+# Define file names
+file_names <- paste0(BUFF_logger_data, c("BUFF_1.csv", "BUFF_2.csv", 
+                                          "BUFF_3.csv")) 
+
+# Create an empty list to store the data from each file
+full_data_list <- list()
+
+# Loop through each file and read the data into the list
+for (file_name in file_names) {
+  all_data <- read.csv(file_name, stringsAsFactors = FALSE)
+  full_data_list[[file_name]] <- all_data
+}
+
+# Combine all datasets into a single data frame by stacking rows
+BUFF_logger_data <- bind_rows(full_data_list)
+
+# Display the first few rows of the combined dataset
+head(BUFF_logger_data)
+
+# Write the combined data to a new CSV file
+write.csv(BUFF_logger_data, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/BUFF_logger_data.csv", 
+          row.names = FALSE)
+
+```
+
+```{r combine all amethyst files}
+
+# Define the path to the folder
+AMTH_logger_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawLoggerData/Temperature/AMTH/"
+
+# Define file names
+file_names <- paste0(AMTH_logger_data, c("AMTH_1.csv", "AMTH_2.csv", 
+                                          "AMTH_3.csv")) 
+
+# Create an empty list to store the data from each file
+full_data_list <- list()
+
+# Loop through each file and read the data into the list
+for (file_name in file_names) {
+  all_data <- read.csv(file_name, stringsAsFactors = FALSE)
+  full_data_list[[file_name]] <- all_data
+}
+
+# Combine all datasets into a single data frame by stacking rows
+AMTH_logger_data <- bind_rows(full_data_list)
+
+# Display the first few rows of the combined dataset
+head(AMTH_logger_data)
+
+# Write the combined data to a new CSV file
+write.csv(AMTH_logger_data, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/AMTH_logger_data.csv", 
+          row.names = FALSE)
+
+```
+
+```{r combine all dickey files}
+
+# Define the path to the folder
+DCKY_logger_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawLoggerData/Temperature/DCKY/"
+
+# Define file names
+file_names <- paste0(DCKY_logger_data, c("DCKY_1.csv", "DCKY_2.csv", 
+                                          "DCKY_3.csv", "DCKY_4.csv", 
+                                          "DCKY_5.csv", "DCKY_6.csv", 
+                                          "DCKY_7.csv")) 
+
+# Create an empty list to store the data from each file
+full_data_list <- list()
+
+# Loop through each file and read the data into the list
+for (file_name in file_names) {
+  all_data <- read.csv(file_name, stringsAsFactors = FALSE)
+  full_data_list[[file_name]] <- all_data
+}
+
+# Combine all datasets into a single data frame by stacking rows
+DCKY_logger_data <- bind_rows(full_data_list)
+
+# Display the first few rows of the combined dataset
+head(DCKY_logger_data)
+
+# Write the combined data to a new CSV file
+write.csv(DCKY_logger_data, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/DCKY_logger_data.csv", 
+          row.names = FALSE)
+
+```
+
+```{r combine all dry upper files}
+
+# Define the path to the folder
+DRYU_logger_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawLoggerData/Temperature/DRYU/"
+
+# Define file names
+file_names <- paste0(DRYU_logger_data, c("DRYU_1.csv", "DRYU_2.csv", 
+                                          "DRYU_3.csv", "DRYU_4.csv", 
+                                          "DRYU_5.csv", "DRYU_6.csv", 
+                                          "DRYU_7.csv")) 
+
+# Create an empty list to store the data from each file
+full_data_list <- list()
+
+# Loop through each file and read the data into the list
+for (file_name in file_names) {
+  all_data <- read.csv(file_name, stringsAsFactors = FALSE)
+  full_data_list[[file_name]] <- all_data
+}
+
+# Combine all datasets into a single data frame by stacking rows
+DRYU_logger_data <- bind_rows(full_data_list)
+
+# Display the first few rows of the combined dataset
+head(DRYU_logger_data)
+
+# Write the combined data to a new CSV file
+write.csv(DRYU_logger_data, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/DRYU_logger_data.csv", 
+          row.names = FALSE)
+
+```
+
+```{r combine all logger data}
+
+# Read in the logger data
+DRYU_logger_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/DRYU_logger_data.csv")
+HARR_logger_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/HARR_logger_data.csv")
+BUFF_logger_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/BUFF_logger_data.csv")
+AMTH_logger_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/AMTH_logger_data.csv")
+DCKY_logger_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/DCKY_logger_data.csv")
+UNDH_logger_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/UNDH_logger_data.csv")
+
+# Combine the data frames by rows
+logger_data_all <- bind_rows(DRYU_logger_data, HARR_logger_data, BUFF_logger_data, AMTH_logger_data, DCKY_logger_data, UNDH_logger_data)
+
+# Display the first few rows of the combined dataset
+head(logger_data_all)
+
+# Write the combined data to a new CSV file
+write.csv(logger_data_all, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/logger_data_all.csv", 
+          row.names = FALSE)
+
+```
+
+```{r filter logger data}
+
+logger_data_all <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/logger_data_all.csv")
+
+# Remove rows where `flagged` is TRUE
+logger_data_filtered <- logger_data_all %>%
+  filter(flagged != TRUE)
+
+# Write the combined data to a new CSV file
+write.csv(logger_data_filtered, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/logger_data_filtered.csv", 
+          row.names = FALSE)
+
+logger_data_filtered$date <- as.Date(logger_data_filtered$datetime, format = "%m/%d/%Y %H:%M")
+
+# Define date range
+start_date <- as.Date("2024-06-11")
+end_date <- as.Date("2024-08-29")
+
+# Filter dataset to within the date range
+logger_data_summer <- logger_data_filtered %>%
+  filter(date >= start_date & date <= end_date)
+
+# Display the first few rows of the combined dataset
+head(logger_data_summer)
+
+# Write the combined data to a new CSV file
+write.csv(logger_data_summer, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/logger_data_summer.csv", 
+          row.names = FALSE)
+
+```
+
+
+
+
+
+
+
+## Preparing Pressure Transducer Files
+
+```{r combine all underhill pressure files}
+
+# Define the path to the folder
+UNDH_pressure_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawLoggerData/Pressure/UNDH/"
+
+# Define file names
+file_names <- paste0(UNDH_pressure_data, c("UNDH_20240604_to_20240801.csv",
+                                           "UNDH_20240801_to_20240905.csv")) 
+
+# Create an empty list to store the data from each file
+full_data_list <- list()
+
+# Loop through each file and read the data into the list
+for (file_name in file_names) {
+  all_data <- read.csv(file_name, stringsAsFactors = FALSE)
+  full_data_list[[file_name]] <- all_data
+}
+
+# Combine all datasets into a single data frame by stacking rows
+UNDH_pressure_data <- bind_rows(full_data_list)
+
+# Display the first few rows of the combined dataset
+head(UNDH_pressure_data)
+
+# Write the combined data to a new CSV file
+write.csv(UNDH_pressure_data, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/UNDH_pressure_data.csv", 
+          row.names = FALSE)
+
+```
+
+```{r combine all harris pressure files}
+# Edit this code since I don't need binding ##########################
+
+# Define the path to the folder
+HARR_pressure_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawLoggerData/Pressure/HARR/"
+
+# Define file names
+file_names <- paste0(HARR_pressure_data, c("HARR_1.csv")) 
+
+# Create an empty list to store the data from each file
+full_data_list <- list()
+
+# Loop through each file and read the data into the list
+for (file_name in file_names) {
+  all_data <- read.csv(file_name, stringsAsFactors = FALSE)
+  full_data_list[[file_name]] <- all_data
+}
+
+# Combine all datasets into a single data frame by stacking rows
+HARR_pressure_data <- bind_rows(full_data_list)
+
+# Display the first few rows of the combined dataset
+head(HARR_pressure_data)
+
+# Write the combined data to a new CSV file
+write.csv(HARR_pressure_data, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/HARR_pressure_data.csv", 
+          row.names = FALSE)
+
+```
+
+```{r combine all buffam pressure files}
+
+# Define the path to the folder
+BUFF_pressure_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawLoggerData/Pressure/BUFF/"
+
+# Define file names
+file_names <- paste0(BUFF_pressure_data, c("BUFF_20240610_to_20240618.csv", 
+                                           "BUFF_20240618_to_20240825.csv", 
+                                           "BUFF_20240825_to_20240905.csv")) 
+
+# Create an empty list to store the data from each file
+full_data_list <- list()
+
+# Loop through each file and read the data into the list
+for (file_name in file_names) {
+  all_data <- read.csv(file_name, stringsAsFactors = FALSE)
+  full_data_list[[file_name]] <- all_data
+}
+
+# Combine all datasets into a single data frame by stacking rows
+BUFF_pressure_data <- bind_rows(full_data_list)
+
+# Display the first few rows of the combined dataset
+head(BUFF_pressure_data)
+
+# Write the combined data to a new CSV file
+write.csv(BUFF_pressure_data, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/BUFF_pressure_data.csv", 
+          row.names = FALSE)
+
+```
+
+```{r combine all dickey pressure files}
+
+# Define the path to the folder
+DCKY_pressure_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawLoggerData/Pressure/DCKY/"
+
+# Define file names
+file_names <- paste0(DCKY_pressure_data, c("DCKY_20240604_to_20240724.csv", 
+                                           "DCKY_20240724_to_20240905.csv")) 
+
+# Create an empty list to store the data from each file
+full_data_list <- list()
+
+# Loop through each file and read the data into the list
+for (file_name in file_names) {
+  all_data <- read.csv(file_name, stringsAsFactors = FALSE)
+  full_data_list[[file_name]] <- all_data
+}
+
+# Combine all datasets into a single data frame by stacking rows
+DCKY_pressure_data <- bind_rows(full_data_list)
+
+# Display the first few rows of the combined dataset
+head(DCKY_pressure_data)
+
+# Write the combined data to a new CSV file
+write.csv(DCKY_pressure_data, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/DCKY_pressure_data.csv", 
+          row.names = FALSE)
+
+```
+
+```{r combine all dry upper pressure files}
+
+# Define the path to the folder
+DRYU_pressure_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawLoggerData/Pressure/DRYU/"
+
+# Define file names
+file_names <- paste0(DRYU_pressure_data, c("DRYU_20240605_to_20240802.csv", 
+                                           "DRYU_20240802_to_20240905.csv")) 
+
+# Create an empty list to store the data from each file
+full_data_list <- list()
+
+# Loop through each file and read the data into the list
+for (file_name in file_names) {
+  all_data <- read.csv(file_name, stringsAsFactors = FALSE)
+  full_data_list[[file_name]] <- all_data
+}
+
+# Combine all datasets into a single data frame by stacking rows
+DRYU_pressure_data <- bind_rows(full_data_list)
+
+# Display the first few rows of the combined dataset
+head(DRYU_pressure_data)
+
+# Write the combined data to a new CSV file
+write.csv(DRYU_pressure_data, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/DRYU_pressure_data.csv", 
+          row.names = FALSE)
+
+```
+
+```{r combine all pressure data}
+
+# Read in the pressure data
+DRYU_pressure_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/DRYU_pressure_data.csv")
+#HARR_pressure_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/HARR_pressure_data.csv")
+BUFF_pressure_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/BUFF_pressure_data.csv")
+DCKY_pressure_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/DCKY_pressure_data.csv")
+UNDH_pressure_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/UNDH_pressure_data.csv")
+
+# Combine the data frames by rows
+pressure_data_all <- bind_rows(DRYU_pressure_data, BUFF_pressure_data, DCKY_pressure_data, UNDH_pressure_data) #, HARR_logger_data)
+
+# Display the first few rows of the combined dataset
+head(pressure_data_all)
+
+# Write the combined data to a new CSV file
+write.csv(pressure_data_all, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/pressure_data_all.csv", 
+          row.names = FALSE)
+
+```
+
+```{r filter pressure data}
+
+# Edit this code so that the column names are in proper format and datetime is formatted correctly ######################
+
+pressure_data_all <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/pressure_data_all.csv")
+
+# Create a date column
+pressure_data_all$date <- as.Date(pressure_data_all$datetime, format = "%m/%d/%Y %H:%M")
+
+# Define date range
+start_date <- as.Date("2024-06-11")
+end_date <- as.Date("2024-08-29")
+
+# Filter dataset to within the date range
+pressure_data_summer <- pressure_data_all %>%
+  filter(date >= start_date & date <= end_date)
+
+# Display the first few rows of the combined dataset
+head(pressure_data_summer)
+
+# Write the combined data to a new CSV file
+write.csv(pressure_data_summer, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/pressure_data_summer.csv", 
+          row.names = FALSE)
+
+```

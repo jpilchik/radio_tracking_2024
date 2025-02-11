@@ -25,7 +25,6 @@ tracking_data_all$date <- ymd(tracking_data_all$date)
 
 ```
 
-
 ```{r create filtered dataset of matching receiver/iPad points, all iPad points, and select unmatched receiver points}
 
 # Step 1: Filter to keep all iPad points
@@ -73,7 +72,7 @@ closest_receiver_points <- closest_receiver_points %>%
          cloud = cloud.receiver,
          precip = precip.receiver,
          totalDischarge = totalDischarge.receiver,
-         flowTime_EST = flowTime_EST.receiver,
+         ftTime_EST = ftTime_EST.receiver,
          startTime_EST = startTime_EST.receiver,
          endTime_EST = endTime_EST.receiver,
          streamNotes = streamNotes.receiver,
@@ -118,7 +117,7 @@ tracking_data_filtered <- tracking_data_filtered %>%
          tempID, power, source, fishNotes, lon, lat, 
          habitat, habitatExtra, position, substrate, 
          substrateExtra, shade, airTemp, cloud, precip, 
-         totalDischarge, flowTime_EST, startTime_EST, endTime_EST, streamNotes,
+         totalDischarge, ftTime_EST, startTime_EST, endTime_EST, streamNotes,
          downstreamGPS, downstreamGain, upstreamGPS, upstreamGain, 
          isoID, isoTime_EST, length, weight, sex, type, geneticSam, 
          blood, section, collectionNotes, trackedTime_EST.receiver) 
@@ -131,12 +130,139 @@ inconsistent_rows <- tracking_data_filtered %>%
 print("Inconsistent Rows:")
 print(inconsistent_rows)
 
+# Remove 'trackedTime_EST.receiver' from the dataset
+tracking_data_filtered <- tracking_data_filtered %>%
+  select(-trackedTime_EST.receiver)  
+
 # View the final cleaned dataset
 print(tracking_data_filtered)
 
 # Write new csv
 write.csv(tracking_data_filtered, 
           file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/tracking_data_filtered.csv", 
+          row.names = FALSE)
+
+```
+
+```{r create filtered dataset of matching receiver/iPad points, all iPad points, and select unmatched receiver points 2.0}
+
+# Step 1: Filter to keep all iPad points
+ipad_points <- tracking_data_all %>%
+  filter(source == "iPad" | is.na(source))
+
+# Debugging: Check the iPad points
+print("iPad Points (including NA in source):")
+print(ipad_points)
+
+# Step 2: Select receiver points for each matching iPad point with the highest power
+closest_receiver_points <- tracking_data_all %>%
+  filter(source == "receiver") %>%
+  inner_join(ipad_points, by = "radioID", suffix = c(".receiver", ".ipad")) %>%
+  filter(abs(difftime(trackedTime_EST.receiver, trackedTime_EST.ipad, units = "mins")) <= 10) %>%
+  group_by(trackedTime_EST.ipad, radioID) %>%
+  # Ensure 'power' is treated as numeric and select the receiver point with the highest power
+  slice(which.max(as.numeric(power.receiver))) %>%
+  ungroup()
+
+# Debugging: Check how many closest receiver points were found
+print("Closest Receiver Points with Highest Power:")
+print(closest_receiver_points)
+
+# Now select the correct columns from closest receiver points
+closest_receiver_points <- closest_receiver_points %>%
+  select(date = date.receiver, 
+         trackedTime_EST.receiver, 
+         river = river.receiver, 
+         shift = shift.receiver,
+         radioID, 
+         tempID = tempID.receiver,
+         power = power.receiver, 
+         source = source.receiver,
+         fishNotes = fishNotes.receiver,
+         lon = lon.receiver,
+         lat = lat.receiver,
+         habitat = habitat.receiver,
+         habitatExtra = habitatExtra.receiver,
+         position = position.receiver,
+         substrate = substrate.receiver,
+         substrateExtra = substrateExtra.receiver,
+         shade = shade.receiver,
+         airTemp = airTemp.receiver,
+         cloud = cloud.receiver,
+         precip = precip.receiver,
+         totalDischarge = totalDischarge.receiver,
+         ftTime_EST = ftTime_EST.receiver,
+         startTime_EST = startTime_EST.receiver,
+         endTime_EST = endTime_EST.receiver,
+         streamNotes = streamNotes.receiver,
+         downstreamGPS = downstreamGPS.receiver,
+         downstreamGain = downstreamGain.receiver,
+         upstreamGPS = upstreamGPS.receiver,
+         upstreamGain = upstreamGain.receiver,
+         isoID = isoID.receiver,
+         isoTime_EST = isoTime_EST.receiver,
+         length = length.receiver,
+         weight = weight.receiver,
+         sex = sex.receiver,
+         type = type.receiver,
+         geneticSam = geneticSam.receiver,
+         blood = blood.receiver,
+         section = section.receiver,
+         collectionNotes = collectionNotes.receiver) %>% 
+  mutate(source = "receiver")
+
+# Step 3: Select one representative receiver point for unmatched receiver points
+unmatched_receivers <- tracking_data_all %>%
+  filter(source == "receiver") %>%
+  anti_join(ipad_points, by = "radioID") %>%
+  group_by(date, shift, radioID) %>%
+  slice(which.max(power)) %>%
+  ungroup()
+
+# Combine the results
+tracking_data_filtered_2.0 <- bind_rows(
+  ipad_points,
+  closest_receiver_points %>% mutate(source = "receiver"),
+  unmatched_receivers %>% mutate(source = "receiver")
+)
+
+# Ensure that the trackedTime_EST is consistent and that receiver data columns are retained
+tracking_data_filtered_2.0 <- tracking_data_filtered_2.0 %>%
+  mutate(
+    # Consolidate the trackedTime_EST column
+    trackedTime_EST = coalesce(trackedTime_EST, trackedTime_EST.receiver)
+  ) %>%
+  select(date, trackedTime_EST, river, shift, radioID, 
+         tempID, power, source, fishNotes, lon, lat, 
+         habitat, habitatExtra, position, substrate, 
+         substrateExtra, shade, airTemp, cloud, precip, 
+         totalDischarge, ftTime_EST, startTime_EST, endTime_EST, streamNotes,
+         downstreamGPS, downstreamGain, upstreamGPS, upstreamGain, 
+         isoID, isoTime_EST, length, weight, sex, type, geneticSam, 
+         blood, section, collectionNotes, trackedTime_EST.receiver) 
+
+# Check for any remaining inconsistencies
+inconsistent_rows <- tracking_data_filtered_2.0 %>%
+  filter(is.na(trackedTime_EST) | (source == "receiver" & is.na(trackedTime_EST.receiver)))
+
+# Check the rows
+print("Inconsistent Rows:")
+print(inconsistent_rows)
+
+# Remove 'trackedTime_EST.receiver' from the dataset
+tracking_data_filtered_2.0 <- tracking_data_filtered_2.0 %>%
+  select(-trackedTime_EST.receiver)  
+
+# Remove duplicate rows
+tracking_data_filtered_2.0 <- tracking_data_filtered_2.0 %>%
+  distinct()
+
+# View the final cleaned dataset
+print(tracking_data_filtered_2.0)
+
+# Write new csv
+write.csv(tracking_data_filtered_2.0, 
+          file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/tracking_data_filtered_2.0.csv", 
           row.names = FALSE)
 
 ```
@@ -231,33 +357,6 @@ write.csv(unmatched_receiver_iPad,
           row.names = FALSE)
 
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

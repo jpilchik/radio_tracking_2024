@@ -1,0 +1,128 @@
+---
+title: "range_of_flow"
+---
+
+```{r}
+library(dplyr)
+```
+
+```{r combine all flow tracker files}
+
+# Define the path to the folder
+flow_tracker_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/flow_tracker_data/"
+
+# Define file names
+file_names <- paste0(flow_tracker_data, c("flow_tracker_1.csv", "flow_tracker_2.csv", 
+                                          "flow_tracker_3.csv", "flow_tracker_4.csv", 
+                                          "flow_tracker_5.csv", "flow_tracker_6.csv", 
+                                          "flow_tracker_7.csv", "flow_tracker_8.csv", 
+                                          "flow_tracker_9.csv", "flow_tracker_10.csv", 
+                                          "flow_tracker_11.csv", "flow_tracker_12.csv")) 
+
+# Create an empty list to store the data from each file
+full_data_list <- list()
+
+# Loop through each file and read the data into the list
+for (file_name in file_names) {
+  all_data <- read.csv(file_name, stringsAsFactors = FALSE)
+  full_data_list[[file_name]] <- all_data
+}
+
+# Combine all datasets into a single data frame by stacking rows
+flow_tracker_all <- bind_rows(full_data_list)
+
+# Display the first few rows of the combined dataset
+head(flow_tracker_all)
+
+# Write the combined data to a new CSV file
+write.csv(flow_tracker_all, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/flow_tracker_data/flow_tracker_all.csv", 
+          row.names = FALSE)
+
+```
+
+```{r filter out amethyst from flow tracker}
+
+# Read in the data
+flow_tracker_all <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/flow_tracker_data/flow_tracker_all.csv")
+
+# Filter to only Buffam, Harris, Underhill, Dickey, and Dry
+flow_tracker_range <- flow_tracker_all %>%
+  filter(river != "AMETHYST")
+
+# Display the first few rows of the dataset
+head(flow_tracker_range)
+
+# Write the data to a new CSV file
+write.csv(flow_tracker_range, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/flow_tracker_data/flow_tracker_range.csv", 
+          row.names = FALSE)
+
+```
+
+```{r discharge ranges}
+
+# Find the discharge ranges for each river
+discharge_ranges_ft <- flow_tracker_range %>%
+  group_by(river) %>%  # Group by stream
+  summarize(
+    min_discharge = min(totalDischarge, na.rm = TRUE),  # Find the minimum value
+    max_discharge = max(totalDischarge, na.rm = TRUE)   # Find the maximum value
+  )
+
+# Display the first few rows of the dataset
+head(discharge_ranges_ft)
+
+# Write the data to a new CSV file
+write.csv(discharge_ranges_ft, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/flow_tracker_data/discharge_ranges_ft.csv", 
+          row.names = FALSE)
+
+```
+
+```{r discharge percentiles}
+
+# Find the discharge ranges for each river for a 2.5 to 97.5 percentile
+discharge_percentiles_ft <- flow_tracker_range %>%
+  group_by(river) %>%  # Group by stream
+  summarize(
+    p2_5 = quantile(totalDischarge, probs = 0.025, na.rm = TRUE),  # 2.5th percentile
+    p97_5 = quantile(totalDischarge, probs = 0.975, na.rm = TRUE)  # 97.5th percentile
+  )
+
+# Display the first few rows of the dataset
+head(discharge_percentiles_ft)
+
+# Write the data to a new CSV file
+write.csv(discharge_percentiles_ft, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/flow_tracker_data/discharge_percentiles_ft.csv", 
+          row.names = FALSE)
+
+```
+
+```{r discharge data}
+
+flow_tracker_range$date <- as.Date(flow_tracker_range$flowTime_EST)
+
+# Find the discharge ranges
+discharge_summary_ft <- flow_tracker_range %>%
+  group_by(river) %>%  # Group by stream
+  summarize(
+    p2_5 = quantile(totalDischarge, probs = 0.025, na.rm = TRUE),  # 2.5th percentile
+    p97_5 = quantile(totalDischarge, probs = 0.975, na.rm = TRUE),  # 97.5th percentile
+    min_discharge = min(totalDischarge, na.rm = TRUE),  # Find the minimum value
+    max_discharge = max(totalDischarge, na.rm = TRUE),   # Find the maximum value
+    start_date = min(date, na.rm = TRUE),
+    end_date = max(date, na.rm = TRUE),
+    .groups = "drop"  # Ensures the result is not grouped
+  )
+
+# Display the first few rows of the dataset
+head(discharge_summary_ft)
+
+# Write the data to a new CSV file
+write.csv(discharge_summary_ft, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/flow_tracker_data/discharge_summary_ft.csv", 
+          row.names = FALSE)
+
+```
