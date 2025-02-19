@@ -1,4 +1,4 @@
-"river","airTemp","cloud","precip","startTime_EST","endTime_EST","isoID","streamNotes","isoTime_EST","downstreamGPS","downstreamGain","upstreamGPS","upstreamGain","shift"
+"river","airTemp_F","cloud","precip","startTime_EST","endTime_EST","isoID","streamNotes","isoTime_EST","downstreamGPS","downstreamGain","upstreamGPS","upstreamGain","shift"
 "DICKEY",70,"Cloudy","No rain","03:35","08:55","DCKY202407160347EST","","03:47","42.4422631.N 72.3733436 W",70,"42.4374180 N 72.346902 W",75,"day"
 "DICKEY",85,"Mostly sunny/mostly clear","No rain","13:13","18:08","DCKY202407161444EST","","14:44","Lat: 42.27 +/-7.6 N Long: 72.22 +/-7.6 W",80,"42.4430367 LAT. 72.3700836 LON",80,"night"
 "AMETHYST",74,"Clear","No rain","03:44","09:00","BUFF202407170440EST, HARR202407170601EST, AMTH202407170611EST","","04:40","42.1794043 N 72.4630898 W",75,"42.3807796 N 72.4584831 W",75,"day"

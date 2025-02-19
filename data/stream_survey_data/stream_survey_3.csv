@@ -1,4 +1,4 @@
-"river","airTemp","cloud","precip","startTime_EST","endTime_EST","isoID","streamNotes","isoTime_EST","downstreamGPS","downstreamGain","upstreamGPS","upstreamGain","shift"
+"river","airTemp_F","cloud","precip","startTime_EST","endTime_EST","isoID","streamNotes","isoTime_EST","downstreamGPS","downstreamGain","upstreamGPS","upstreamGain","shift"
 "DRY UPPER",57,"Clear","No rain","05:44","10:44","DRYU202406250610EST","Did not get to the stream on time because the batteries were corroded in the receiver so had to go back to lab and get other receiver. ","06:10","42.6353974. -72.4967190",65,"42.6694251 -72.5074050",55,"day"
 "DRY UPPER",82,"Cloudy","No rain","17:21","23:05","DRYU202406251745EST","","17:45","Lat: 42.665107 long: 72.5031943 W",75,"Lat: 42.6683114 degrees N Long: 72.5066514 degrees W",85,"night"
 "AMETHYST",70,"Mostly sunny/mostly clear","No rain","05:25","11:06","AMTH202406261101EST","","11:01","42 degrees 23N, 72 degrees 28W",74,"42 degrees 23N, 72 degrees 27W",75,"day"

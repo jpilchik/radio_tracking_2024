@@ -560,28 +560,23 @@ extract_values <- function(file_path) {
   local_end_time <- df %>% filter(Column1 == "Local_End_Time") %>% select(Column3) %>% pull()
   site_name <- df %>% filter(Column1 == "Site_Name") %>% select(Column3) %>% pull()
   total_discharge <- df %>% filter(Column1 == "Total_Discharge") %>% select(Column3) %>% pull()
+  discharge_unit <- df %>% filter(Column1 == "Total_Discharge") %>% select(Column2) %>% pull()
   
-  # Extract the temperature value and unit
-  #mean_temp_value <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column3) %>% pull()
-  #temp_unit <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column2) %>% pull()
-
-  # Convert only if the unit is Fahrenheit ("°F")
-  #if (temp_unit == "°F") {
-    #mean_temp_value <- (as.numeric(mean_temp_value) - 32) * 5 / 9
-  #} else {
-    #mean_temp_value <- as.numeric(mean_temp_value)  # Ensure it's numeric for Celsius values or NA
-  #}
+  # Convert to cubic feet per second only if the unit is cubic meters per second
+  if (discharge_unit == "m³/s") {
+    total_discharge <- as.numeric(total_discharge) * 35.3147
+  } else {
+    total_discharge <- as.numeric(total_discharge)
+  }
   
   # Round values to 2 decimal places
-  #mean_temp_value <- round(mean_temp_value, 2)
   total_discharge <- round(as.numeric(total_discharge), 2)
   
   # Rename columns
   data.frame(
     localEndTime = local_end_time,
     river = site_name,
-    totalDischarge = as.numeric(total_discharge),  # Ensure numeric type
-    #meanTemp = mean_temp_value,  # Already handled as numeric
+    ftDischarge_cfs = as.numeric(total_discharge),  # Ensure numeric type
     stringsAsFactors = FALSE
   )
 }
@@ -595,8 +590,7 @@ week_1_files <- find_files(week_1_directory)
 flow_tracker_1 <- data.frame(
   localEndTime = character(),
   river = character(),
-  totalDischarge = numeric(),  # Initialize as numeric
-  #meanTemp = numeric(),  # Initialize as numeric
+  ftDischarge_cfs = numeric(),  # Initialize as numeric
   stringsAsFactors = FALSE
 )
 
@@ -651,27 +645,22 @@ extract_values <- function(file_path) {
   local_end_time <- df %>% filter(Column1 == "Local_End_Time") %>% select(Column3) %>% pull()
   site_name <- df %>% filter(Column1 == "Site_Name") %>% select(Column3) %>% pull()
   total_discharge <- df %>% filter(Column1 == "Total_Discharge") %>% select(Column3) %>% pull()
+  discharge_unit <- df %>% filter(Column1 == "Total_Discharge") %>% select(Column2) %>% pull()
   
-  # Extract the temperature value and unit
-  #mean_temp_value <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column3) %>% pull()
-  #temp_unit <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column2) %>% pull()
-
-  # Convert only if the unit is Fahrenheit ("°F")
-  #if (temp_unit == "°F") {
-    #mean_temp_value <- (as.numeric(mean_temp_value) - 32) * 5 / 9
-  #} else {
-    #mean_temp_value <- as.numeric(mean_temp_value)  # Ensure it's numeric for Celsius values or NA
-  #}
+  # Convert to cubic feet per second only if the unit is cubic meters per second
+  if (discharge_unit == "m³/s") {
+    total_discharge <- as.numeric(total_discharge) * 35.3147
+  } else {
+    total_discharge <- as.numeric(total_discharge)
+  }
   
   # Round values to 2 decimal places
-  #mean_temp_value <- round(mean_temp_value, 2)
   total_discharge <- round(as.numeric(total_discharge), 2)
   
   data.frame(
     localEndTime = local_end_time,
     river = site_name,
-    totalDischarge = as.numeric(total_discharge),  # Ensure numeric type
-    #meanTemp = mean_temp_value,  # Already handled as numeric
+    ftDischarge_cfs = as.numeric(total_discharge),  # Ensure numeric type
     stringsAsFactors = FALSE
   )
 }
@@ -685,8 +674,7 @@ week_2_files <- find_files(week_2_directory)
 flow_tracker_2 <- data.frame(
   localEndTime = character(),
   river = character(),
-  totalDischarge = numeric(),  # Initialize as numeric
-  #meanTemp = numeric(),  # Initialize as numeric
+  ftDischarge_cfs = numeric(),  # Initialize as numeric
   stringsAsFactors = FALSE
 )
 
@@ -741,27 +729,22 @@ extract_values <- function(file_path) {
   local_end_time <- df %>% filter(Column1 == "Local_End_Time") %>% select(Column3) %>% pull()
   site_name <- df %>% filter(Column1 == "Site_Name") %>% select(Column3) %>% pull()
   total_discharge <- df %>% filter(Column1 == "Total_Discharge") %>% select(Column3) %>% pull()
+  discharge_unit <- df %>% filter(Column1 == "Total_Discharge") %>% select(Column2) %>% pull()
   
-  # Extract the temperature value and unit
-  #mean_temp_value <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column3) %>% pull()
-  #temp_unit <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column2) %>% pull()
-
-  # Convert only if the unit is Fahrenheit ("°F")
-  #if (temp_unit == "°F") {
-    #mean_temp_value <- (as.numeric(mean_temp_value) - 32) * 5 / 9
-  #} else {
-    #mean_temp_value <- as.numeric(mean_temp_value)  # Ensure it's numeric for Celsius values or NA
-  #}
+  # Convert to cubic feet per second only if the unit is cubic meters per second
+  if (discharge_unit == "m³/s") {
+    total_discharge <- as.numeric(total_discharge) * 35.3147
+  } else {
+    total_discharge <- as.numeric(total_discharge)
+  }
   
   # Round values to 2 decimal places
-  #mean_temp_value <- round(mean_temp_value, 2)
   total_discharge <- round(as.numeric(total_discharge), 2)
   
   data.frame(
     localEndTime = local_end_time,
     river = site_name,
-    totalDischarge = as.numeric(total_discharge),  # Ensure numeric type
-    #meanTemp = mean_temp_value,  # Already handled as numeric
+    ftDischarge_cfs = as.numeric(total_discharge),  # Ensure numeric type
     stringsAsFactors = FALSE
   )
 }
@@ -775,8 +758,7 @@ week_3_files <- find_files(week_3_directory)
 flow_tracker_3 <- data.frame(
   localEndTime = character(),
   river = character(),
-  totalDischarge = numeric(),  # Initialize as numeric
-  #meanTemp = numeric(),  # Initialize as numeric
+  ftDischarge_cfs = numeric(),  # Initialize as numeric
   stringsAsFactors = FALSE
 )
 
@@ -831,27 +813,22 @@ extract_values <- function(file_path) {
   local_end_time <- df %>% filter(Column1 == "Local_End_Time") %>% select(Column3) %>% pull()
   site_name <- df %>% filter(Column1 == "Site_Name") %>% select(Column3) %>% pull()
   total_discharge <- df %>% filter(Column1 == "Total_Discharge") %>% select(Column3) %>% pull()
+  discharge_unit <- df %>% filter(Column1 == "Total_Discharge") %>% select(Column2) %>% pull()
   
-  # Extract the temperature value and unit
-  #mean_temp_value <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column3) %>% pull()
-  #temp_unit <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column2) %>% pull()
-
-  # Convert only if the unit is Fahrenheit ("°F")
-  #if (temp_unit == "°F") {
-    #mean_temp_value <- (as.numeric(mean_temp_value) - 32) * 5 / 9
-  #} else {
-    #mean_temp_value <- as.numeric(mean_temp_value)  # Ensure it's numeric for Celsius values or NA
-  #}
+  # Convert to cubic feet per second only if the unit is cubic meters per second
+  if (discharge_unit == "m³/s") {
+    total_discharge <- as.numeric(total_discharge) * 35.3147
+  } else {
+    total_discharge <- as.numeric(total_discharge)
+  }
   
   # Round values to 2 decimal places
-  #mean_temp_value <- round(mean_temp_value, 2)
   total_discharge <- round(as.numeric(total_discharge), 2)
   
   data.frame(
     localEndTime = local_end_time,
     river = site_name,
-    totalDischarge = as.numeric(total_discharge),  # Ensure numeric type
-    #meanTemp = mean_temp_value,  # Already handled as numeric
+    ftDischarge_cfs = as.numeric(total_discharge),  # Ensure numeric type
     stringsAsFactors = FALSE
   )
 }
@@ -865,8 +842,7 @@ week_4_files <- find_files(week_4_directory)
 flow_tracker_4 <- data.frame(
   localEndTime = character(),
   river = character(),
-  totalDischarge = numeric(),  # Initialize as numeric
-  #meanTemp = numeric(),  # Initialize as numeric
+  ftDischarge_cfs = numeric(),  # Initialize as numeric
   stringsAsFactors = FALSE
 )
 
@@ -921,27 +897,22 @@ extract_values <- function(file_path) {
   local_end_time <- df %>% filter(Column1 == "Local_End_Time") %>% select(Column3) %>% pull()
   site_name <- df %>% filter(Column1 == "Site_Name") %>% select(Column3) %>% pull()
   total_discharge <- df %>% filter(Column1 == "Total_Discharge") %>% select(Column3) %>% pull()
+  discharge_unit <- df %>% filter(Column1 == "Total_Discharge") %>% select(Column2) %>% pull()
   
-  # Extract the temperature value and unit
-  #mean_temp_value <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column3) %>% pull()
-  #temp_unit <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column2) %>% pull()
-
-  # Convert only if the unit is Fahrenheit ("°F")
-  #if (temp_unit == "°F") {
-    #mean_temp_value <- (as.numeric(mean_temp_value) - 32) * 5 / 9
-  #} else {
-    #mean_temp_value <- as.numeric(mean_temp_value)  # Ensure it's numeric for Celsius values or NA
-  #}
+  # Convert to cubic feet per second only if the unit is cubic meters per second
+  if (discharge_unit == "m³/s") {
+    total_discharge <- as.numeric(total_discharge) * 35.3147
+  } else {
+    total_discharge <- as.numeric(total_discharge)
+  }
   
   # Round values to 2 decimal places
-  #mean_temp_value <- round(mean_temp_value, 2)
   total_discharge <- round(as.numeric(total_discharge), 2)
   
   data.frame(
     localEndTime = local_end_time,
     river = site_name,
-    totalDischarge = as.numeric(total_discharge),  # Ensure numeric type
-    #meanTemp = mean_temp_value,  # Already handled as numeric
+    ftDischarge_cfs = as.numeric(total_discharge),  # Ensure numeric type
     stringsAsFactors = FALSE
   )
 }
@@ -955,8 +926,7 @@ week_5_files <- find_files(week_5_directory)
 flow_tracker_5 <- data.frame(
   localEndTime = character(),
   river = character(),
-  totalDischarge = numeric(),  # Initialize as numeric
-  #meanTemp = numeric(),  # Initialize as numeric
+  ftDischarge_cfs = numeric(),  # Initialize as numeric
   stringsAsFactors = FALSE
 )
 
@@ -1011,27 +981,22 @@ extract_values <- function(file_path) {
   local_end_time <- df %>% filter(Column1 == "Local_End_Time") %>% select(Column3) %>% pull()
   site_name <- df %>% filter(Column1 == "Site_Name") %>% select(Column3) %>% pull()
   total_discharge <- df %>% filter(Column1 == "Total_Discharge") %>% select(Column3) %>% pull()
+  discharge_unit <- df %>% filter(Column1 == "Total_Discharge") %>% select(Column2) %>% pull()
   
-  # Extract the temperature value and unit
-  #mean_temp_value <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column3) %>% pull()
-  #temp_unit <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column2) %>% pull()
-
-  # Convert only if the unit is Fahrenheit ("°F")
-  #if (temp_unit == "°F") {
-    #mean_temp_value <- (as.numeric(mean_temp_value) - 32) * 5 / 9
-  #} else {
-    #mean_temp_value <- as.numeric(mean_temp_value)  # Ensure it's numeric for Celsius values or NA
-  #}
+  # Convert to cubic feet per second only if the unit is cubic meters per second
+  if (discharge_unit == "m³/s") {
+    total_discharge <- as.numeric(total_discharge) * 35.3147
+  } else {
+    total_discharge <- as.numeric(total_discharge)
+  }
   
   # Round values to 2 decimal places
-  #mean_temp_value <- round(mean_temp_value, 2)
   total_discharge <- round(as.numeric(total_discharge), 2)
   
   data.frame(
     localEndTime = local_end_time,
     river = site_name,
-    totalDischarge = as.numeric(total_discharge),  # Ensure numeric type
-    #meanTemp = mean_temp_value,  # Already handled as numeric
+    ftDischarge_cfs = as.numeric(total_discharge),  # Ensure numeric type
     stringsAsFactors = FALSE
   )
 }
@@ -1045,8 +1010,7 @@ week_6_files <- find_files(week_6_directory)
 flow_tracker_6 <- data.frame(
   localEndTime = character(),
   river = character(),
-  totalDischarge = numeric(),  # Initialize as numeric
-  #meanTemp = numeric(),  # Initialize as numeric
+  ftDischarge_cfs = numeric(),  # Initialize as numeric
   stringsAsFactors = FALSE
 )
 
@@ -1101,27 +1065,22 @@ extract_values <- function(file_path) {
   local_end_time <- df %>% filter(Column1 == "Local_End_Time") %>% select(Column3) %>% pull()
   site_name <- df %>% filter(Column1 == "Site_Name") %>% select(Column3) %>% pull()
   total_discharge <- df %>% filter(Column1 == "Total_Discharge") %>% select(Column3) %>% pull()
+  discharge_unit <- df %>% filter(Column1 == "Total_Discharge") %>% select(Column2) %>% pull()
   
-  # Extract the temperature value and unit
-  #mean_temp_value <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column3) %>% pull()
-  #temp_unit <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column2) %>% pull()
-
-  # Convert only if the unit is Fahrenheit ("°F")
-  #if (temp_unit == "°F") {
-    #mean_temp_value <- (as.numeric(mean_temp_value) - 32) * 5 / 9
-  #} else {
-    #mean_temp_value <- as.numeric(mean_temp_value)  # Ensure it's numeric for Celsius values or NA
-  #}
+  # Convert to cubic feet per second only if the unit is cubic meters per second
+  if (discharge_unit == "m³/s") {
+    total_discharge <- as.numeric(total_discharge) * 35.3147
+  } else {
+    total_discharge <- as.numeric(total_discharge)
+  }
   
   # Round values to 2 decimal places
-  #mean_temp_value <- round(mean_temp_value, 2)
   total_discharge <- round(as.numeric(total_discharge), 2)
   
   data.frame(
     localEndTime = local_end_time,
     river = site_name,
-    totalDischarge = as.numeric(total_discharge),  # Ensure numeric type
-    #meanTemp = mean_temp_value,  # Already handled as numeric
+    ftDischarge_cfs = as.numeric(total_discharge),  # Ensure numeric type
     stringsAsFactors = FALSE
   )
 }
@@ -1135,8 +1094,7 @@ week_7_files <- find_files(week_7_directory)
 flow_tracker_7 <- data.frame(
   localEndTime = character(),
   river = character(),
-  totalDischarge = numeric(),  # Initialize as numeric
-  #meanTemp = numeric(),  # Initialize as numeric
+  ftDischarge_cfs = numeric(),  # Initialize as numeric
   stringsAsFactors = FALSE
 )
 
@@ -1191,27 +1149,22 @@ extract_values <- function(file_path) {
   local_end_time <- df %>% filter(Column1 == "Local_End_Time") %>% select(Column3) %>% pull()
   site_name <- df %>% filter(Column1 == "Site_Name") %>% select(Column3) %>% pull()
   total_discharge <- df %>% filter(Column1 == "Total_Discharge") %>% select(Column3) %>% pull()
+  discharge_unit <- df %>% filter(Column1 == "Total_Discharge") %>% select(Column2) %>% pull()
   
-  # Extract the temperature value and unit
-  #mean_temp_value <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column3) %>% pull()
-  #temp_unit <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column2) %>% pull()
-
-  # Convert only if the unit is Fahrenheit ("°F")
-  #if (temp_unit == "°F") {
-    #mean_temp_value <- (as.numeric(mean_temp_value) - 32) * 5 / 9
-  #} else {
-    #mean_temp_value <- as.numeric(mean_temp_value)  # Ensure it's numeric for Celsius values or NA
-  #}
+  # Convert to cubic feet per second only if the unit is cubic meters per second
+  if (discharge_unit == "m³/s") {
+    total_discharge <- as.numeric(total_discharge) * 35.3147
+  } else {
+    total_discharge <- as.numeric(total_discharge)
+  }
   
   # Round values to 2 decimal places
-  #mean_temp_value <- round(mean_temp_value, 2)
   total_discharge <- round(as.numeric(total_discharge), 2)
   
   data.frame(
     localEndTime = local_end_time,
     river = site_name,
-    totalDischarge = as.numeric(total_discharge),  # Ensure numeric type
-    #meanTemp = mean_temp_value,  # Already handled as numeric
+    ftDischarge_cfs = as.numeric(total_discharge),  # Ensure numeric type
     stringsAsFactors = FALSE
   )
 }
@@ -1225,8 +1178,7 @@ week_8_files <- find_files(week_8_directory)
 flow_tracker_8 <- data.frame(
   localEndTime = character(),
   river = character(),
-  totalDischarge = numeric(),  # Initialize as numeric
-  #meanTemp = numeric(),  # Initialize as numeric
+  ftDischarge_cfs = numeric(),  # Initialize as numeric
   stringsAsFactors = FALSE
 )
 
@@ -1281,27 +1233,22 @@ extract_values <- function(file_path) {
   local_end_time <- df %>% filter(Column1 == "Local_End_Time") %>% select(Column3) %>% pull()
   site_name <- df %>% filter(Column1 == "Site_Name") %>% select(Column3) %>% pull()
   total_discharge <- df %>% filter(Column1 == "Total_Discharge") %>% select(Column3) %>% pull()
+  discharge_unit <- df %>% filter(Column1 == "Total_Discharge") %>% select(Column2) %>% pull()
   
-  # Extract the temperature value and unit
-  #mean_temp_value <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column3) %>% pull()
-  #temp_unit <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column2) %>% pull()
-
-  # Convert only if the unit is Fahrenheit ("°F")
-  #if (temp_unit == "°F") {
-    #mean_temp_value <- (as.numeric(mean_temp_value) - 32) * 5 / 9
-  #} else {
-    #mean_temp_value <- as.numeric(mean_temp_value)  # Ensure it's numeric for Celsius values or NA
-  #}
+  # Convert to cubic feet per second only if the unit is cubic meters per second
+  if (discharge_unit == "m³/s") {
+    total_discharge <- as.numeric(total_discharge) * 35.3147
+  } else {
+    total_discharge <- as.numeric(total_discharge)
+  }
   
   # Round values to 2 decimal places
-  #mean_temp_value <- round(mean_temp_value, 2)
   total_discharge <- round(as.numeric(total_discharge), 2)
   
   data.frame(
     localEndTime = local_end_time,
     river = site_name,
-    totalDischarge = as.numeric(total_discharge),  # Ensure numeric type
-    #meanTemp = mean_temp_value,  # Already handled as numeric
+    ftDischarge_cfs = as.numeric(total_discharge),  # Ensure numeric type
     stringsAsFactors = FALSE
   )
 }
@@ -1315,8 +1262,7 @@ week_9_files <- find_files(week_9_directory)
 flow_tracker_9 <- data.frame(
   localEndTime = character(),
   river = character(),
-  totalDischarge = numeric(),  # Initialize as numeric
-  #meanTemp = numeric(),  # Initialize as numeric
+  ftDischarge_cfs = numeric(),  # Initialize as numeric
   stringsAsFactors = FALSE
 )
 
@@ -1371,27 +1317,22 @@ extract_values <- function(file_path) {
   local_end_time <- df %>% filter(Column1 == "Local_End_Time") %>% select(Column3) %>% pull()
   site_name <- df %>% filter(Column1 == "Site_Name") %>% select(Column3) %>% pull()
   total_discharge <- df %>% filter(Column1 == "Total_Discharge") %>% select(Column3) %>% pull()
+  discharge_unit <- df %>% filter(Column1 == "Total_Discharge") %>% select(Column2) %>% pull()
   
-  # Extract the temperature value and unit
-  #mean_temp_value <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column3) %>% pull()
-  #temp_unit <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column2) %>% pull()
-
-  # Convert only if the unit is Fahrenheit ("°F")
-  #if (temp_unit == "°F") {
-    #mean_temp_value <- (as.numeric(mean_temp_value) - 32) * 5 / 9
-  #} else {
-    #mean_temp_value <- as.numeric(mean_temp_value)  # Ensure it's numeric for Celsius values or NA
-  #}
+  # Convert to cubic feet per second only if the unit is cubic meters per second
+  if (discharge_unit == "m³/s") {
+    total_discharge <- as.numeric(total_discharge) * 35.3147
+  } else {
+    total_discharge <- as.numeric(total_discharge)
+  }
   
   # Round values to 2 decimal places
-  #mean_temp_value <- round(mean_temp_value, 2)
   total_discharge <- round(as.numeric(total_discharge), 2)
   
   data.frame(
     localEndTime = local_end_time,
     river = site_name,
-    totalDischarge = as.numeric(total_discharge),  # Ensure numeric type
-    #meanTemp = mean_temp_value,  # Already handled as numeric
+    ftDischarge_cfs = as.numeric(total_discharge),  # Ensure numeric type
     stringsAsFactors = FALSE
   )
 }
@@ -1405,8 +1346,7 @@ week_10_files <- find_files(week_10_directory)
 flow_tracker_10 <- data.frame(
   localEndTime = character(),
   river = character(),
-  totalDischarge = numeric(),  # Initialize as numeric
-  #meanTemp = numeric(),  # Initialize as numeric
+  ftDischarge_cfs = numeric(),  # Initialize as numeric
   stringsAsFactors = FALSE
 )
 
@@ -1461,27 +1401,22 @@ extract_values <- function(file_path) {
   local_end_time <- df %>% filter(Column1 == "Local_End_Time") %>% select(Column3) %>% pull()
   site_name <- df %>% filter(Column1 == "Site_Name") %>% select(Column3) %>% pull()
   total_discharge <- df %>% filter(Column1 == "Total_Discharge") %>% select(Column3) %>% pull()
+  discharge_unit <- df %>% filter(Column1 == "Total_Discharge") %>% select(Column2) %>% pull()
   
-  # Extract the temperature value and unit
-  #mean_temp_value <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column3) %>% pull()
-  #temp_unit <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column2) %>% pull()
-
-  # Convert only if the unit is Fahrenheit ("°F")
-  #if (temp_unit == "°F") {
-    #mean_temp_value <- (as.numeric(mean_temp_value) - 32) * 5 / 9
-  #} else {
-    #mean_temp_value <- as.numeric(mean_temp_value)  # Ensure it's numeric for Celsius values or NA
-  #}
+  # Convert to cubic feet per second only if the unit is cubic meters per second
+  if (discharge_unit == "m³/s") {
+    total_discharge <- as.numeric(total_discharge) * 35.3147
+  } else {
+    total_discharge <- as.numeric(total_discharge)
+  }
   
   # Round values to 2 decimal places
-  #mean_temp_value <- round(mean_temp_value, 2)
   total_discharge <- round(as.numeric(total_discharge), 2)
   
   data.frame(
     localEndTime = local_end_time,
     river = site_name,
-    totalDischarge = as.numeric(total_discharge),  # Ensure numeric type
-    #meanTemp = mean_temp_value,  # Already handled as numeric
+    ftDischarge_cfs = as.numeric(total_discharge),  # Ensure numeric type
     stringsAsFactors = FALSE
   )
 }
@@ -1495,8 +1430,7 @@ week_11_files <- find_files(week_11_directory)
 flow_tracker_11 <- data.frame(
   localEndTime = character(),
   river = character(),
-  totalDischarge = numeric(),  # Initialize as numeric
-  #meanTemp = numeric(),  # Initialize as numeric
+  ftDischarge_cfs = numeric(),  # Initialize as numeric
   stringsAsFactors = FALSE
 )
 
@@ -1551,27 +1485,22 @@ extract_values <- function(file_path) {
   local_end_time <- df %>% filter(Column1 == "Local_End_Time") %>% select(Column3) %>% pull()
   site_name <- df %>% filter(Column1 == "Site_Name") %>% select(Column3) %>% pull()
   total_discharge <- df %>% filter(Column1 == "Total_Discharge") %>% select(Column3) %>% pull()
+  discharge_unit <- df %>% filter(Column1 == "Total_Discharge") %>% select(Column2) %>% pull()
   
-  # Extract the temperature value and unit
-  #mean_temp_value <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column3) %>% pull()
-  #temp_unit <- df %>% filter(Column1 == "Mean_Temp") %>% select(Column2) %>% pull()
-
-  # Convert only if the unit is Fahrenheit ("°F")
-  #if (temp_unit == "°F") {
-    #mean_temp_value <- (as.numeric(mean_temp_value) - 32) * 5 / 9
-  #} else {
-    #mean_temp_value <- as.numeric(mean_temp_value)  # Ensure it's numeric for Celsius values or NA
-  #}
+  # Convert to cubic feet per second only if the unit is cubic meters per second
+  if (discharge_unit == "m³/s") {
+    total_discharge <- as.numeric(total_discharge) * 35.3147
+  } else {
+    total_discharge <- as.numeric(total_discharge)
+  }
   
   # Round values to 2 decimal places
-  #mean_temp_value <- round(mean_temp_value, 2)
   total_discharge <- round(as.numeric(total_discharge), 2)
   
   data.frame(
     localEndTime = local_end_time,
     river = site_name,
-    totalDischarge = as.numeric(total_discharge),  # Ensure numeric type
-    #meanTemp = mean_temp_value,  # Already handled as numeric
+    ftDischarge_cfs = as.numeric(total_discharge),  # Ensure numeric type
     stringsAsFactors = FALSE
   )
 }
@@ -1585,8 +1514,7 @@ week_12_files <- find_files(week_12_directory)
 flow_tracker_12 <- data.frame(
   localEndTime = character(),
   river = character(),
-  totalDischarge = numeric(),  # Initialize as numeric
-  #meanTemp = numeric(),  # Initialize as numeric
+  ftDischarge_cfs = numeric(),  # Initialize as numeric
   stringsAsFactors = FALSE
 )
 
@@ -1656,8 +1584,7 @@ amethyst_combined <- flow_tracker_1 %>%
   group_by(shift) %>%                            # Group by shift (day/night)
   summarise(
     river = "AMETHYST",                          # Set river to AMETHYST
-    totalDischarge = sum(totalDischarge, na.rm = TRUE)#, # Sum totalDischarge
-    #meanTemp = mean(meanTemp, na.rm = TRUE)      # Average meanTemp
+    ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE) # Sum ftDischarge_cfs
   )
 
 # Bind the AMETHYST rows to the original dataset
@@ -1698,8 +1625,7 @@ amethyst_combined <- flow_tracker_2 %>%
   group_by(shift) %>%                            # Group by shift (day/night)
   summarise(
     river = "AMETHYST",                          # Set river to AMETHYST
-    totalDischarge = sum(totalDischarge, na.rm = TRUE)#, # Sum totalDischarge
-    #meanTemp = mean(meanTemp, na.rm = TRUE)      # Average meanTemp
+    ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE) # Sum ftDischarge_cfs
   )
 
 # Bind the AMETHYST rows to the original dataset
@@ -1740,8 +1666,7 @@ amethyst_combined <- flow_tracker_3 %>%
   group_by(shift) %>%                            # Group by shift (day/night)
   summarise(
     river = "AMETHYST",                          # Set river to AMETHYST
-    totalDischarge = sum(totalDischarge, na.rm = TRUE)#, # Sum totalDischarge
-    #meanTemp = mean(meanTemp, na.rm = TRUE)      # Average meanTemp
+    ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE) # Sum ftDischarge_cfs
   )
 
 # Bind the AMETHYST rows to the original dataset
@@ -1782,8 +1707,7 @@ amethyst_combined <- flow_tracker_4 %>%
   group_by(shift) %>%                            # Group by shift (day/night)
   summarise(
     river = "AMETHYST",                          # Set river to AMETHYST
-    totalDischarge = sum(totalDischarge, na.rm = TRUE)#, # Sum totalDischarge
-    #meanTemp = mean(meanTemp, na.rm = TRUE)      # Average meanTemp
+    ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE) # Sum ftDischarge_cfs
   )
 
 # Bind the AMETHYST rows to the original dataset
@@ -1824,8 +1748,7 @@ amethyst_combined <- flow_tracker_5 %>%
   group_by(shift) %>%                            # Group by shift (day/night)
   summarise(
     river = "AMETHYST",                          # Set river to AMETHYST
-    totalDischarge = sum(totalDischarge, na.rm = TRUE)#, # Sum totalDischarge
-    #meanTemp = mean(meanTemp, na.rm = TRUE)      # Average meanTemp
+    ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE) # Sum ftDischarge_cfs
   )
 
 # Bind the AMETHYST rows to the original dataset
@@ -1866,8 +1789,7 @@ amethyst_combined <- flow_tracker_6 %>%
   group_by(shift) %>%                            # Group by shift (day/night)
   summarise(
     river = "AMETHYST",                          # Set river to AMETHYST
-    totalDischarge = sum(totalDischarge, na.rm = TRUE)#, # Sum totalDischarge
-    #meanTemp = mean(meanTemp, na.rm = TRUE)      # Average meanTemp
+    ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE) # Sum ftDischarge_cfs
   )
 
 # Bind the AMETHYST rows to the original dataset
@@ -1908,8 +1830,7 @@ amethyst_combined <- flow_tracker_7 %>%
   group_by(shift) %>%                            # Group by shift (day/night)
   summarise(
     river = "AMETHYST",                          # Set river to AMETHYST
-    totalDischarge = sum(totalDischarge, na.rm = TRUE)#, # Sum totalDischarge
-    #meanTemp = mean(meanTemp, na.rm = TRUE)      # Average meanTemp
+    ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE) # Sum ftDischarge_cfs
   )
 
 # Bind the AMETHYST rows to the original dataset
@@ -1950,8 +1871,7 @@ amethyst_combined <- flow_tracker_8 %>%
   group_by(shift) %>%                            # Group by shift (day/night)
   summarise(
     river = "AMETHYST",                          # Set river to AMETHYST
-    totalDischarge = sum(totalDischarge, na.rm = TRUE)#, # Sum totalDischarge
-    #meanTemp = mean(meanTemp, na.rm = TRUE)      # Average meanTemp
+    ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE) # Sum ftDischarge_cfs
   )
 
 # Bind the AMETHYST rows to the original dataset
@@ -1992,8 +1912,7 @@ amethyst_combined <- flow_tracker_9 %>%
   group_by(shift) %>%                            # Group by shift (day/night)
   summarise(
     river = "AMETHYST",                          # Set river to AMETHYST
-    totalDischarge = sum(totalDischarge, na.rm = TRUE)#, # Sum totalDischarge
-    #meanTemp = mean(meanTemp, na.rm = TRUE)      # Average meanTemp
+    ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE) # Sum ftDischarge_cfs
   )
 
 # Bind the AMETHYST rows to the original dataset
@@ -2034,8 +1953,7 @@ amethyst_combined <- flow_tracker_10 %>%
   group_by(shift) %>%                            # Group by shift (day/night)
   summarise(
     river = "AMETHYST",                          # Set river to AMETHYST
-    totalDischarge = sum(totalDischarge, na.rm = TRUE)#, # Sum totalDischarge
-    #meanTemp = mean(meanTemp, na.rm = TRUE)      # Average meanTemp
+    ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE) # Sum ftDischarge_cfs
   )
 
 # Bind the AMETHYST rows to the original dataset
@@ -2071,8 +1989,7 @@ amethyst_combined <- flow_tracker_11 %>%
   group_by(shift) %>%                            # Group by shift (day/night)
   summarise(
     river = "AMETHYST",                          # Set river to AMETHYST
-    totalDischarge = sum(totalDischarge, na.rm = TRUE)#, # Sum totalDischarge
-    #meanTemp = mean(meanTemp, na.rm = TRUE)      # Average meanTemp
+    ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE) # Sum ftDischarge_cfs
   )
 
 # Bind the AMETHYST rows to the original dataset
@@ -2125,16 +2042,27 @@ flow_file_names <- paste0(flow_tracker_data, c("flow_tracker_1.csv", "flow_track
 # Create an empty list to store the processed datasets
 processed_flow_data_list <- list()
 
-# Loop through each stream survey file
+# Loop through each flow file
 for (file_name in flow_file_names) {
-  # Read in the stream survey data
+  # Read in the flow data
   raw_flow_data <- read.csv(file_name)
   
-  # Step 1: Process the data
+  # Process the data
   flow_data <- raw_flow_data %>%
     
-    # Step 2: Select specific columns
-    select(river, totalDischarge, ftTime_EST, shift) 
+    # Loop through each dataset and apply the transformations
+    group_by(shift, river) %>%
+    mutate(row_count = n()) %>%  # Count rows per group
+    summarize(
+      ftDischarge_cfs = round(mean(ftDischarge_cfs, na.rm = TRUE), 2),
+      ftTime_EST = ifelse(first(row_count) > 1, NA, first(ftTime_EST)),  # Keep time if only 1 row
+      .groups = "drop"
+    ) %>%
+    
+    # Select specific columns
+    select(river, ftDischarge_cfs, ftTime_EST, shift) 
+    
+    
   
   # Store the processed data in the list
   processed_flow_data_list[[file_name]] <- flow_data
@@ -2150,7 +2078,6 @@ for (i in 1:length(processed_flow_data_list)) {
 }
 
 ```
-
 
 
 ## Combine fish survey and flow data
@@ -3678,7 +3605,8 @@ for (file_name in stream_file_names) {
       startTime_EST = startTime,
       endTime_EST = endTime,
       isoID = iso,
-      isoTime_EST = isoTime) %>%
+      isoTime_EST = isoTime,
+      airTemp_F = airTemp) %>%
     
     # Step 4: Rewrite stream names
     left_join(stream_name_lookup, by = c("river" = "abbreviation")) %>%
@@ -4348,8 +4276,8 @@ tagging_data <- tagging_data %>%
     section = SECTION,
     radioID = RADIOTAG,
     tempID = TEMPTAG,
-    length = LENGTH,
-    weight = WEIGHT,
+    length_mm = LENGTH,
+    weight_g = WEIGHT,
     geneticSam = GENETICSAM,
     sex = SEX
     )
@@ -4361,8 +4289,8 @@ tagging_data <- tagging_data %>%
          section = str_trim(section),
          radioID = str_trim(radioID),
          tempID = str_trim(tempID),
-         length = str_trim(length),
-         weight = str_trim(weight),
+         length_mm = str_trim(length_mm),
+         weight_g = str_trim(weight_g),
          geneticSam = str_trim(geneticSam),
          sex = str_trim(sex)) %>%
   filter(!(radioID == "44" & date == as.POSIXct("2024-06-04", format="%Y-%m-%d")))
@@ -4435,8 +4363,8 @@ collection_data <- collection_data %>%
     date = recoveryDate,
     radioID = RADIOTAG,
     tempID = TEMPTAG,
-    length = LENGTH,
-    weight = WEIGHT,
+    length_mm = LENGTH,
+    weight_g = WEIGHT,
     blood = BLOOD,
     type = TYPE,
     sex = SEX,
@@ -4449,8 +4377,8 @@ collection_data <- collection_data %>%
          date = str_trim(date),
          radioID = str_trim(radioID),
          tempID = str_trim(tempID),
-         length = str_trim(length),
-         weight = str_trim(weight),
+         length_mm = str_trim(length_mm),
+         weight_g = str_trim(weight_g),
          blood = str_trim(blood),
          type = str_trim(type),
          sex = str_trim(sex),
@@ -4512,7 +4440,7 @@ head(tracking_data_all)
 
 # Select columns to keep
 tracking_data_all <- tracking_data_all %>%
-  select(date, trackedTime_EST, river, shift, radioID, tempID, status, power, source, fishNotes, lon, lat, habitat, habitatExtra, position, substrate, substrateExtra, shade, airTemp, cloud, precip, totalDischarge, ftTime_EST, startTime_EST, endTime_EST, streamNotes, downstreamGPS, downstreamGain, upstreamGPS, upstreamGain, isoID, isoTime_EST, length, weight, sex, type, geneticSam, blood, section, collectionNotes)
+  select(date, trackedTime_EST, river, shift, radioID, tempID, status, power, source, fishNotes, lon, lat, habitat, habitatExtra, position, substrate, substrateExtra, shade, airTemp_F, cloud, precip, ftDischarge_cfs, ftTime_EST, startTime_EST, endTime_EST, streamNotes, downstreamGPS, downstreamGain, upstreamGPS, upstreamGain, isoID, isoTime_EST, length_mm, weight_g, sex, type, geneticSam, blood, section, collectionNotes)
 
 # Replace all blank ("") or whitespace-only values with NA
 tracking_data_all <- tracking_data_all %>%

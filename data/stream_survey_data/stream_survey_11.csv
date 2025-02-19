@@ -1,4 +1,4 @@
-"river","airTemp","cloud","precip","startTime_EST","endTime_EST","isoID","streamNotes","isoTime_EST","downstreamGPS","downstreamGain","upstreamGPS","upstreamGain","shift"
+"river","airTemp_F","cloud","precip","startTime_EST","endTime_EST","isoID","streamNotes","isoTime_EST","downstreamGPS","downstreamGain","upstreamGPS","upstreamGain","shift"
 "AMETHYST",68,"Cloudy","No rain","09:00","13:37","BUFF202408201044EST, AMTH202408201047EST, HARR202408200947EST","","09:47",NA,NA,NA,NA,"day"
 "UNDERHILL",63,"Clear","No rain","08:25","13:00","UNDH202408210929EST","Day of fish collection ","09:29",NA,NA,NA,NA,"day"
 "DRY UPPER",60,"Clear","No rain","07:55","16:30","DRYU202408220918EST","","09:18",NA,NA,NA,NA,"day"

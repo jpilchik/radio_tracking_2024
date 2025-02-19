@@ -1,4 +1,4 @@
-"river","date","section","radioID","tempID","length","weight","geneticSam","sex"
+"river","date","section","radioID","tempID","length_mm","weight_g","geneticSam","sex"
 "DRY UPPER","2024-07-18","R10","29.1","325","145","44","Y",NA
 "DRY UPPER","2024-07-18","R9","30.1","319","152","41.2","Y",NA
 "DRY UPPER","2024-07-18","R12","39.1","304","188","90","Y",NA

@@ -1,4 +1,4 @@
-"river","date","radioID","tempID","length","weight","blood","type","sex","collectionNotes"
+"river","date","radioID","tempID","length_mm","weight_g","blood","type","sex","collectionNotes"
 "DICKEY","2024-06-28","46","317",NA,NA,NA,"TAG","M",NA
 "DICKEY","2024-07-01","29","304",NA,NA,NA,"TAG","M","Recovered on 7/1/2024 but confirmed dead on 6/17/2024"
 "DRY UPPER","2024-07-12","42","325",NA,NA,NA,"TAG","M",NA

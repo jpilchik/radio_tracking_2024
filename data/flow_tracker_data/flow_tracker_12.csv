@@ -1,3 +1,3 @@
-"river","totalDischarge","ftTime_EST","shift"
-"DICKEY",0.03,"2024-08-29 10:21:54","day"
-"UNDERHILL",0.03,"2024-08-27 10:16:23","day"
+"river","ftDischarge_cfs","ftTime_EST","shift"
+"DICKEY",0.95,"2024-08-29 10:21:54","day"
+"UNDERHILL",1.2,"2024-08-27 10:16:23","day"

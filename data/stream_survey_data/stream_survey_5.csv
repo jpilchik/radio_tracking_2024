@@ -1,4 +1,4 @@
-"river","airTemp","cloud","precip","startTime_EST","endTime_EST","isoID","streamNotes","isoTime_EST","downstreamGPS","downstreamGain","upstreamGPS","upstreamGain","shift"
+"river","airTemp_F","cloud","precip","startTime_EST","endTime_EST","isoID","streamNotes","isoTime_EST","downstreamGPS","downstreamGain","upstreamGPS","upstreamGain","shift"
 "UNDERHILL",71,"Cloudy","Moderate rain","07:28","12:39","UNDH202407090734EST","","07:27","42.4445523 N 72.3210041 W",75,"42.4436600 W 72.3295537 N",75,"day"
 "UNDERHILL",75,"Mostly cloudy","Moderate rain","17:30","19:49","UNDH202407091730EST","Thunder most of the night","17:30","",NA,"",NA,"night"
 "DICKEY",83,"Cloudy","No rain","07:13","12:43","DCKY20240710749EST","","07:49","42.4419963.   -72.3735598",74,"42.4373994 N 72.3647180 W",74,"day"
