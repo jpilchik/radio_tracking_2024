@@ -1581,14 +1581,22 @@ flow_tracker_1 <- flow_tracker_1 %>%
 # Create rows representing Amethyst brook discharge and temperature by combining Buffam and Harris measurements per shift
 amethyst_combined <- flow_tracker_1 %>%
   filter(river %in% c("BUFFAM", "HARRIS")) %>%   # Filter BUFFAM and HARRIS
-  group_by(shift) %>%                            # Group by shift (day/night)
+  group_by(shift) %>%  # Group by date and shift
   summarise(
     river = "AMETHYST",                          # Set river to AMETHYST
-    ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE) # Sum ftDischarge_cfs
-  )
+    ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE), # Sum ftDischarge_cfs
+  ) 
 
 # Bind the AMETHYST rows to the original dataset
 flow_tracker_1 <- bind_rows(flow_tracker_1, amethyst_combined)
+
+# Manually set the correct date for AMETHYST day and night rows
+flow_tracker_1 <- flow_tracker_1 %>%
+  mutate(ftTime_EST = case_when(
+    river == "AMETHYST" & shift == "day" ~ as.POSIXct("2024-06-11 00:00:00", tz="EST"),  # Set the correct date for the day row
+    river == "AMETHYST" & shift == "night" ~ as.POSIXct("2024-06-11 00:00:00", tz="EST"),  # Set the correct date for the night row
+    TRUE ~ ftTime_EST  # Keep the existing dateTime for other rows
+  ))
 
 # Display the first few rows to check the result
 head(flow_tracker_1)
@@ -1622,14 +1630,22 @@ flow_tracker_2 <- flow_tracker_2 %>%
 # Create rows representing Amethyst brook discharge and temperature by combining Buffam and Harris measurements per shift
 amethyst_combined <- flow_tracker_2 %>%
   filter(river %in% c("BUFFAM", "HARRIS")) %>%   # Filter BUFFAM and HARRIS
-  group_by(shift) %>%                            # Group by shift (day/night)
+  group_by(shift) %>%  # Group by date and shift
   summarise(
     river = "AMETHYST",                          # Set river to AMETHYST
-    ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE) # Sum ftDischarge_cfs
-  )
+    ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE), # Sum ftDischarge_cfs
+  ) 
 
 # Bind the AMETHYST rows to the original dataset
 flow_tracker_2 <- bind_rows(flow_tracker_2, amethyst_combined)
+
+# Manually set the correct date for AMETHYST day and night rows
+flow_tracker_2 <- flow_tracker_2 %>%
+  mutate(ftTime_EST = case_when(
+    river == "AMETHYST" & shift == "day" ~ as.POSIXct("2024-06-18 00:00:00", tz="EST"),  # Set the correct date for the day row
+    river == "AMETHYST" & shift == "night" ~ as.POSIXct("2024-06-19 00:00:00", tz="EST"),  # Set the correct date for the night row
+    TRUE ~ ftTime_EST  # Keep the existing dateTime for other rows
+  ))
 
 # Display the first few rows to check the result
 head(flow_tracker_2)
@@ -1663,14 +1679,22 @@ flow_tracker_3 <- flow_tracker_3 %>%
 # Create rows representing Amethyst brook discharge and temperature by combining Buffam and Harris measurements per shift
 amethyst_combined <- flow_tracker_3 %>%
   filter(river %in% c("BUFFAM", "HARRIS")) %>%   # Filter BUFFAM and HARRIS
-  group_by(shift) %>%                            # Group by shift (day/night)
+  group_by(shift) %>%  # Group by date and shift
   summarise(
     river = "AMETHYST",                          # Set river to AMETHYST
-    ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE) # Sum ftDischarge_cfs
-  )
+    ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE), # Sum ftDischarge_cfs
+  ) 
 
 # Bind the AMETHYST rows to the original dataset
 flow_tracker_3 <- bind_rows(flow_tracker_3, amethyst_combined)
+
+# Manually set the correct date for AMETHYST day and night rows
+flow_tracker_3 <- flow_tracker_3 %>%
+  mutate(ftTime_EST = case_when(
+    river == "AMETHYST" & shift == "day" ~ as.POSIXct("2024-06-26 00:00:00", tz="EST"),  # Set the correct date for the day row
+    river == "AMETHYST" & shift == "night" ~ as.POSIXct("2024-06-26 00:00:00", tz="EST"),  # Set the correct date for the night row
+    TRUE ~ ftTime_EST  # Keep the existing dateTime for other rows
+  ))
 
 # Display the first few rows to check the result
 head(flow_tracker_3)
@@ -1704,14 +1728,22 @@ flow_tracker_4 <- flow_tracker_4 %>%
 # Create rows representing Amethyst brook discharge and temperature by combining Buffam and Harris measurements per shift
 amethyst_combined <- flow_tracker_4 %>%
   filter(river %in% c("BUFFAM", "HARRIS")) %>%   # Filter BUFFAM and HARRIS
-  group_by(shift) %>%                            # Group by shift (day/night)
+  group_by(shift) %>%  # Group by date and shift
   summarise(
     river = "AMETHYST",                          # Set river to AMETHYST
-    ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE) # Sum ftDischarge_cfs
-  )
+    ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE), # Sum ftDischarge_cfs
+  ) 
 
 # Bind the AMETHYST rows to the original dataset
 flow_tracker_4 <- bind_rows(flow_tracker_4, amethyst_combined)
+
+# Manually set the correct date for AMETHYST day and night rows
+flow_tracker_4 <- flow_tracker_4 %>%
+  mutate(ftTime_EST = case_when(
+    river == "AMETHYST" & shift == "day" ~ as.POSIXct("2024-07-02 00:00:00", tz="EST"),  # Set the correct date for the day row
+    river == "AMETHYST" & shift == "night" ~ as.POSIXct("2024-07-02 00:00:00", tz="EST"),  # Set the correct date for the night row
+    TRUE ~ ftTime_EST  # Keep the existing dateTime for other rows
+  ))
 
 # Display the first few rows to check the result
 head(flow_tracker_4)
@@ -1745,14 +1777,22 @@ flow_tracker_5 <- flow_tracker_5 %>%
 # Create rows representing Amethyst brook discharge and temperature by combining Buffam and Harris measurements per shift
 amethyst_combined <- flow_tracker_5 %>%
   filter(river %in% c("BUFFAM", "HARRIS")) %>%   # Filter BUFFAM and HARRIS
-  group_by(shift) %>%                            # Group by shift (day/night)
+  group_by(shift) %>%  # Group by date and shift
   summarise(
     river = "AMETHYST",                          # Set river to AMETHYST
-    ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE) # Sum ftDischarge_cfs
-  )
+    ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE), # Sum ftDischarge_cfs
+  ) 
 
 # Bind the AMETHYST rows to the original dataset
 flow_tracker_5 <- bind_rows(flow_tracker_5, amethyst_combined)
+
+# Manually set the correct date for AMETHYST day and night rows
+flow_tracker_5 <- flow_tracker_5 %>%
+  mutate(ftTime_EST = case_when(
+    river == "AMETHYST" & shift == "day" ~ as.POSIXct("2024-07-11 00:00:00", tz="EST"),  # Set the correct date for the day row
+    river == "AMETHYST" & shift == "night" ~ as.POSIXct("2024-07-11 00:00:00", tz="EST"),  # Set the correct date for the night row
+    TRUE ~ ftTime_EST  # Keep the existing dateTime for other rows
+  ))
 
 # Display the first few rows to check the result
 head(flow_tracker_5)
@@ -1786,14 +1826,22 @@ flow_tracker_6 <- flow_tracker_6 %>%
 # Create rows representing Amethyst brook discharge and temperature by combining Buffam and Harris measurements per shift
 amethyst_combined <- flow_tracker_6 %>%
   filter(river %in% c("BUFFAM", "HARRIS")) %>%   # Filter BUFFAM and HARRIS
-  group_by(shift) %>%                            # Group by shift (day/night)
+  group_by(shift) %>%  # Group by date and shift
   summarise(
     river = "AMETHYST",                          # Set river to AMETHYST
-    ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE) # Sum ftDischarge_cfs
+    ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE), # Sum ftDischarge_cfs
   )
 
 # Bind the AMETHYST rows to the original dataset
 flow_tracker_6 <- bind_rows(flow_tracker_6, amethyst_combined)
+
+# Manually set the correct date for AMETHYST day and night rows
+flow_tracker_6 <- flow_tracker_6 %>%
+  mutate(ftTime_EST = case_when(
+    river == "AMETHYST" & shift == "day" ~ as.POSIXct("2024-07-17 00:00:00", tz="EST"),  # Set the correct date for the day row
+    river == "AMETHYST" & shift == "night" ~ as.POSIXct("2024-07-17 00:00:00", tz="EST"),  # Set the correct date for the night row
+    TRUE ~ ftTime_EST  # Keep the existing dateTime for other rows
+  ))
 
 # Display the first few rows to check the result
 head(flow_tracker_6)
@@ -1827,14 +1875,22 @@ flow_tracker_7 <- flow_tracker_7 %>%
 # Create rows representing Amethyst brook discharge and temperature by combining Buffam and Harris measurements per shift
 amethyst_combined <- flow_tracker_7 %>%
   filter(river %in% c("BUFFAM", "HARRIS")) %>%   # Filter BUFFAM and HARRIS
-  group_by(shift) %>%                            # Group by shift (day/night)
+  group_by(shift) %>%  # Group by date and shift
   summarise(
     river = "AMETHYST",                          # Set river to AMETHYST
-    ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE) # Sum ftDischarge_cfs
-  )
+    ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE), # Sum ftDischarge_cfs
+  ) 
 
 # Bind the AMETHYST rows to the original dataset
 flow_tracker_7 <- bind_rows(flow_tracker_7, amethyst_combined)
+
+# Manually set the correct date for AMETHYST day and night rows
+flow_tracker_7 <- flow_tracker_7 %>%
+  mutate(ftTime_EST = case_when(
+    river == "AMETHYST" & shift == "day" ~ as.POSIXct("2024-07-25 00:00:00", tz="EST"),  # Set the correct date for the day row
+    river == "AMETHYST" & shift == "night" ~ as.POSIXct("2024-07-25 00:00:00", tz="EST"),  # Set the correct date for the night row
+    TRUE ~ ftTime_EST  # Keep the existing dateTime for other rows
+  ))
 
 # Display the first few rows to check the result
 head(flow_tracker_7)
@@ -1868,14 +1924,22 @@ flow_tracker_8 <- flow_tracker_8 %>%
 # Create rows representing Amethyst brook discharge and temperature by combining Buffam and Harris measurements per shift
 amethyst_combined <- flow_tracker_8 %>%
   filter(river %in% c("BUFFAM", "HARRIS")) %>%   # Filter BUFFAM and HARRIS
-  group_by(shift) %>%                            # Group by shift (day/night)
+  group_by(shift) %>%  # Group by date and shift
   summarise(
     river = "AMETHYST",                          # Set river to AMETHYST
-    ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE) # Sum ftDischarge_cfs
-  )
+    ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE), # Sum ftDischarge_cfs
+  ) 
 
 # Bind the AMETHYST rows to the original dataset
 flow_tracker_8 <- bind_rows(flow_tracker_8, amethyst_combined)
+
+# Manually set the correct date for AMETHYST day and night rows
+flow_tracker_8 <- flow_tracker_8 %>%
+  mutate(ftTime_EST = case_when(
+    river == "AMETHYST" & shift == "day" ~ as.POSIXct("2024-07-31 00:00:00", tz="EST"),  # Set the correct date for the day row
+    river == "AMETHYST" & shift == "night" ~ as.POSIXct("2024-07-31 00:00:00", tz="EST"),  # Set the correct date for the night row
+    TRUE ~ ftTime_EST  # Keep the existing dateTime for other rows
+  ))
 
 # Display the first few rows to check the result
 head(flow_tracker_8)
@@ -1909,14 +1973,22 @@ flow_tracker_9 <- flow_tracker_9 %>%
 # Create rows representing Amethyst brook discharge and temperature by combining Buffam and Harris measurements per shift
 amethyst_combined <- flow_tracker_9 %>%
   filter(river %in% c("BUFFAM", "HARRIS")) %>%   # Filter BUFFAM and HARRIS
-  group_by(shift) %>%                            # Group by shift (day/night)
+  group_by(shift) %>%  # Group by date and shift
   summarise(
     river = "AMETHYST",                          # Set river to AMETHYST
-    ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE) # Sum ftDischarge_cfs
-  )
+    ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE), # Sum ftDischarge_cfs
+  ) 
 
 # Bind the AMETHYST rows to the original dataset
 flow_tracker_9 <- bind_rows(flow_tracker_9, amethyst_combined)
+
+# Manually set the correct date for AMETHYST day and night rows
+flow_tracker_9 <- flow_tracker_9 %>%
+  mutate(ftTime_EST = case_when(
+    river == "AMETHYST" & shift == "day" ~ as.POSIXct("2024-08-08 00:00:00", tz="EST"),  # Set the correct date for the day row
+    river == "AMETHYST" & shift == "night" ~ as.POSIXct("2024-08-08 00:00:00", tz="EST"),  # Set the correct date for the night row
+    TRUE ~ ftTime_EST  # Keep the existing dateTime for other rows
+  ))
 
 # Display the first few rows to check the result
 head(flow_tracker_9)
@@ -1950,14 +2022,22 @@ flow_tracker_10 <- flow_tracker_10 %>%
 # Create rows representing Amethyst brook discharge and temperature by combining Buffam and Harris measurements per shift
 amethyst_combined <- flow_tracker_10 %>%
   filter(river %in% c("BUFFAM", "HARRIS")) %>%   # Filter BUFFAM and HARRIS
-  group_by(shift) %>%                            # Group by shift (day/night)
+  group_by(shift) %>%  # Group by date and shift
   summarise(
     river = "AMETHYST",                          # Set river to AMETHYST
-    ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE) # Sum ftDischarge_cfs
-  )
+    ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE), # Sum ftDischarge_cfs
+  ) 
 
 # Bind the AMETHYST rows to the original dataset
 flow_tracker_10 <- bind_rows(flow_tracker_10, amethyst_combined)
+
+# Manually set the correct date for AMETHYST day and night rows
+flow_tracker_10 <- flow_tracker_10 %>%
+  mutate(ftTime_EST = case_when(
+    river == "AMETHYST" & shift == "day" ~ as.POSIXct("2024-08-13 00:00:00", tz="EST"),  # Set the correct date for the day row
+    river == "AMETHYST" & shift == "night" ~ as.POSIXct("2024-08-13 00:00:00", tz="EST"),  # Set the correct date for the night row
+    TRUE ~ ftTime_EST  # Keep the existing dateTime for other rows
+  ))
 
 # Display the first few rows to check the result
 head(flow_tracker_10)
@@ -1968,6 +2048,7 @@ write.csv(flow_tracker_10,
           row.names = FALSE)
 
 ```
+
 ```{r add day and night shift differentiation into the flow week 11}
 
 # Read in the flow data
@@ -1986,11 +2067,14 @@ flow_tracker_11 <- flow_tracker_11 %>%
 # Create rows representing Amethyst brook discharge and temperature by combining Buffam and Harris measurements per shift
 amethyst_combined <- flow_tracker_11 %>%
   filter(river %in% c("BUFFAM", "HARRIS")) %>%   # Filter BUFFAM and HARRIS
-  group_by(shift) %>%                            # Group by shift (day/night)
+  mutate(date = as.Date(ftTime_EST)) %>%          # Extract only the date portion
+  group_by(date, shift) %>%  # Group by date and shift
   summarise(
     river = "AMETHYST",                          # Set river to AMETHYST
-    ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE) # Sum ftDischarge_cfs
-  )
+    ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE), # Sum ftDischarge_cfs
+    .groups = "drop"
+  ) %>%
+  mutate(ftTime_EST = as.POSIXct(paste(date, "00:00:00"), format="%Y-%m-%d %H:%M:%S", tz = "EST"))  # Convert date back to POSIXct for consistency
 
 # Bind the AMETHYST rows to the original dataset
 flow_tracker_11 <- bind_rows(flow_tracker_11, amethyst_combined)
@@ -2004,6 +2088,8 @@ write.csv(flow_tracker_11,
           row.names = FALSE)
 
 ```
+
+
 ```{r add day and night shift differentiation into the flow week 12}
 
 # Read in the flow data
@@ -2049,9 +2135,10 @@ for (file_name in flow_file_names) {
   
   # Process the data
   flow_data <- raw_flow_data %>%
+    mutate(ftDate = as.Date(ftTime_EST)) %>%  # Extract date from ftTime_EST
     
     # Loop through each dataset and apply the transformations
-    group_by(shift, river) %>%
+    group_by(shift, river, ftDate) %>%
     mutate(row_count = n()) %>%  # Count rows per group
     summarize(
       ftDischarge_cfs = round(mean(ftDischarge_cfs, na.rm = TRUE), 2),
@@ -3595,7 +3682,7 @@ for (file_name in stream_file_names) {
   stream_data <- raw_stream_data %>%
     
     # Step 2: Select specific columns
-    select(stream, airTemp, cloud, precip, startTime, endTime, iso, Notes, 
+    select(date, stream, airTemp, cloud, precip, startTime, endTime, iso, Notes, 
            isoTime, downstreamGPS, downstreamGain, upstreamGPS, upstreamGain, shift) %>%
 
     # Step 3: Rename columns
@@ -3648,7 +3735,7 @@ fish_flow_receiver_1 <- fish_flow_receiver_1 %>%
 # Perform the join on the 'shift' and the modified 'riverMatch' column in the fish survey
 fish_flow_receiver_stream_1 <- left_join(fish_flow_receiver_1, 
                            stream_survey_1, 
-                           by = c("shift", "riverMatch" = "river"))
+                           by = c("shift", "riverMatch" = "river", "date"))
 
 # Remove the 'riverMatch' column from the result
 fish_flow_receiver_stream_1 <- fish_flow_receiver_stream_1 %>% 
@@ -3680,7 +3767,7 @@ fish_flow_receiver_2 <- fish_flow_receiver_2 %>%
 # Perform the join on the 'shift' and the modified 'riverMatch' column in the fish survey
 fish_flow_receiver_stream_2 <- left_join(fish_flow_receiver_2, 
                            stream_survey_2, 
-                           by = c("shift", "riverMatch" = "river"))
+                           by = c("shift", "riverMatch" = "river", "date"))
 
 # Remove the 'riverMatch' column from the result
 fish_flow_receiver_stream_2 <- fish_flow_receiver_stream_2 %>% 
@@ -3712,7 +3799,7 @@ fish_flow_receiver_3 <- fish_flow_receiver_3 %>%
 # Perform the join on the 'shift' and the modified 'riverMatch' column in the fish survey
 fish_flow_receiver_stream_3 <- left_join(fish_flow_receiver_3, 
                            stream_survey_3, 
-                           by = c("shift", "riverMatch" = "river"))
+                           by = c("shift", "riverMatch" = "river", "date"))
 
 # Remove the 'riverMatch' column from the result
 fish_flow_receiver_stream_3 <- fish_flow_receiver_stream_3 %>% 
@@ -3744,7 +3831,7 @@ fish_flow_receiver_4 <- fish_flow_receiver_4 %>%
 # Perform the join on the 'shift' and the modified 'riverMatch' column in the fish survey
 fish_flow_receiver_stream_4 <- left_join(fish_flow_receiver_4, 
                            stream_survey_4, 
-                           by = c("shift", "riverMatch" = "river"))
+                           by = c("shift", "riverMatch" = "river", "date"))
 
 # Remove the 'riverMatch' column from the result
 fish_flow_receiver_stream_4 <- fish_flow_receiver_stream_4 %>% 
@@ -3776,7 +3863,7 @@ fish_flow_receiver_5 <- fish_flow_receiver_5 %>%
 # Perform the join on the 'shift' and the modified 'riverMatch' column in the fish survey
 fish_flow_receiver_stream_5 <- left_join(fish_flow_receiver_5, 
                            stream_survey_5, 
-                           by = c("shift", "riverMatch" = "river"))
+                           by = c("shift", "riverMatch" = "river", "date"))
 
 # Remove the 'riverMatch' column from the result
 fish_flow_receiver_stream_5 <- fish_flow_receiver_stream_5 %>% 
@@ -3808,7 +3895,7 @@ fish_flow_receiver_6 <- fish_flow_receiver_6 %>%
 # Perform the join on the 'shift' and the modified 'riverMatch' column in the fish survey
 fish_flow_receiver_stream_6 <- left_join(fish_flow_receiver_6, 
                            stream_survey_6, 
-                           by = c("shift", "riverMatch" = "river"))
+                           by = c("shift", "riverMatch" = "river", "date"))
 
 # Remove the 'riverMatch' column from the result
 fish_flow_receiver_stream_6 <- fish_flow_receiver_stream_6 %>% 
@@ -3840,7 +3927,7 @@ fish_flow_receiver_7 <- fish_flow_receiver_7 %>%
 # Perform the join on the 'shift' and the modified 'riverMatch' column in the fish survey
 fish_flow_receiver_stream_7 <- left_join(fish_flow_receiver_7, 
                            stream_survey_7, 
-                           by = c("shift", "riverMatch" = "river"))
+                           by = c("shift", "riverMatch" = "river", "date"))
 
 # Remove the 'riverMatch' column from the result
 fish_flow_receiver_stream_7 <- fish_flow_receiver_stream_7 %>% 
@@ -3872,7 +3959,7 @@ fish_flow_receiver_8 <- fish_flow_receiver_8 %>%
 # Perform the join on the 'shift' and the modified 'riverMatch' column in the fish survey
 fish_flow_receiver_stream_8 <- left_join(fish_flow_receiver_8, 
                            stream_survey_8, 
-                           by = c("shift", "riverMatch" = "river"))
+                           by = c("shift", "riverMatch" = "river", "date"))
 
 # Remove the 'riverMatch' column from the result
 fish_flow_receiver_stream_8 <- fish_flow_receiver_stream_8 %>% 
@@ -3904,7 +3991,7 @@ fish_flow_receiver_9 <- fish_flow_receiver_9 %>%
 # Perform the join on the 'shift' and the modified 'riverMatch' column in the fish survey
 fish_flow_receiver_stream_9 <- left_join(fish_flow_receiver_9, 
                            stream_survey_9, 
-                           by = c("shift", "riverMatch" = "river"))
+                           by = c("shift", "riverMatch" = "river", "date"))
 
 # Remove the 'riverMatch' column from the result
 fish_flow_receiver_stream_9 <- fish_flow_receiver_stream_9 %>% 
@@ -3936,7 +4023,7 @@ fish_flow_receiver_10 <- fish_flow_receiver_10 %>%
 # Perform the join on the 'shift' and the modified 'riverMatch' column in the fish survey
 fish_flow_receiver_stream_10 <- left_join(fish_flow_receiver_10, 
                             stream_survey_10, 
-                            by = c("shift", "riverMatch" = "river"))
+                            by = c("shift", "riverMatch" = "river", "date"))
 
 # Remove the 'riverMatch' column from the result
 fish_flow_receiver_stream_10 <- fish_flow_receiver_stream_10 %>% 
@@ -3968,7 +4055,7 @@ fish_flow_receiver_11 <- fish_flow_receiver_11 %>%
 # Perform the join on the 'shift' and the modified 'riverMatch' column in the fish survey
 fish_flow_receiver_stream_11 <- left_join(fish_flow_receiver_11, 
                             stream_survey_11, 
-                            by = c("shift", "riverMatch" = "river"))
+                            by = c("shift", "riverMatch" = "river", "date"))
 
 # Remove the 'riverMatch' column from the result
 fish_flow_receiver_stream_11 <- fish_flow_receiver_stream_11 %>% 
@@ -3993,7 +4080,7 @@ stream_survey_12 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My stud
 # Combine the datasets by shift and river columns
 fish_flow_receiver_stream_12 <- left_join(fish_flow_receiver_12, 
                             stream_survey_12, 
-                            by = c("shift", "river"))
+                            by = c("shift", "river", "date"))
 
 # Display the first few rows of the combined data
 head(fish_flow_receiver_stream_12)
@@ -4464,467 +4551,3 @@ write.csv(tracking_data_all,
 
 
 
-## Preparing HOBO Logger Files
-
-```{r combine all underhill files}
-
-# Define the path to the folder
-UNDH_logger_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawLoggerData/Temperature/UNDH/"
-
-# Define file names
-file_names <- paste0(UNDH_logger_data, c("UNDH_1.csv", "UNDH_2.csv", 
-                                          "UNDH_3.csv", "UNDH_4.csv", 
-                                          "UNDH_5.csv", "UNDH_trib.csv", 
-                                          "UNDH_6.csv", "UNDH_7.csv", 
-                                          "UNDH_8.csv")) 
-
-# Create an empty list to store the data from each file
-full_data_list <- list()
-
-# Loop through each file and read the data into the list
-for (file_name in file_names) {
-  all_data <- read.csv(file_name, stringsAsFactors = FALSE)
-  full_data_list[[file_name]] <- all_data
-}
-
-# Combine all datasets into a single data frame by stacking rows
-UNDH_logger_data <- bind_rows(full_data_list)
-
-# Display the first few rows of the combined dataset
-head(UNDH_logger_data)
-
-# Write the combined data to a new CSV file
-write.csv(UNDH_logger_data, 
-          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/UNDH_logger_data.csv", 
-          row.names = FALSE)
-
-```
-
-```{r combine all harris files}
-
-# Define the path to the folder
-HARR_logger_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawLoggerData/Temperature/HARR/"
-
-# Define file names
-file_names <- paste0(HARR_logger_data, c("HARR_1.csv", "HARR_2.csv", 
-                                          "HARR_3.csv", "HARR_4.csv", 
-                                          "HARR_5.csv", "HARR_6.csv")) 
-
-# Create an empty list to store the data from each file
-full_data_list <- list()
-
-# Loop through each file and read the data into the list
-for (file_name in file_names) {
-  all_data <- read.csv(file_name, stringsAsFactors = FALSE)
-  full_data_list[[file_name]] <- all_data
-}
-
-# Combine all datasets into a single data frame by stacking rows
-HARR_logger_data <- bind_rows(full_data_list)
-
-# Display the first few rows of the combined dataset
-head(HARR_logger_data)
-
-# Write the combined data to a new CSV file
-write.csv(HARR_logger_data, 
-          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/HARR_logger_data.csv", 
-          row.names = FALSE)
-
-```
-
-```{r combine all buffam files}
-
-# Define the path to the folder
-BUFF_logger_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawLoggerData/Temperature/BUFF/"
-
-# Define file names
-file_names <- paste0(BUFF_logger_data, c("BUFF_1.csv", "BUFF_2.csv", 
-                                          "BUFF_3.csv")) 
-
-# Create an empty list to store the data from each file
-full_data_list <- list()
-
-# Loop through each file and read the data into the list
-for (file_name in file_names) {
-  all_data <- read.csv(file_name, stringsAsFactors = FALSE)
-  full_data_list[[file_name]] <- all_data
-}
-
-# Combine all datasets into a single data frame by stacking rows
-BUFF_logger_data <- bind_rows(full_data_list)
-
-# Display the first few rows of the combined dataset
-head(BUFF_logger_data)
-
-# Write the combined data to a new CSV file
-write.csv(BUFF_logger_data, 
-          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/BUFF_logger_data.csv", 
-          row.names = FALSE)
-
-```
-
-```{r combine all amethyst files}
-
-# Define the path to the folder
-AMTH_logger_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawLoggerData/Temperature/AMTH/"
-
-# Define file names
-file_names <- paste0(AMTH_logger_data, c("AMTH_1.csv", "AMTH_2.csv", 
-                                          "AMTH_3.csv")) 
-
-# Create an empty list to store the data from each file
-full_data_list <- list()
-
-# Loop through each file and read the data into the list
-for (file_name in file_names) {
-  all_data <- read.csv(file_name, stringsAsFactors = FALSE)
-  full_data_list[[file_name]] <- all_data
-}
-
-# Combine all datasets into a single data frame by stacking rows
-AMTH_logger_data <- bind_rows(full_data_list)
-
-# Display the first few rows of the combined dataset
-head(AMTH_logger_data)
-
-# Write the combined data to a new CSV file
-write.csv(AMTH_logger_data, 
-          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/AMTH_logger_data.csv", 
-          row.names = FALSE)
-
-```
-
-```{r combine all dickey files}
-
-# Define the path to the folder
-DCKY_logger_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawLoggerData/Temperature/DCKY/"
-
-# Define file names
-file_names <- paste0(DCKY_logger_data, c("DCKY_1.csv", "DCKY_2.csv", 
-                                          "DCKY_3.csv", "DCKY_4.csv", 
-                                          "DCKY_5.csv", "DCKY_6.csv", 
-                                          "DCKY_7.csv")) 
-
-# Create an empty list to store the data from each file
-full_data_list <- list()
-
-# Loop through each file and read the data into the list
-for (file_name in file_names) {
-  all_data <- read.csv(file_name, stringsAsFactors = FALSE)
-  full_data_list[[file_name]] <- all_data
-}
-
-# Combine all datasets into a single data frame by stacking rows
-DCKY_logger_data <- bind_rows(full_data_list)
-
-# Display the first few rows of the combined dataset
-head(DCKY_logger_data)
-
-# Write the combined data to a new CSV file
-write.csv(DCKY_logger_data, 
-          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/DCKY_logger_data.csv", 
-          row.names = FALSE)
-
-```
-
-```{r combine all dry upper files}
-
-# Define the path to the folder
-DRYU_logger_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawLoggerData/Temperature/DRYU/"
-
-# Define file names
-file_names <- paste0(DRYU_logger_data, c("DRYU_1.csv", "DRYU_2.csv", 
-                                          "DRYU_3.csv", "DRYU_4.csv", 
-                                          "DRYU_5.csv", "DRYU_6.csv", 
-                                          "DRYU_7.csv")) 
-
-# Create an empty list to store the data from each file
-full_data_list <- list()
-
-# Loop through each file and read the data into the list
-for (file_name in file_names) {
-  all_data <- read.csv(file_name, stringsAsFactors = FALSE)
-  full_data_list[[file_name]] <- all_data
-}
-
-# Combine all datasets into a single data frame by stacking rows
-DRYU_logger_data <- bind_rows(full_data_list)
-
-# Display the first few rows of the combined dataset
-head(DRYU_logger_data)
-
-# Write the combined data to a new CSV file
-write.csv(DRYU_logger_data, 
-          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/DRYU_logger_data.csv", 
-          row.names = FALSE)
-
-```
-
-```{r combine all logger data}
-
-# Read in the logger data
-DRYU_logger_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/DRYU_logger_data.csv")
-HARR_logger_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/HARR_logger_data.csv")
-BUFF_logger_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/BUFF_logger_data.csv")
-AMTH_logger_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/AMTH_logger_data.csv")
-DCKY_logger_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/DCKY_logger_data.csv")
-UNDH_logger_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/UNDH_logger_data.csv")
-
-# Combine the data frames by rows
-logger_data_all <- bind_rows(DRYU_logger_data, HARR_logger_data, BUFF_logger_data, AMTH_logger_data, DCKY_logger_data, UNDH_logger_data)
-
-# Display the first few rows of the combined dataset
-head(logger_data_all)
-
-# Write the combined data to a new CSV file
-write.csv(logger_data_all, 
-          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/logger_data_all.csv", 
-          row.names = FALSE)
-
-```
-
-```{r filter logger data}
-
-logger_data_all <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/logger_data_all.csv")
-
-# Remove rows where `flagged` is TRUE
-logger_data_filtered <- logger_data_all %>%
-  filter(flagged != TRUE)
-
-# Write the combined data to a new CSV file
-write.csv(logger_data_filtered, 
-          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/logger_data_filtered.csv", 
-          row.names = FALSE)
-
-logger_data_filtered$date <- as.Date(logger_data_filtered$datetime, format = "%m/%d/%Y %H:%M")
-
-# Define date range
-start_date <- as.Date("2024-06-11")
-end_date <- as.Date("2024-08-29")
-
-# Filter dataset to within the date range
-logger_data_summer <- logger_data_filtered %>%
-  filter(date >= start_date & date <= end_date)
-
-# Display the first few rows of the combined dataset
-head(logger_data_summer)
-
-# Write the combined data to a new CSV file
-write.csv(logger_data_summer, 
-          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/logger_data_summer.csv", 
-          row.names = FALSE)
-
-```
-
-
-
-
-
-
-
-## Preparing Pressure Transducer Files
-
-```{r combine all underhill pressure files}
-
-# Define the path to the folder
-UNDH_pressure_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawLoggerData/Pressure/UNDH/"
-
-# Define file names
-file_names <- paste0(UNDH_pressure_data, c("UNDH_20240604_to_20240801.csv",
-                                           "UNDH_20240801_to_20240905.csv")) 
-
-# Create an empty list to store the data from each file
-full_data_list <- list()
-
-# Loop through each file and read the data into the list
-for (file_name in file_names) {
-  all_data <- read.csv(file_name, stringsAsFactors = FALSE)
-  full_data_list[[file_name]] <- all_data
-}
-
-# Combine all datasets into a single data frame by stacking rows
-UNDH_pressure_data <- bind_rows(full_data_list)
-
-# Display the first few rows of the combined dataset
-head(UNDH_pressure_data)
-
-# Write the combined data to a new CSV file
-write.csv(UNDH_pressure_data, 
-          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/UNDH_pressure_data.csv", 
-          row.names = FALSE)
-
-```
-
-```{r combine all harris pressure files}
-# Edit this code since I don't need binding ##########################
-
-# Define the path to the folder
-HARR_pressure_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawLoggerData/Pressure/HARR/"
-
-# Define file names
-file_names <- paste0(HARR_pressure_data, c("HARR_1.csv")) 
-
-# Create an empty list to store the data from each file
-full_data_list <- list()
-
-# Loop through each file and read the data into the list
-for (file_name in file_names) {
-  all_data <- read.csv(file_name, stringsAsFactors = FALSE)
-  full_data_list[[file_name]] <- all_data
-}
-
-# Combine all datasets into a single data frame by stacking rows
-HARR_pressure_data <- bind_rows(full_data_list)
-
-# Display the first few rows of the combined dataset
-head(HARR_pressure_data)
-
-# Write the combined data to a new CSV file
-write.csv(HARR_pressure_data, 
-          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/HARR_pressure_data.csv", 
-          row.names = FALSE)
-
-```
-
-```{r combine all buffam pressure files}
-
-# Define the path to the folder
-BUFF_pressure_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawLoggerData/Pressure/BUFF/"
-
-# Define file names
-file_names <- paste0(BUFF_pressure_data, c("BUFF_20240610_to_20240618.csv", 
-                                           "BUFF_20240618_to_20240825.csv", 
-                                           "BUFF_20240825_to_20240905.csv")) 
-
-# Create an empty list to store the data from each file
-full_data_list <- list()
-
-# Loop through each file and read the data into the list
-for (file_name in file_names) {
-  all_data <- read.csv(file_name, stringsAsFactors = FALSE)
-  full_data_list[[file_name]] <- all_data
-}
-
-# Combine all datasets into a single data frame by stacking rows
-BUFF_pressure_data <- bind_rows(full_data_list)
-
-# Display the first few rows of the combined dataset
-head(BUFF_pressure_data)
-
-# Write the combined data to a new CSV file
-write.csv(BUFF_pressure_data, 
-          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/BUFF_pressure_data.csv", 
-          row.names = FALSE)
-
-```
-
-```{r combine all dickey pressure files}
-
-# Define the path to the folder
-DCKY_pressure_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawLoggerData/Pressure/DCKY/"
-
-# Define file names
-file_names <- paste0(DCKY_pressure_data, c("DCKY_20240604_to_20240724.csv", 
-                                           "DCKY_20240724_to_20240905.csv")) 
-
-# Create an empty list to store the data from each file
-full_data_list <- list()
-
-# Loop through each file and read the data into the list
-for (file_name in file_names) {
-  all_data <- read.csv(file_name, stringsAsFactors = FALSE)
-  full_data_list[[file_name]] <- all_data
-}
-
-# Combine all datasets into a single data frame by stacking rows
-DCKY_pressure_data <- bind_rows(full_data_list)
-
-# Display the first few rows of the combined dataset
-head(DCKY_pressure_data)
-
-# Write the combined data to a new CSV file
-write.csv(DCKY_pressure_data, 
-          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/DCKY_pressure_data.csv", 
-          row.names = FALSE)
-
-```
-
-```{r combine all dry upper pressure files}
-
-# Define the path to the folder
-DRYU_pressure_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawLoggerData/Pressure/DRYU/"
-
-# Define file names
-file_names <- paste0(DRYU_pressure_data, c("DRYU_20240605_to_20240802.csv", 
-                                           "DRYU_20240802_to_20240905.csv")) 
-
-# Create an empty list to store the data from each file
-full_data_list <- list()
-
-# Loop through each file and read the data into the list
-for (file_name in file_names) {
-  all_data <- read.csv(file_name, stringsAsFactors = FALSE)
-  full_data_list[[file_name]] <- all_data
-}
-
-# Combine all datasets into a single data frame by stacking rows
-DRYU_pressure_data <- bind_rows(full_data_list)
-
-# Display the first few rows of the combined dataset
-head(DRYU_pressure_data)
-
-# Write the combined data to a new CSV file
-write.csv(DRYU_pressure_data, 
-          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/DRYU_pressure_data.csv", 
-          row.names = FALSE)
-
-```
-
-```{r combine all pressure data}
-
-# Read in the pressure data
-DRYU_pressure_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/DRYU_pressure_data.csv")
-#HARR_pressure_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/HARR_pressure_data.csv")
-BUFF_pressure_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/BUFF_pressure_data.csv")
-DCKY_pressure_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/DCKY_pressure_data.csv")
-UNDH_pressure_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/UNDH_pressure_data.csv")
-
-# Combine the data frames by rows
-pressure_data_all <- bind_rows(DRYU_pressure_data, BUFF_pressure_data, DCKY_pressure_data, UNDH_pressure_data) #, HARR_logger_data)
-
-# Display the first few rows of the combined dataset
-head(pressure_data_all)
-
-# Write the combined data to a new CSV file
-write.csv(pressure_data_all, 
-          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/pressure_data_all.csv", 
-          row.names = FALSE)
-
-```
-
-```{r filter pressure data}
-
-# Edit this code so that the column names are in proper format and datetime is formatted correctly ######################
-
-pressure_data_all <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/pressure_data_all.csv")
-
-# Create a date column
-pressure_data_all$date <- as.Date(pressure_data_all$datetime, format = "%m/%d/%Y %H:%M")
-
-# Define date range
-start_date <- as.Date("2024-06-11")
-end_date <- as.Date("2024-08-29")
-
-# Filter dataset to within the date range
-pressure_data_summer <- pressure_data_all %>%
-  filter(date >= start_date & date <= end_date)
-
-# Display the first few rows of the combined dataset
-head(pressure_data_summer)
-
-# Write the combined data to a new CSV file
-write.csv(pressure_data_summer, 
-          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/pressure_data_summer.csv", 
-          row.names = FALSE)
-
-```

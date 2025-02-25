@@ -1,6 +1,6 @@
 "date","trackedTime_EST","river","shift","radioID","power","status","habitat","habitatExtra","position","substrate","substrateExtra","shade","lon","lat","fishNotes","source","ftDischarge_cfs","ftTime_EST"
-"2024-06-11","2024-06-11 05:57:00","AMETHYST","day",59,NA,NA,"Riffle","","Center","Rock",NA,"Fully shaded",-72.46037667,42.38161867,"","iPad",4.03,NA
-"2024-06-11","2024-06-11 06:08:00","AMETHYST","day",60,NA,NA,"Riffle","","Center","Rock",NA,"Fully shaded",-72.46029983,42.3813595,"","iPad",4.03,NA
+"2024-06-11","2024-06-11 05:57:00","AMETHYST","day",59,NA,NA,"Riffle","","Center","Rock",NA,"Fully shaded",-72.46037667,42.38161867,"","iPad",4.03,"2024-06-11"
+"2024-06-11","2024-06-11 06:08:00","AMETHYST","day",60,NA,NA,"Riffle","","Center","Rock",NA,"Fully shaded",-72.46029983,42.3813595,"","iPad",4.03,"2024-06-11"
 "2024-06-11","2024-06-11 06:15:00","BUFFAM","day",19,NA,NA,"Riffle","","Center","Rock",NA,"Fully shaded",-72.46023317,42.3813855,"","iPad",1.49,"2024-06-11 08:32:26"
 "2024-06-11","2024-06-11 06:19:00","HARRIS","day",20,NA,NA,"Run","","Left","Pebble",NA,"Mostly shaded",-72.46015167,42.38095333,"","iPad",2.54,"2024-06-11 09:42:47"
 "2024-06-11","2024-06-11 06:28:00","HARRIS","day",57,NA,NA,"Run","","Left","Rock",NA,"Mostly shaded",-72.460342,42.3810545,"","iPad",2.54,"2024-06-11 09:42:47"
@@ -10,14 +10,14 @@
 "2024-06-11","2024-06-11 07:04:00","BUFFAM","day",62,NA,NA,"Pool","","Right","Rock",NA,"Fully shaded",-72.45977583,42.3812375,"","iPad",1.49,"2024-06-11 08:32:26"
 "2024-06-11","2024-06-11 07:05:00","BUFFAM","day",11,NA,NA,"Pool","","Right","Rock",NA,"Fully shaded",-72.45970767,42.3811855,"","iPad",1.49,"2024-06-11 08:32:26"
 "2024-06-11","2024-06-11 07:06:00","BUFFAM","day",18,NA,NA,"Glide","","Center","Rock",NA,"Fully shaded",-72.45981467,42.38123233,"","iPad",1.49,"2024-06-11 08:32:26"
-"2024-06-11","2024-06-11 07:24:00","AMETHYST","day",56,NA,NA,"Pool","","Center","Pebble",NA,"Fully shaded",-72.460664,42.38153317,"","iPad",4.03,NA
-"2024-06-11","2024-06-11 07:24:00","AMETHYST","day",14,NA,NA,"Pool","","Center","Rock",NA,"Fully shaded",-72.460666,42.38154233,"","iPad",4.03,NA
-"2024-06-11","2024-06-11 10:18:00","AMETHYST","day",60,NA,NA,"Glide","","Center","Rock",NA,"Mostly shaded",-72.46019667,42.38136167,"","iPad",4.03,NA
-"2024-06-11","2024-06-11 10:29:00","AMETHYST","day",56,NA,NA,"Pool","","Center","Rock",NA,"Fully shaded",-72.46097867,42.38140633,"","iPad",4.03,NA
-"2024-06-11","2024-06-11 10:29:00","AMETHYST","day",14,NA,NA,"Run","","Right","Rock",NA,"Fully shaded",-72.46093733,42.38140683,"","iPad",4.03,NA
-"2024-06-11","2024-06-11 10:53:00","AMETHYST","day",61,NA,NA,"Riffle","","Center","Rock",NA,"Mostly shaded",-72.46181583,42.38100433,"","iPad",4.03,NA
+"2024-06-11","2024-06-11 07:24:00","AMETHYST","day",56,NA,NA,"Pool","","Center","Pebble",NA,"Fully shaded",-72.460664,42.38153317,"","iPad",4.03,"2024-06-11"
+"2024-06-11","2024-06-11 07:24:00","AMETHYST","day",14,NA,NA,"Pool","","Center","Rock",NA,"Fully shaded",-72.460666,42.38154233,"","iPad",4.03,"2024-06-11"
+"2024-06-11","2024-06-11 10:18:00","AMETHYST","day",60,NA,NA,"Glide","","Center","Rock",NA,"Mostly shaded",-72.46019667,42.38136167,"","iPad",4.03,"2024-06-11"
+"2024-06-11","2024-06-11 10:29:00","AMETHYST","day",56,NA,NA,"Pool","","Center","Rock",NA,"Fully shaded",-72.46097867,42.38140633,"","iPad",4.03,"2024-06-11"
+"2024-06-11","2024-06-11 10:29:00","AMETHYST","day",14,NA,NA,"Run","","Right","Rock",NA,"Fully shaded",-72.46093733,42.38140683,"","iPad",4.03,"2024-06-11"
+"2024-06-11","2024-06-11 10:53:00","AMETHYST","day",61,NA,NA,"Riffle","","Center","Rock",NA,"Mostly shaded",-72.46181583,42.38100433,"","iPad",4.03,"2024-06-11"
 "2024-06-11","2024-06-11 17:18:00","BUFFAM","night",19,NA,NA,"Riffle","","Center","Pebble",NA,"Fully shaded",-72.46036167,42.3813595,"","iPad",0.74,"2024-06-11 20:26:53"
-"2024-06-11","2024-06-11 17:25:00","AMETHYST","night",60,NA,NA,"Pool","","Left","Pebble",NA,"Fully shaded",-72.46038483,42.3814365,"","iPad",2.75,NA
+"2024-06-11","2024-06-11 17:25:00","AMETHYST","night",60,NA,NA,"Pool","","Left","Pebble",NA,"Fully shaded",-72.46038483,42.3814365,"","iPad",2.75,"2024-06-11"
 "2024-06-11","2024-06-11 17:30:00","BUFFAM","night",11,NA,NA,"Run","","Right","Rock",NA,"Fully shaded",-72.4597635,42.38115933,"","iPad",0.74,"2024-06-11 20:26:53"
 "2024-06-11","2024-06-11 17:31:00","BUFFAM","night",62,NA,NA,"Run","","Right","Sand",NA,"Fully shaded",-72.459722,42.38108717,"","iPad",0.74,"2024-06-11 20:26:53"
 "2024-06-11","2024-06-11 17:35:00","BUFFAM","night",18,NA,NA,"Pool","","Center","Rock",NA,"Fully shaded",-72.45982,42.38120883,"","iPad",0.74,"2024-06-11 20:26:53"
@@ -26,11 +26,11 @@
 "2024-06-11","2024-06-11 18:18:00","HARRIS","night",12,NA,NA,"Run","","Center","Rock",NA,"Night",-72.45997067,42.38103133,"","iPad",2.01,"2024-06-11 18:54:41"
 "2024-06-11","2024-06-11 18:30:00","HARRIS","night",15,NA,NA,"Pool","","Right","Granule",NA,"Night",-72.459586,42.38091033,"","iPad",2.01,"2024-06-11 18:54:41"
 "2024-06-11","2024-06-11 18:31:00","HARRIS","night",13,NA,NA,"Pool","","Right","Rock",NA,"Night",-72.45960967,42.38089667,"","iPad",2.01,"2024-06-11 18:54:41"
-"2024-06-11","2024-06-11 18:46:00","AMETHYST","night",59,NA,NA,"Pool","","Right","Granule",NA,"Night",-72.4605465,42.38160717,"","iPad",2.75,NA
-"2024-06-11","2024-06-11 19:00:00","AMETHYST","night",56,NA,NA,"Pool","","Right","Granule",NA,"Night",-72.46096133,42.3814535,"","iPad",2.75,NA
-"2024-06-11","2024-06-11 19:07:00","AMETHYST","night",14,NA,NA,"Run","","Right","Pebble",NA,"Night",-72.4609275,42.38136533,"","iPad",2.75,NA
-"2024-06-11","2024-06-11 19:26:00","AMETHYST","night",61,NA,NA,"Pool","","Left","Rock",NA,"Night",-72.46196167,42.38089467,"","iPad",2.75,NA
-"2024-06-11","2024-06-11 19:32:00","AMETHYST","night",60,NA,NA,"Pool","","Left","Rock",NA,"Night",-72.46039817,42.38142783,"","iPad",2.75,NA
+"2024-06-11","2024-06-11 18:46:00","AMETHYST","night",59,NA,NA,"Pool","","Right","Granule",NA,"Night",-72.4605465,42.38160717,"","iPad",2.75,"2024-06-11"
+"2024-06-11","2024-06-11 19:00:00","AMETHYST","night",56,NA,NA,"Pool","","Right","Granule",NA,"Night",-72.46096133,42.3814535,"","iPad",2.75,"2024-06-11"
+"2024-06-11","2024-06-11 19:07:00","AMETHYST","night",14,NA,NA,"Run","","Right","Pebble",NA,"Night",-72.4609275,42.38136533,"","iPad",2.75,"2024-06-11"
+"2024-06-11","2024-06-11 19:26:00","AMETHYST","night",61,NA,NA,"Pool","","Left","Rock",NA,"Night",-72.46196167,42.38089467,"","iPad",2.75,"2024-06-11"
+"2024-06-11","2024-06-11 19:32:00","AMETHYST","night",60,NA,NA,"Pool","","Left","Rock",NA,"Night",-72.46039817,42.38142783,"","iPad",2.75,"2024-06-11"
 "2024-06-11","2024-06-11 19:34:00","BUFFAM","night",19,NA,NA,"Pool","","Center","Granule",NA,"Night",-72.46024917,42.38137917,"","iPad",0.74,"2024-06-11 20:26:53"
 "2024-06-11","2024-06-11 19:40:00","BUFFAM","night",11,NA,NA,"Run","","Right","Sand",NA,"Night",-72.459731,42.3811205,"","iPad",0.74,"2024-06-11 20:26:53"
 "2024-06-11","2024-06-11 19:41:00","BUFFAM","night",62,NA,NA,"Run","","Right","Sand",NA,"Night",-72.45970617,42.38118517,"","iPad",0.74,"2024-06-11 20:26:53"
@@ -39,9 +39,9 @@
 "2024-06-11","2024-06-11 20:00:00","HARRIS","night",57,NA,NA,"Pool","","Left","Pebble",NA,"Night",-72.46022733,42.38102167,"","iPad",2.01,"2024-06-11 18:54:41"
 "2024-06-11","2024-06-11 20:02:00","HARRIS","night",12,NA,NA,"Run","","Right","Rock",NA,"Night",-72.46011117,42.38092,"","iPad",2.01,"2024-06-11 18:54:41"
 "2024-06-11","2024-06-11 20:07:00","HARRIS","night",15,NA,NA,"Run","","Center","Rock",NA,"Night",-72.459656,42.38082,"","iPad",2.01,"2024-06-11 18:54:41"
-"2024-06-11","2024-06-11 20:21:00","AMETHYST","night",59,NA,NA,"Pool","","Right","Granule",NA,"Night",-72.4604455,42.38156717,"","iPad",2.75,NA
-"2024-06-11","2024-06-11 20:30:00","AMETHYST","night",56,NA,NA,"Pool","","Center","Granule",NA,"Night",-72.4608845,42.38133417,"","iPad",2.75,NA
-"2024-06-11","2024-06-11 21:08:00","AMETHYST","night",60,NA,NA,"Riffle","","Center","Rock",NA,"Night",-72.4602475,42.38145683,"","iPad",2.75,NA
+"2024-06-11","2024-06-11 20:21:00","AMETHYST","night",59,NA,NA,"Pool","","Right","Granule",NA,"Night",-72.4604455,42.38156717,"","iPad",2.75,"2024-06-11"
+"2024-06-11","2024-06-11 20:30:00","AMETHYST","night",56,NA,NA,"Pool","","Center","Granule",NA,"Night",-72.4608845,42.38133417,"","iPad",2.75,"2024-06-11"
+"2024-06-11","2024-06-11 21:08:00","AMETHYST","night",60,NA,NA,"Riffle","","Center","Rock",NA,"Night",-72.4602475,42.38145683,"","iPad",2.75,"2024-06-11"
 "2024-06-11","2024-06-11 21:12:00","BUFFAM","night",19,NA,NA,"Run","","Center","Rock",NA,"Night",-72.460177,42.38129683,"","iPad",0.74,"2024-06-11 20:26:53"
 "2024-06-11","2024-06-11 21:18:00","BUFFAM","night",62,NA,NA,"Pool","","Center","Sand",NA,"Night",-72.4596645,42.3811295,"","iPad",0.74,"2024-06-11 20:26:53"
 "2024-06-11","2024-06-11 21:22:00","BUFFAM","night",11,NA,NA,"Pool","","Center","Sand",NA,"Night",-72.45970883,42.38113267,"","iPad",0.74,"2024-06-11 20:26:53"
@@ -51,10 +51,10 @@
 "2024-06-11","2024-06-11 22:07:00","BUFFAM","night",18,NA,NA,"Run","","Right","Rock",NA,"Night",-72.45986633,42.381316,"","iPad",0.74,"2024-06-11 20:26:53"
 "2024-06-11","2024-06-11 22:20:00","HARRIS","night",20,NA,NA,"Pool","","Center","Rock",NA,"Night",-72.46036567,42.38099267,"","iPad",2.01,"2024-06-11 18:54:41"
 "2024-06-11","2024-06-11 22:22:00","HARRIS","night",57,NA,NA,"Riffle","","Left","Rock",NA,"Night",-72.4603175,42.38101317,"","iPad",2.01,"2024-06-11 18:54:41"
-"2024-06-11","2024-06-11 22:34:00","AMETHYST","night",59,NA,NA,"Run","","Right","Rock",NA,"Night",-72.4604705,42.38156067,"Fast moving water right next to slow moving water.","iPad",2.75,NA
-"2024-06-11","2024-06-11 22:45:00","AMETHYST","night",56,NA,NA,"Pool","","Center","Granule",NA,"Night",-72.46100817,42.381548,"","iPad",2.75,NA
-"2024-06-11","2024-06-11 22:50:00","AMETHYST","night",14,NA,NA,"Run","","Right","Pebble",NA,"Night",-72.46099033,42.38141117,"","iPad",2.75,NA
-"2024-06-11","2024-06-11 23:01:00","AMETHYST","night",61,NA,NA,"Run","","Left","Rock",NA,"Night",-72.461756,42.38078733,"On the edge of fast and slow moving water.","iPad",2.75,NA
+"2024-06-11","2024-06-11 22:34:00","AMETHYST","night",59,NA,NA,"Run","","Right","Rock",NA,"Night",-72.4604705,42.38156067,"Fast moving water right next to slow moving water.","iPad",2.75,"2024-06-11"
+"2024-06-11","2024-06-11 22:45:00","AMETHYST","night",56,NA,NA,"Pool","","Center","Granule",NA,"Night",-72.46100817,42.381548,"","iPad",2.75,"2024-06-11"
+"2024-06-11","2024-06-11 22:50:00","AMETHYST","night",14,NA,NA,"Run","","Right","Pebble",NA,"Night",-72.46099033,42.38141117,"","iPad",2.75,"2024-06-11"
+"2024-06-11","2024-06-11 23:01:00","AMETHYST","night",61,NA,NA,"Run","","Left","Rock",NA,"Night",-72.461756,42.38078733,"On the edge of fast and slow moving water.","iPad",2.75,"2024-06-11"
 "2024-06-12","2024-06-12 05:45:00","UNDERHILL","day",41,NA,NA,"Riffle","Root_bundle","Right","Rock",NA,"Mostly shaded",-72.32473633,42.444896,"","iPad",0.86,"2024-06-12 09:04:18"
 "2024-06-12","2024-06-12 06:11:00","UNDERHILL","day",43,NA,NA,"Riffle","Woody_debris,Root_bundle","Right","Rock",NA,"Mostly shaded",-72.32539283,42.445208,"","iPad",0.86,"2024-06-12 09:04:18"
 "2024-06-12","2024-06-12 06:16:00","UNDERHILL","day",40,NA,NA,"Run","Root_bundle,Woody_debris","Center","Rock",NA,"Mostly shaded",-72.32570383,42.44533517,"","iPad",0.86,"2024-06-12 09:04:18"

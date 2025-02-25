@@ -41,6 +41,25 @@ write.csv(flow_tracker_all,
 
 ```
 
+```{r flag large negative flow values}
+# Read in the data
+flow_tracker_all <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/flow_tracker_data/flow_tracker_all.csv")
+
+# Add a flag column
+flow_tracker_all <- flow_tracker_all %>%
+  mutate(Flagged = ifelse(ftDischarge_cfs < -0.10, "FLAGGED", "OK"))
+
+# View result
+print(flow_tracker_all)
+
+# Write the combined data to a new CSV file
+write.csv(flow_tracker_all, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/flow_tracker_data/flow_tracker_all.csv", 
+          row.names = FALSE)
+```
+
+
+
 ```{r filter out amethyst from flow tracker}
 
 # Read in the data
@@ -66,8 +85,8 @@ write.csv(flow_tracker_range,
 discharge_ranges_ft <- flow_tracker_range %>%
   group_by(river) %>%  # Group by stream
   summarize(
-    min_discharge = min(totalDischarge, na.rm = TRUE),  # Find the minimum value
-    max_discharge = max(totalDischarge, na.rm = TRUE)   # Find the maximum value
+    min_discharge = min(ftDischarge_cfs, na.rm = TRUE),  # Find the minimum value
+    max_discharge = max(ftDischarge_cfs, na.rm = TRUE)   # Find the maximum value
   )
 
 # Display the first few rows of the dataset
@@ -86,8 +105,8 @@ write.csv(discharge_ranges_ft,
 discharge_percentiles_ft <- flow_tracker_range %>%
   group_by(river) %>%  # Group by stream
   summarize(
-    p2_5 = quantile(totalDischarge, probs = 0.025, na.rm = TRUE),  # 2.5th percentile
-    p97_5 = quantile(totalDischarge, probs = 0.975, na.rm = TRUE)  # 97.5th percentile
+    p2_5 = quantile(ftDischarge_cfs, probs = 0.025, na.rm = TRUE),  # 2.5th percentile
+    p97_5 = quantile(ftDischarge_cfs, probs = 0.975, na.rm = TRUE)  # 97.5th percentile
   )
 
 # Display the first few rows of the dataset
@@ -102,16 +121,16 @@ write.csv(discharge_percentiles_ft,
 
 ```{r discharge data}
 
-flow_tracker_range$date <- as.Date(flow_tracker_range$flowTime_EST)
+flow_tracker_range$date <- as.Date(flow_tracker_range$ftTime_EST)
 
 # Find the discharge ranges
 discharge_summary_ft <- flow_tracker_range %>%
   group_by(river) %>%  # Group by stream
   summarize(
-    p2_5 = quantile(totalDischarge, probs = 0.025, na.rm = TRUE),  # 2.5th percentile
-    p97_5 = quantile(totalDischarge, probs = 0.975, na.rm = TRUE),  # 97.5th percentile
-    min_discharge = min(totalDischarge, na.rm = TRUE),  # Find the minimum value
-    max_discharge = max(totalDischarge, na.rm = TRUE),   # Find the maximum value
+    p2_5 = quantile(ftDischarge_cfs, probs = 0.025, na.rm = TRUE),  # 2.5th percentile
+    p97_5 = quantile(ftDischarge_cfs, probs = 0.975, na.rm = TRUE),  # 97.5th percentile
+    min_discharge = min(ftDischarge_cfs, na.rm = TRUE),  # Find the minimum value
+    max_discharge = max(ftDischarge_cfs, na.rm = TRUE),   # Find the maximum value
     start_date = min(date, na.rm = TRUE),
     end_date = max(date, na.rm = TRUE),
     .groups = "drop"  # Ensures the result is not grouped

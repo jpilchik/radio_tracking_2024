@@ -1,0 +1,468 @@
+---
+title: "logger_data_processing"
+---
+
+## Preparing HOBO Logger Files
+
+```{r combine all underhill files}
+
+# Define the path to the folder
+UNDH_logger_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawLoggerData/Temperature/UNDH/"
+
+# Define file names
+file_names <- paste0(UNDH_logger_data, c("UNDH_1.csv", "UNDH_2.csv", 
+                                          "UNDH_3.csv", "UNDH_4.csv", 
+                                          "UNDH_5.csv", "UNDH_trib.csv", 
+                                          "UNDH_6.csv", "UNDH_7.csv", 
+                                          "UNDH_8.csv")) 
+
+# Create an empty list to store the data from each file
+full_data_list <- list()
+
+# Loop through each file and read the data into the list
+for (file_name in file_names) {
+  all_data <- read.csv(file_name, stringsAsFactors = FALSE)
+  full_data_list[[file_name]] <- all_data
+}
+
+# Combine all datasets into a single data frame by stacking rows
+UNDH_logger_data <- bind_rows(full_data_list)
+
+# Display the first few rows of the combined dataset
+head(UNDH_logger_data)
+
+# Write the combined data to a new CSV file
+write.csv(UNDH_logger_data, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/UNDH_logger_data.csv", 
+          row.names = FALSE)
+
+```
+
+```{r combine all harris files}
+
+# Define the path to the folder
+HARR_logger_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawLoggerData/Temperature/HARR/"
+
+# Define file names
+file_names <- paste0(HARR_logger_data, c("HARR_1.csv", "HARR_2.csv", 
+                                          "HARR_3.csv", "HARR_4.csv", 
+                                          "HARR_5.csv", "HARR_6.csv")) 
+
+# Create an empty list to store the data from each file
+full_data_list <- list()
+
+# Loop through each file and read the data into the list
+for (file_name in file_names) {
+  all_data <- read.csv(file_name, stringsAsFactors = FALSE)
+  full_data_list[[file_name]] <- all_data
+}
+
+# Combine all datasets into a single data frame by stacking rows
+HARR_logger_data <- bind_rows(full_data_list)
+
+# Display the first few rows of the combined dataset
+head(HARR_logger_data)
+
+# Write the combined data to a new CSV file
+write.csv(HARR_logger_data, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/HARR_logger_data.csv", 
+          row.names = FALSE)
+
+```
+
+```{r combine all buffam files}
+
+# Define the path to the folder
+BUFF_logger_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawLoggerData/Temperature/BUFF/"
+
+# Define file names
+file_names <- paste0(BUFF_logger_data, c("BUFF_1.csv", "BUFF_2.csv", 
+                                          "BUFF_3.csv")) 
+
+# Create an empty list to store the data from each file
+full_data_list <- list()
+
+# Loop through each file and read the data into the list
+for (file_name in file_names) {
+  all_data <- read.csv(file_name, stringsAsFactors = FALSE)
+  full_data_list[[file_name]] <- all_data
+}
+
+# Combine all datasets into a single data frame by stacking rows
+BUFF_logger_data <- bind_rows(full_data_list)
+
+# Display the first few rows of the combined dataset
+head(BUFF_logger_data)
+
+# Write the combined data to a new CSV file
+write.csv(BUFF_logger_data, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/BUFF_logger_data.csv", 
+          row.names = FALSE)
+
+```
+
+```{r combine all amethyst files}
+
+# Define the path to the folder
+AMTH_logger_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawLoggerData/Temperature/AMTH/"
+
+# Define file names
+file_names <- paste0(AMTH_logger_data, c("AMTH_1.csv", "AMTH_2.csv", 
+                                          "AMTH_3.csv")) 
+
+# Create an empty list to store the data from each file
+full_data_list <- list()
+
+# Loop through each file and read the data into the list
+for (file_name in file_names) {
+  all_data <- read.csv(file_name, stringsAsFactors = FALSE)
+  full_data_list[[file_name]] <- all_data
+}
+
+# Combine all datasets into a single data frame by stacking rows
+AMTH_logger_data <- bind_rows(full_data_list)
+
+# Display the first few rows of the combined dataset
+head(AMTH_logger_data)
+
+# Write the combined data to a new CSV file
+write.csv(AMTH_logger_data, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/AMTH_logger_data.csv", 
+          row.names = FALSE)
+
+```
+
+```{r combine all dickey files}
+
+# Define the path to the folder
+DCKY_logger_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawLoggerData/Temperature/DCKY/"
+
+# Define file names
+file_names <- paste0(DCKY_logger_data, c("DCKY_1.csv", "DCKY_2.csv", 
+                                          "DCKY_3.csv", "DCKY_4.csv", 
+                                          "DCKY_5.csv", "DCKY_6.csv", 
+                                          "DCKY_7.csv")) 
+
+# Create an empty list to store the data from each file
+full_data_list <- list()
+
+# Loop through each file and read the data into the list
+for (file_name in file_names) {
+  all_data <- read.csv(file_name, stringsAsFactors = FALSE)
+  full_data_list[[file_name]] <- all_data
+}
+
+# Combine all datasets into a single data frame by stacking rows
+DCKY_logger_data <- bind_rows(full_data_list)
+
+# Display the first few rows of the combined dataset
+head(DCKY_logger_data)
+
+# Write the combined data to a new CSV file
+write.csv(DCKY_logger_data, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/DCKY_logger_data.csv", 
+          row.names = FALSE)
+
+```
+
+```{r combine all dry upper files}
+
+# Define the path to the folder
+DRYU_logger_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawLoggerData/Temperature/DRYU/"
+
+# Define file names
+file_names <- paste0(DRYU_logger_data, c("DRYU_1.csv", "DRYU_2.csv", 
+                                          "DRYU_3.csv", "DRYU_4.csv", 
+                                          "DRYU_5.csv", "DRYU_6.csv", 
+                                          "DRYU_7.csv")) 
+
+# Create an empty list to store the data from each file
+full_data_list <- list()
+
+# Loop through each file and read the data into the list
+for (file_name in file_names) {
+  all_data <- read.csv(file_name, stringsAsFactors = FALSE)
+  full_data_list[[file_name]] <- all_data
+}
+
+# Combine all datasets into a single data frame by stacking rows
+DRYU_logger_data <- bind_rows(full_data_list)
+
+# Display the first few rows of the combined dataset
+head(DRYU_logger_data)
+
+# Write the combined data to a new CSV file
+write.csv(DRYU_logger_data, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/DRYU_logger_data.csv", 
+          row.names = FALSE)
+
+```
+
+```{r combine all logger data}
+
+# Read in the logger data
+DRYU_logger_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/DRYU_logger_data.csv")
+HARR_logger_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/HARR_logger_data.csv")
+BUFF_logger_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/BUFF_logger_data.csv")
+AMTH_logger_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/AMTH_logger_data.csv")
+DCKY_logger_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/DCKY_logger_data.csv")
+UNDH_logger_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/UNDH_logger_data.csv")
+
+# Combine the data frames by rows
+logger_data_all <- bind_rows(DRYU_logger_data, HARR_logger_data, BUFF_logger_data, AMTH_logger_data, DCKY_logger_data, UNDH_logger_data)
+
+# Display the first few rows of the combined dataset
+head(logger_data_all)
+
+# Write the combined data to a new CSV file
+write.csv(logger_data_all, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/logger_data_all.csv", 
+          row.names = FALSE)
+
+```
+
+```{r filter logger data}
+
+logger_data_all <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/logger_data_all.csv")
+
+# Remove rows where `flagged` is TRUE
+logger_data_filtered <- logger_data_all %>%
+  filter(flagged != TRUE)
+
+# Write the combined data to a new CSV file
+write.csv(logger_data_filtered, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/logger_data_filtered.csv", 
+          row.names = FALSE)
+
+logger_data_filtered$date <- as.Date(logger_data_filtered$datetime, format = "%m/%d/%Y %H:%M")
+
+# Define date range
+start_date <- as.Date("2024-06-11")
+end_date <- as.Date("2024-08-29")
+
+# Filter dataset to within the date range
+logger_data_summer <- logger_data_filtered %>%
+  filter(date >= start_date & date <= end_date)
+
+# Display the first few rows of the combined dataset
+head(logger_data_summer)
+
+# Write the combined data to a new CSV file
+write.csv(logger_data_summer, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/logger_data_summer.csv", 
+          row.names = FALSE)
+
+```
+
+
+
+
+
+
+
+## Preparing Pressure Transducer Files
+
+```{r combine all underhill pressure files}
+
+# Define the path to the folder
+UNDH_pressure_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawLoggerData/Pressure/UNDH/"
+
+# Define file names
+file_names <- paste0(UNDH_pressure_data, c("UNDH_20240604_to_20240801.csv",
+                                           "UNDH_20240801_to_20240905.csv")) 
+
+# Create an empty list to store the data from each file
+full_data_list <- list()
+
+# Loop through each file and read the data into the list
+for (file_name in file_names) {
+  all_data <- read.csv(file_name, stringsAsFactors = FALSE)
+  full_data_list[[file_name]] <- all_data
+}
+
+# Combine all datasets into a single data frame by stacking rows
+UNDH_pressure_data <- bind_rows(full_data_list)
+
+# Display the first few rows of the combined dataset
+head(UNDH_pressure_data)
+
+# Write the combined data to a new CSV file
+write.csv(UNDH_pressure_data, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/UNDH_pressure_data.csv", 
+          row.names = FALSE)
+
+```
+
+```{r combine all harris pressure files}
+# Edit this code since I don't need binding ##########################
+
+# Define the path to the folder
+HARR_pressure_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawLoggerData/Pressure/HARR/"
+
+# Define file names
+file_names <- paste0(HARR_pressure_data, c("HARR_1.csv")) 
+
+# Create an empty list to store the data from each file
+full_data_list <- list()
+
+# Loop through each file and read the data into the list
+for (file_name in file_names) {
+  all_data <- read.csv(file_name, stringsAsFactors = FALSE)
+  full_data_list[[file_name]] <- all_data
+}
+
+# Combine all datasets into a single data frame by stacking rows
+HARR_pressure_data <- bind_rows(full_data_list)
+
+# Display the first few rows of the combined dataset
+head(HARR_pressure_data)
+
+# Write the combined data to a new CSV file
+write.csv(HARR_pressure_data, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/HARR_pressure_data.csv", 
+          row.names = FALSE)
+
+```
+
+```{r combine all buffam pressure files}
+
+# Define the path to the folder
+BUFF_pressure_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawLoggerData/Pressure/BUFF/"
+
+# Define file names
+file_names <- paste0(BUFF_pressure_data, c("BUFF_20240610_to_20240618.csv", 
+                                           "BUFF_20240618_to_20240825.csv", 
+                                           "BUFF_20240825_to_20240905.csv")) 
+
+# Create an empty list to store the data from each file
+full_data_list <- list()
+
+# Loop through each file and read the data into the list
+for (file_name in file_names) {
+  all_data <- read.csv(file_name, stringsAsFactors = FALSE)
+  full_data_list[[file_name]] <- all_data
+}
+
+# Combine all datasets into a single data frame by stacking rows
+BUFF_pressure_data <- bind_rows(full_data_list)
+
+# Display the first few rows of the combined dataset
+head(BUFF_pressure_data)
+
+# Write the combined data to a new CSV file
+write.csv(BUFF_pressure_data, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/BUFF_pressure_data.csv", 
+          row.names = FALSE)
+
+```
+
+```{r combine all dickey pressure files}
+
+# Define the path to the folder
+DCKY_pressure_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawLoggerData/Pressure/DCKY/"
+
+# Define file names
+file_names <- paste0(DCKY_pressure_data, c("DCKY_20240604_to_20240724.csv", 
+                                           "DCKY_20240724_to_20240905.csv")) 
+
+# Create an empty list to store the data from each file
+full_data_list <- list()
+
+# Loop through each file and read the data into the list
+for (file_name in file_names) {
+  all_data <- read.csv(file_name, stringsAsFactors = FALSE)
+  full_data_list[[file_name]] <- all_data
+}
+
+# Combine all datasets into a single data frame by stacking rows
+DCKY_pressure_data <- bind_rows(full_data_list)
+
+# Display the first few rows of the combined dataset
+head(DCKY_pressure_data)
+
+# Write the combined data to a new CSV file
+write.csv(DCKY_pressure_data, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/DCKY_pressure_data.csv", 
+          row.names = FALSE)
+
+```
+
+```{r combine all dry upper pressure files}
+
+# Define the path to the folder
+DRYU_pressure_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawLoggerData/Pressure/DRYU/"
+
+# Define file names
+file_names <- paste0(DRYU_pressure_data, c("DRYU_20240605_to_20240802.csv", 
+                                           "DRYU_20240802_to_20240905.csv")) 
+
+# Create an empty list to store the data from each file
+full_data_list <- list()
+
+# Loop through each file and read the data into the list
+for (file_name in file_names) {
+  all_data <- read.csv(file_name, stringsAsFactors = FALSE)
+  full_data_list[[file_name]] <- all_data
+}
+
+# Combine all datasets into a single data frame by stacking rows
+DRYU_pressure_data <- bind_rows(full_data_list)
+
+# Display the first few rows of the combined dataset
+head(DRYU_pressure_data)
+
+# Write the combined data to a new CSV file
+write.csv(DRYU_pressure_data, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/DRYU_pressure_data.csv", 
+          row.names = FALSE)
+
+```
+
+```{r combine all pressure data}
+
+# Read in the pressure data
+DRYU_pressure_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/DRYU_pressure_data.csv")
+#HARR_pressure_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/HARR_pressure_data.csv")
+BUFF_pressure_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/BUFF_pressure_data.csv")
+DCKY_pressure_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/DCKY_pressure_data.csv")
+UNDH_pressure_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/UNDH_pressure_data.csv")
+
+# Combine the data frames by rows
+pressure_data_all <- bind_rows(DRYU_pressure_data, BUFF_pressure_data, DCKY_pressure_data, UNDH_pressure_data) #, HARR_logger_data)
+
+# Display the first few rows of the combined dataset
+head(pressure_data_all)
+
+# Write the combined data to a new CSV file
+write.csv(pressure_data_all, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/pressure_data_all.csv", 
+          row.names = FALSE)
+
+```
+
+```{r filter pressure data}
+
+# Edit this code so that the column names are in proper format and datetime is formatted correctly ######################
+
+pressure_data_all <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/pressure_data_all.csv")
+
+# Create a date column
+pressure_data_all$date <- as.Date(pressure_data_all$datetime, format = "%m/%d/%Y %H:%M")
+
+# Define date range
+start_date <- as.Date("2024-06-11")
+end_date <- as.Date("2024-08-29")
+
+# Filter dataset to within the date range
+pressure_data_summer <- pressure_data_all %>%
+  filter(date >= start_date & date <= end_date)
+
+# Display the first few rows of the combined dataset
+head(pressure_data_summer)
+
+# Write the combined data to a new CSV file
+write.csv(pressure_data_summer, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/pressure_data_summer.csv", 
+          row.names = FALSE)
+
+```

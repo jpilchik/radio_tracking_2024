@@ -17,12 +17,12 @@ require(RMark) # Used for Mark-Recapture Data (Survival and Detection Rates)
 library(readxl)
 library(gridExtra)
 library(moments)
+library(ggplot2)
 
 # Convert points to UTMs from decimal degrees
 library(sf)
-#library(rgdal) # package no longer exists
 
-# For the coordinates function???
+# For the coordinates function
 library(sp)
 ```
 ## Load dataset
@@ -45,7 +45,6 @@ tracking_data_locations <- tracking_data_locations %>%
   ) %>%
   ungroup()
 ```
-
 
 ## Underhill Brook
 
@@ -80,8 +79,6 @@ underhill_mouth <- setmouth(seg = 46, vert = 4, rivers = underhill_flowlines_UTM
 ```{r Load in fish points}
 
 # read in your fish points and filter by the watershed you're looking at. Make sure to have X and Y columns available in decimal degrees
-
-#fish_flow_receiver_stream_corrected <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/combined_data/fish_flow_receiver_stream_corrected.csv")
 
 # Keep only points from "UNDERHILL" and also remove rows where lat or lon are NA
 underhill_points <- tracking_data_locations %>%
@@ -126,15 +123,11 @@ riverpoints(seg=underhill_segvert$seg, vert=underhill_segvert$vert, rivers= unde
 nrow(res_underhill)  # Total points before snapping
 nrow(underhill_segvert)  # Total points successfully snapped
 
-# Merge the snapped data with the original dataset using row numbers
+# Assign row numbers
 underhill_segvert <- underhill_segvert %>%
-  mutate(Rownumber = row_number()) # Assign row numbers if not already there
+  mutate(Rownumber = row_number()) 
 
-# Ensure `res` also has row numbers
-#res <- res %>%
-  #mutate(Rownumber = row_number())
-
-# Merge snapped points back with the original dataset to retain radioID and trackedTime_EST
+# Merge snapped points back with the original dataset using row numbers
 underhill_locations <- left_join(res_underhill %>% select(Rownumber, radioID, trackedTime_EST, POINT_X, POINT_Y), 
                                underhill_segvert, 
                                by = "Rownumber")
@@ -155,7 +148,7 @@ duplicates <- underhill_locations %>%
 print(duplicates)
 
 # Initialize a column for movement distance
-underhill_locations$distance_moved <- NA
+underhill_locations$distMoved_m <- NA
 
 # Loop through each fish and calculate movement distance
 for (fish in unique(underhill_locations$radioID)) {
@@ -175,16 +168,19 @@ for (fish in unique(underhill_locations$radioID)) {
                             rivers = underhill_flowlines_UTMZONE18N, stopiferror = FALSE)
       
       # Store the result
-      underhill_locations$distance_moved[underhill_locations$radioID == fish & underhill_locations$trackedTime_EST == fish_data$trackedTime_EST[i]] <- dist
+      underhill_locations$distMoved_m[underhill_locations$radioID == fish & underhill_locations$trackedTime_EST == fish_data$trackedTime_EST[i]] <- dist
     }
   }
 }
 
 # Replace NAs (first observation for each fish) with 0
-underhill_locations$distance_moved[is.na(underhill_locations$distance_moved)] <- 0
+underhill_locations$distMoved_m[is.na(underhill_locations$distMoved_m)] <- 0
 
 ```
 
+```{r histogram of distance moved}
+hist(underhill_locations$distMoved_m, main="distance moved (m)")
+```
 
 ### Dickey Brook
 
@@ -219,8 +215,6 @@ dickey_mouth <- setmouth(seg = 42, vert = 19, rivers = dickey_flowlines_UTMZONE1
 ```{r Load in fish points}
 
 # read in your fish points and filter by the watershed you're looking at. Make sure to have X and Y columns available in decimal degrees
-
-#fish_flow_receiver_stream_corrected <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/combined_data/fish_flow_receiver_stream_corrected.csv")
 
 # Keep only points from "DICKEY" and also remove rows where lat or lon are NA
 dickey_points <- tracking_data_locations %>%
@@ -260,6 +254,70 @@ riverpoints(seg=dickey_segvert$seg, vert=dickey_segvert$vert, rivers= dickey_flo
             col="blue")
 ```
 
+```{r prepare for and calculate distance moved}
+
+nrow(res_dickey)  # Total points before snapping
+nrow(dickey_segvert)  # Total points successfully snapped
+
+# Assign row numbers
+dickey_segvert <- dickey_segvert %>%
+  mutate(Rownumber = row_number()) 
+
+# Merge snapped points back with the original dataset using row numbers
+dickey_locations <- left_join(res_dickey %>% select(Rownumber, radioID, trackedTime_EST, POINT_X, POINT_Y), 
+                               dickey_segvert, 
+                               by = "Rownumber")
+
+# Organize dataset
+dickey_locations <- dickey_locations %>%
+  select(radioID, trackedTime_EST, POINT_X, POINT_Y, snap_x, snap_y, seg, vert, snapdist)
+
+# Arrange data by fish ID and datetime to ensure chronological order
+dickey_locations <- dickey_locations %>%
+  arrange(radioID, trackedTime_EST)
+
+# Check for duplicate rows
+duplicates <- dickey_locations %>%
+  group_by(radioID, trackedTime_EST) %>%
+  filter(n() > 1)
+
+print(duplicates)
+
+# Initialize a column for movement distance
+dickey_locations$distMoved_m <- NA
+
+# Loop through each fish and calculate movement distance
+for (fish in unique(dickey_locations$radioID)) {
+  fish_data <- dickey_locations[dickey_locations$radioID == fish, ]  # Subset data for the fish
+  
+  if (nrow(fish_data) > 1) {
+    for (i in 2:nrow(fish_data)) {
+      # Get previous and current locations
+      from_seg <- fish_data$seg[i - 1]
+      from_vert <- fish_data$vert[i - 1]
+      to_seg <- fish_data$seg[i]
+      to_vert <- fish_data$vert[i]
+      
+      # Calculate distance
+      dist <- riverdistance(startseg = from_seg, startvert = from_vert, 
+                            endseg = to_seg, endvert = to_vert, 
+                            rivers = dickey_flowlines_UTMZONE18N, stopiferror = FALSE)
+      
+      # Store the result
+      dickey_locations$distMoved_m[dickey_locations$radioID == fish & dickey_locations$trackedTime_EST == fish_data$trackedTime_EST[i]] <- dist
+    }
+  }
+}
+
+# Replace NAs (first observation for each fish) with 0
+dickey_locations$distMoved_m[is.na(dickey_locations$distMoved_m)] <- 0
+
+```
+
+```{r histogram of distance moved}
+hist(dickey_locations$distMoved_m, main="distance moved (m)")
+```
+
 ### Dry Brook
 
 1. Load your flowline shapefiles (do this for each watershed separately)
@@ -294,9 +352,7 @@ dry_mouth <- setmouth(seg = 9, vert = 19, rivers = dry_flowlines_UTMZONE18N) # s
 
 # read in your fish points and filter by the watershed you're looking at. Make sure to have X and Y columns available in decimal degrees
 
-#fish_flow_receiver_stream_corrected <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/combined_data/fish_flow_receiver_stream_corrected.csv")
-
-# Keep only points from "DICKEY" and also remove rows where lat or lon are NA
+# Keep only points from "DRY UPPER" and also remove rows where lat or lon are NA
 dry_points <- tracking_data_locations %>%
   filter(river == "DRY UPPER" & !is.na(lon) & !is.na(lat))
 
@@ -335,6 +391,70 @@ riverpoints(seg=dry_segvert$seg, vert=dry_segvert$vert, rivers= dry_flowlines_UT
             col="blue")
 ```
 
+```{r prepare for and calculate distance moved}
+
+nrow(res_dry)  # Total points before snapping
+nrow(dry_segvert)  # Total points successfully snapped
+
+# Assign row numbers
+dry_segvert <- dry_segvert %>%
+  mutate(Rownumber = row_number()) 
+
+# Merge snapped points back with the original dataset using row numbers
+dry_locations <- left_join(res_dry %>% select(Rownumber, radioID, trackedTime_EST, POINT_X, POINT_Y), 
+                               dry_segvert, 
+                               by = "Rownumber")
+
+# Organize dataset
+dry_locations <- dry_locations %>%
+  select(radioID, trackedTime_EST, POINT_X, POINT_Y, snap_x, snap_y, seg, vert, snapdist)
+
+# Arrange data by fish ID and datetime to ensure chronological order
+dry_locations <- dry_locations %>%
+  arrange(radioID, trackedTime_EST)
+
+# Check for duplicate rows
+duplicates <- dry_locations %>%
+  group_by(radioID, trackedTime_EST) %>%
+  filter(n() > 1)
+
+print(duplicates)
+
+# Initialize a column for movement distance
+dry_locations$distMoved_m <- NA
+
+# Loop through each fish and calculate movement distance
+for (fish in unique(dry_locations$radioID)) {
+  fish_data <- dry_locations[dry_locations$radioID == fish, ]  # Subset data for the fish
+  
+  if (nrow(fish_data) > 1) {
+    for (i in 2:nrow(fish_data)) {
+      # Get previous and current locations
+      from_seg <- fish_data$seg[i - 1]
+      from_vert <- fish_data$vert[i - 1]
+      to_seg <- fish_data$seg[i]
+      to_vert <- fish_data$vert[i]
+      
+      # Calculate distance
+      dist <- riverdistance(startseg = from_seg, startvert = from_vert, 
+                            endseg = to_seg, endvert = to_vert, 
+                            rivers = dry_flowlines_UTMZONE18N, stopiferror = FALSE)
+      
+      # Store the result
+      dry_locations$distMoved_m[dry_locations$radioID == fish & dry_locations$trackedTime_EST == fish_data$trackedTime_EST[i]] <- dist
+    }
+  }
+}
+
+# Replace NAs (first observation for each fish) with 0
+dry_locations$distMoved_m[is.na(dry_locations$distMoved_m)] <- 0
+
+```
+
+```{r histogram of distance moved}
+hist(dry_locations$distMoved_m, main="distance moved (m)")
+```
+
 ### Amethyst Brook
 
 1. Load your flowline shapefiles (do this for each watershed separately)
@@ -369,9 +489,7 @@ amethyst_mouth <- setmouth(seg = 404, vert = 81, rivers = amethyst_flowlines_UTM
 
 # read in your fish points and filter by the watershed you're looking at. Make sure to have X and Y columns available in decimal degrees
 
-#fish_flow_receiver_stream_corrected <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/combined_data/fish_flow_receiver_stream_corrected.csv")
-
-# Keep only points from "DICKEY" and also remove rows where lat or lon are NA
+# Keep only points from "AMETHYST", "BUFFAM", and "HARRIS" and also remove rows where lat or lon are NA
 amethyst_points <- tracking_data_locations %>%
   filter((river == "AMETHYST" | river == "BUFFAM" | river == "HARRIS") & !is.na(lon) & !is.na(lat))
 
@@ -412,6 +530,205 @@ riverpoints(seg=amethyst_segvert$seg, vert=amethyst_segvert$vert, rivers= amethy
             col="blue")
 ```
 
+```{r prepare for and calculate distance moved}
+
+nrow(res_amethyst)  # Total points before snapping
+nrow(amethyst_segvert)  # Total points successfully snapped
+
+# Assign row numbers
+amethyst_segvert <- amethyst_segvert %>%
+  mutate(Rownumber = row_number()) 
+
+# Merge snapped points back with the original dataset using row numbers
+amethyst_locations <- left_join(res_amethyst %>% select(Rownumber, radioID, trackedTime_EST, POINT_X, POINT_Y), 
+                               amethyst_segvert, 
+                               by = "Rownumber")
+
+# Organize dataset
+amethyst_locations <- amethyst_locations %>%
+  select(radioID, trackedTime_EST, POINT_X, POINT_Y, snap_x, snap_y, seg, vert, snapdist)
+
+# Arrange data by fish ID and datetime to ensure chronological order
+amethyst_locations <- amethyst_locations %>%
+  arrange(radioID, trackedTime_EST)
+
+# Check for duplicate rows
+duplicates <- amethyst_locations %>%
+  group_by(radioID, trackedTime_EST) %>%
+  filter(n() > 1)
+
+print(duplicates)
+
+# Initialize a column for movement distance
+amethyst_locations$distMoved_m <- NA
+
+# Loop through each fish and calculate movement distance
+for (fish in unique(amethyst_locations$radioID)) {
+  fish_data <- amethyst_locations[amethyst_locations$radioID == fish, ]  # Subset data for the fish
+  
+  if (nrow(fish_data) > 1) {
+    for (i in 2:nrow(fish_data)) {
+      # Get previous and current locations
+      from_seg <- fish_data$seg[i - 1]
+      from_vert <- fish_data$vert[i - 1]
+      to_seg <- fish_data$seg[i]
+      to_vert <- fish_data$vert[i]
+      
+      # Calculate distance
+      dist <- riverdistance(startseg = from_seg, startvert = from_vert, 
+                            endseg = to_seg, endvert = to_vert, 
+                            rivers = amethyst_flowlines_UTMZONE18N, stopiferror = FALSE)
+      
+      # Store the result
+      amethyst_locations$distMoved_m[amethyst_locations$radioID == fish & amethyst_locations$trackedTime_EST == fish_data$trackedTime_EST[i]] <- dist
+    }
+  }
+}
+
+# Replace NAs (first observation for each fish) with 0
+amethyst_locations$distMoved_m[is.na(amethyst_locations$distMoved_m)] <- 0
+
+```
+
+```{r histogram of distance moved}
+hist(amethyst_locations$distMoved_m, main="distance moved (m)")
+```
+
+### Combine location files
+
+```{r recombine all files back into original file}
+river_locations <- bind_rows(underhill_locations, dickey_locations, dry_locations, amethyst_locations)
+tracking_data_locations <- left_join(tracking_data_locations, river_locations, 
+                                           by = c("radioID", "trackedTime_EST"))
+tracking_data_locations <- tracking_data_locations %>%
+  select(date, trackedTime_EST, river, shift, radioID, tempID, status, power, source, fishNotes, distMoved_m, lon, lat, POINT_X, POINT_Y, snap_x, snap_y, seg, vert, snapdist, habitat, habitatExtra, position, substrate, substrateExtra, shade, airTemp_F, cloud, precip, ftDischarge_cfs, ftTime_EST, startTime_EST, endTime_EST, streamNotes, downstreamGPS, downstreamGain, upstreamGPS, upstreamGain, isoID, length_mm, weight_g, sex, type, geneticSam, blood, section, collectionNotes)
+
+# Write the combined data to a new CSV file
+write.csv(tracking_data_locations, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/combined_data/tracking_data_locations.csv", 
+          row.names = FALSE)
+```
+
+```{r histogram of distance moved}
+hist(tracking_data_locations$distMoved_m, main="distance moved (m)")
+```
+
+```{r}
+# Histogram of distance moved
+
+ggplot(tracking_data_locations, aes(x = distMoved_m)) +
+  geom_histogram(binwidth = 10, fill = "steelblue", color = "black") +  # Adjust binwidth as needed
+  labs(title = "Histogram of Distance Moved Between Observations",
+       x = "Distance Moved (m)", 
+       y = "Frequency") +
+  theme_minimal()
+```
+
+```{r}
+# Calculate movement rate (meters per hour)
+
+# Convert trackedTime_EST to POSIXct if not already
+tracking_data_locations <- tracking_data_locations %>%
+  arrange(radioID, trackedTime_EST) %>%  # Ensure it's ordered
+  mutate(trackedTime_EST = as.POSIXct(trackedTime_EST, format="%Y-%m-%d %H:%M:%S")) %>%
+  group_by(radioID) %>%
+  mutate(time_diff = as.numeric(difftime(trackedTime_EST, lag(trackedTime_EST), units = "hours")),
+         movement_rate = ifelse(time_diff > 0, distMoved_m / time_diff, NA)) %>%  # Avoid division by zero
+  ungroup()
+
+# Remove first sightings (where movement_rate is NA)
+tracking_data_locations_filtered <- tracking_data_locations %>% filter(!is.na(movement_rate))
+```
+
+```{r}
+# Plot a histogram of movement rate (meters per hour)
+
+ggplot(tracking_data_locations_filtered, aes(x = movement_rate)) +
+  geom_histogram(binwidth = 10, fill = "steelblue", color = "black") +  # Adjust binwidth as needed
+  labs(title = "Histogram of Movement Rate",
+       x = "Movement Rate (m/hour)", 
+       y = "Frequency") +
+  theme_minimal()
+```
+
+```{r}
+# Density plot
+
+ggplot(tracking_data_locations_filtered, aes(x = movement_rate)) +
+  geom_density(fill = "lightblue", alpha = 0.5) +
+  labs(title = "Density Plot of Movement Rate",
+       x = "Movement Rate (m/hour)", 
+       y = "Density") +
+  theme_minimal()
+```
+
+```{r}
+#Boxplot of movement rate (m/hour)
+
+tracking_data_locations_filtered$river <- as.factor(tracking_data_locations_filtered$river)
+
+unique(tracking_data_locations_filtered$river)
+
+glimpse(tracking_data_locations_filtered)
+
+colnames(tracking_data_locations_filtered)
+
+ggplot(tracking_data_locations, aes(x = river, y = movement_rate)) + 
+  geom_boxplot()
+
+ggplot(data = tracking_data_locations_filtered, aes(x = river, y = movement_rate, fill = river)) +
+  geom_boxplot() +
+  scale_fill_manual('River', values = river, labels = river) +
+  labs(title = "Movement Rate (m/hour) by River",
+       y = "Movement rate (m/hour)", x = "River") +
+  theme_classic()
+
+ggplot(data = tracking_data_locations, aes(x = river, y = movement_rate, fill = river)) +
+  geom_boxplot() +
+  scale_fill_manual('River', values = river, labels = river) +
+  labs(title = "Movement Rate (m/hour) by River",
+       y = "Movement rate (m/hour)", x = "River") +
+  theme_classic()
+```
+
+
+```{r}
+# Calculate movement rate (meters per minute)
+
+# Convert trackedTime_EST to POSIXct if not already
+tracking_data_locations <- tracking_data_locations %>%
+  arrange(radioID, trackedTime_EST) %>%  # Ensure it's ordered
+  mutate(trackedTime_EST = as.POSIXct(trackedTime_EST, format="%Y-%m-%d %H:%M:%S")) %>%
+  group_by(radioID) %>%
+  mutate(time_diff = as.numeric(difftime(trackedTime_EST, lag(trackedTime_EST), units = "mins")),
+         movement_rate = ifelse(time_diff > 0, distMoved_m / time_diff, NA)) %>%  # Avoid division by zero
+  ungroup()
+
+# Remove first sightings (where movement_rate is NA)
+tracking_data_locations_filtered <- tracking_data_locations %>% filter(!is.na(movement_rate))
+```
+
+```{r}
+# Plot a histogram of movement rate (meters per minute)
+
+ggplot(tracking_data_locations_filtered, aes(x = movement_rate)) +
+  geom_histogram(binwidth = 1, fill = "steelblue", color = "black") +  # Adjust binwidth as needed
+  labs(title = "Histogram of Movement Rate",
+       x = "Movement Rate (m/minute)", 
+       y = "Frequency") +
+  theme_minimal()
+```
+
+
+```{r}
+habitat_summary <- tracking_data_locations %>%
+  group_by(snap_x, snap_y) %>%
+  summarise(habitat_list = paste(unique(habitat), collapse = ", ")) %>%
+  ungroup()
+
+# View the result
+head(habitat_summary)
+```
 
 
 
