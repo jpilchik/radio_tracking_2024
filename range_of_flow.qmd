@@ -58,15 +58,30 @@ write.csv(flow_tracker_all,
           row.names = FALSE)
 ```
 
-
-
-```{r filter out amethyst from flow tracker}
-
+```{r filter out unusable flow data}
 # Read in the data
 flow_tracker_all <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/flow_tracker_data/flow_tracker_all.csv")
 
+# Convert dateTime to date format
+flow_tracker_all_filtered <- flow_tracker_all %>%
+  mutate(date = as.Date(ftTime_EST)) %>%  # Extract just the date from dateTime
+  filter(!(river == "HARRIS" & date == as.Date("2024-08-08") & shift == "night") &
+           !(river == "BUFFAM" & date == as.Date("2024-08-08") & shift == "night") &
+           !(river == "AMETHYST" & date == as.Date("2024-08-08") & shift == "night") &
+           !(river == "DRY UPPER" & date == as.Date("2024-08-07") & shift == "night") &
+           !(river == "UNDERHILL" & date == as.Date("2024-08-06") & shift == "night") &
+           !(river == "DICKEY" & date == as.Date("2024-07-16") & shift == "night"))
+
+# Select specific columns
+flow_tracker_all_filtered <- flow_tracker_all_filtered %>%
+    select(river, ftDischarge_cfs, ftTime_EST, shift, Flagged) 
+
+```
+
+```{r filter out amethyst from flow tracker}
+
 # Filter to only Buffam, Harris, Underhill, Dickey, and Dry
-flow_tracker_range <- flow_tracker_all %>%
+flow_tracker_range <- flow_tracker_all_filtered %>%
   filter(river != "AMETHYST")
 
 # Display the first few rows of the dataset

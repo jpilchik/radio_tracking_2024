@@ -2166,6 +2166,47 @@ for (i in 1:length(processed_flow_data_list)) {
 
 ```
 
+```{r filter out unusable flow data}
+# Read in the flow data
+flow_tracker_6 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/flow_tracker_data/flow_tracker_6.csv")
+
+# Convert dateTime to date format
+flow_tracker_6_filtered <- flow_tracker_6 %>%
+  mutate(date = as.Date(ftTime_EST)) %>%  # Extract just the date from dateTime
+  filter(!(river == "DICKEY" & date == as.Date("2024-07-16") & shift == "night"))
+
+# Select specific columns
+flow_tracker_6_filtered <- flow_tracker_6_filtered %>%
+    select(river, ftDischarge_cfs, ftTime_EST, shift) 
+
+# Write new flow csv
+write.csv(flow_tracker_6_filtered, 
+          file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/flow_tracker_data/flow_tracker_6_filtered.csv", 
+          row.names = FALSE)
+
+
+# Read in the flow data
+flow_tracker_9 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/flow_tracker_data/flow_tracker_9.csv")
+
+# Convert dateTime to date format
+flow_tracker_9_filtered <- flow_tracker_9 %>%
+  mutate(date = as.Date(ftTime_EST)) %>%  # Extract just the date from dateTime
+  filter(!(river == "HARRIS" & date == as.Date("2024-08-08") & shift == "night") &
+           !(river == "BUFFAM" & date == as.Date("2024-08-08") & shift == "night") &
+           !(river == "AMETHYST" & date == as.Date("2024-08-08") & shift == "night") &
+           !(river == "DRY UPPER" & date == as.Date("2024-08-07") & shift == "night") &
+           !(river == "UNDERHILL" & date == as.Date("2024-08-06") & shift == "night"))
+
+# Select specific columns
+flow_tracker_9_filtered <- flow_tracker_9_filtered %>%
+    select(river, ftDischarge_cfs, ftTime_EST, shift) 
+
+# Write new flow csv
+write.csv(flow_tracker_9_filtered, 
+          file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/flow_tracker_data/flow_tracker_9_filtered.csv", 
+          row.names = FALSE)
+
+```
 
 ## Combine fish survey and flow data
 
@@ -2268,10 +2309,10 @@ write.csv(fish_flow_5,
 
 # Read in the fish survey and flow data for week 6
 fish_survey_6 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/fish_survey_data/fish_survey_6.csv")
-flow_tracker_6 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/flow_tracker_data/flow_tracker_6.csv")
+flow_tracker_6_filtered <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/flow_tracker_data/flow_tracker_6_filtered.csv")
 
 # Combine the datasets by shift and river columns
-fish_flow_6 <- left_join(fish_survey_6, flow_tracker_6, by = c("shift", "river"))
+fish_flow_6 <- left_join(fish_survey_6, flow_tracker_6_filtered, by = c("shift", "river"))
 
 # Display the first few rows of the combined data
 head(fish_flow_6)
@@ -2325,10 +2366,10 @@ write.csv(fish_flow_8,
 
 # Read in the fish survey and flow data for week 9
 fish_survey_9 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/fish_survey_data/fish_survey_9.csv")
-flow_tracker_9 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/flow_tracker_data/flow_tracker_9.csv")
+flow_tracker_9_filtered <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/flow_tracker_data/flow_tracker_9_filtered.csv")
 
 # Combine the datasets by shift and river columns
-fish_flow_9 <- left_join(fish_survey_9, flow_tracker_9, by = c("shift", "river"))
+fish_flow_9 <- left_join(fish_survey_9, flow_tracker_9_filtered, by = c("shift", "river"))
 
 # Display the first few rows of the combined data
 head(fish_flow_9)

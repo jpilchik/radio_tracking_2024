@@ -589,6 +589,36 @@ for (fish in unique(amethyst_locations$radioID)) {
 amethyst_locations$distMoved_m[is.na(amethyst_locations$distMoved_m)] <- 0
 
 ```
+```{r calculate euclidean distance moved for finer-scale movements}
+# Arrange data by fish ID and datetime to ensure chronological order
+amethyst_locations <- amethyst_locations %>%
+  arrange(radioID, trackedTime_EST) %>%
+  group_by(radioID) %>%
+  mutate(
+    euclideanMoved_m = sqrt((snap_x - lag(snap_x))^2 + (snap_y - lag(snap_y))^2)
+  ) %>%
+  ungroup()
+
+# Replace NAs (first observation for each fish) with 0
+amethyst_locations$euclideanMoved_m[is.na(amethyst_locations$euclideanMoved_m)] <- 0
+
+# View results
+head(amethyst_locations)
+
+# This method works great for short distances, but if fish stay in one place, GPS noise might create false movement. Filter out small movements to account for GPS error?
+
+# Include Time Between Movements
+amethyst_locations <- amethyst_locations %>%
+  arrange(radioID, trackedTime_EST) %>%
+  group_by(radioID) %>%
+  mutate(
+    time_diff_hours = as.numeric(difftime(trackedTime_EST, lag(trackedTime_EST), units = "hours")),
+    movement_rate = ifelse(time_diff_hours > 0, euclideanMoved_m / time_diff_hours, NA)
+  ) %>%
+  ungroup()
+
+
+```
 
 ```{r histogram of distance moved}
 hist(amethyst_locations$distMoved_m, main="distance moved (m)")
@@ -718,9 +748,16 @@ ggplot(tracking_data_locations_filtered, aes(x = movement_rate)) +
        y = "Frequency") +
   theme_minimal()
 ```
+```{r}
+tracking_data_locations_filtered$river <- as.factor(tracking_data_locations_filtered$river)
+
+ggplot(tracking_data_locations, aes(x = river, y = movement_rate)) + 
+  geom_boxplot()
+```
 
 
 ```{r}
+# Grouping habitat by locations using snap_x and snap_y
 habitat_summary <- tracking_data_locations %>%
   group_by(snap_x, snap_y) %>%
   summarise(habitat_list = paste(unique(habitat), collapse = ", ")) %>%
@@ -729,6 +766,138 @@ habitat_summary <- tracking_data_locations %>%
 # View the result
 head(habitat_summary)
 ```
+
+```{r}
+# Grouping habitat by locations using seg and vert
+habitat_summary <- tracking_data_locations %>%
+  group_by(river, seg, vert) %>%
+  summarise(habitat_list = paste(unique(habitat), collapse = ", ")) %>%
+  ungroup()
+
+# View the result
+head(habitat_summary)
+
+```
+
+
+
+
+The accuracy of seg and vert for detecting subtle fish movements depends on how your river network was built in riverdist. Here’s what you should consider when determining whether seg and vert can capture fine-scale movements:
+
+1. Understanding seg and vert in riverdist
+-seg (segment): Represents a section of the river between two junctions or bends.
+-vert (vertex): Represents a specific point along a segment, based on how the river network was digitized.
+-The resolution of vert along a seg determines how precisely fish movements can be tracked.
+
+To check your river network resolution:
+```{r}
+# To check my river network resolution
+summary(amethyst_flowlines_UTMZONE18N)  # See number of segments and vertices
+summary(dickey_flowlines_UTMZONE18N)  # See number of segments and vertices
+summary(dry_flowlines_UTMZONE18N)  # See number of segments and vertices
+summary(underhill_flowlines_UTMZONE18N)  # See number of segments and vertices
+```
+If the number of vertices per segment is low, movements within a segment (like from stream edge to center) may not be distinguishable.
+
+```{r}
+# Check number of vertices per segment
+amethyst_vertex_counts <- sapply(amethyst_flowlines_UTMZONE18N$cumuldist, length)
+
+# Summary statistics of vertex counts
+summary(amethyst_vertex_counts)
+
+# Check number of vertices per segment
+underhill_vertex_counts <- sapply(underhill_flowlines_UTMZONE18N$cumuldist, length)
+
+# Summary statistics of vertex counts
+summary(underhill_vertex_counts)
+
+# Check number of vertices per segment
+dickey_vertex_counts <- sapply(dickey_flowlines_UTMZONE18N$cumuldist, length)
+
+# Summary statistics of vertex counts
+summary(dickey_vertex_counts)
+
+# Check number of vertices per segment
+dry_vertex_counts <- sapply(dry_flowlines_UTMZONE18N$cumuldist, length)
+
+# Summary statistics of vertex counts
+summary(dry_vertex_counts)
+
+# If the minimum vertex count is low (e.g., 2-3 per segment), your resolution may be too coarse.
+# If the mean or median vertex count is high (e.g., 20+ per segment), you likely have good resolution
+
+```
+```{r}
+# Compute spacing between vertices within each segment
+amethyst_vertex_spacing <- sapply(amethyst_flowlines_UTMZONE18N$cumuldist, function(x) if (length(x) > 1) mean(diff(x)) else NA)
+
+# Summary of spacing
+summary(amethyst_vertex_spacing)
+
+# Compute spacing between vertices within each segment
+underhill_vertex_spacing <- sapply(underhill_flowlines_UTMZONE18N$cumuldist, function(x) if (length(x) > 1) mean(diff(x)) else NA)
+
+# Summary of spacing
+summary(underhill_vertex_spacing)
+
+# Compute spacing between vertices within each segment
+dickey_vertex_spacing <- sapply(dickey_flowlines_UTMZONE18N$cumuldist, function(x) if (length(x) > 1) mean(diff(x)) else NA)
+
+# Summary of spacing
+summary(dickey_vertex_spacing)
+
+# Compute spacing between vertices within each segment
+dry_vertex_spacing <- sapply(dry_flowlines_UTMZONE18N$cumuldist, function(x) if (length(x) > 1) mean(diff(x)) else NA)
+
+# Summary of spacing
+summary(dry_vertex_spacing)
+
+# If spacing is large (e.g., >10-20m), small fish movements may not be captured.
+# If spacing is small (e.g., <5m), seg and vert should work fine.
+```
+
+2. Can seg and vert Detect Small-Scale Movements?
+-If your river network has a high vertex density (many vert per seg), subtle movements might be detectable.
+-If vertices are spaced far apart, then small movements may not result in a vert change.
+-If fish move within the same segment (seg) and between vertices (vert), but the distance is minimal, your calculated movement may be 0 meters even if the fish actually moved.
+
+3. Alternative: Using snapdist for Fine-Scale Movements
+snapdist (distance from original GPS point to snapped river location) might help detect fine movements:
+-If fish move from the stream edge to the center, seg and vert might not change, but snapdist should.
+-You could calculate movement using changes in snapdist between consecutive detections:
+```{r}
+tracking_data_locations <- tracking_data_locations %>%
+  group_by(radioID) %>%
+  arrange(trackedTime_EST) %>%
+  mutate(snapdist_change = abs(snapdist - lag(snapdist))) %>%
+  ungroup()
+```
+-If snapdist_change is small but seg and vert don’t change, it suggests subtle within-segment movement.
+
+4. Best Approach for Your Case
+If you need fine-scale movement tracking (stream edge to center):
+-Use snap_x, snap_y, and snapdist for within-stream movements.
+-Calculate Euclidean distance between consecutive snap_x, snap_y points:
+```{r}
+tracking_data_locations <- tracking_data_locations %>%
+  group_by(radioID) %>%
+  arrange(trackedTime_EST) %>%
+  mutate(euclidean_movement = sqrt((snap_x - lag(snap_x))^2 + (snap_y - lag(snap_y))^2)) %>%
+  ungroup()
+
+head(tracking_data_locations)
+
+```
+-Compare Euclidean distance vs. riverdistance() results.
+
+If you only need general river movements:
+-Stick with seg and vert since they align with river structure.
+
+Final Thoughts
+-If your river network has a high number of vertices, seg and vert may work well.
+-If you need sub-meter movement precision, use snap_x, snap_y, and snapdist instead.
+
 
 
 
