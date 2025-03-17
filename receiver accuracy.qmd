@@ -1,0 +1,1154 @@
+---
+title: "receiver accuracy"
+---
+
+```{r setup libraries}
+# Required packages for script
+require(tidyverse) # Used for Data Wrangling and Clean-up
+require(data.table) # Used for Data Wrangling and Clean-up
+require(riverdist) # Used for Individual Movement
+require(RMark) # Used for Mark-Recapture Data (Survival and Detection Rates)
+library(readxl)
+library(gridExtra)
+library(moments)
+library(ggplot2)
+library(lubridate)
+
+# Convert points to UTMs from decimal degrees
+library(sf)
+
+# For the coordinates function
+library(sp)
+```
+
+## Load dataset
+```{r load and filter fish data}
+tracking_data_all <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/combined_data/tracking_data_all.csv")
+
+# Filter to remove rows where longitude and latitude are NA
+tracking_data_locations <- tracking_data_all %>%
+  filter(!is.na(lon) & !is.na(lat))
+
+# Filter to remove rows where 'status' is "OUT OF FISH" or "RECOVERED"
+tracking_data_locations <- filter(tracking_data_locations, !status %in% c("OUT OF FISH", "RECOVERED"))
+```
+
+## Underhill Brook
+
+1. Load your flowline shapefiles (do this for each watershed separately)
+
+```{r Load in watershed flowlines}
+
+underhill_flowlines <- lines <- st_read("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles/NHDFlowline_UnderhillBrook.shp") # Reads shapefile, these shapefiles are already in geographic coordinate system NAD83
+st_crs(underhill_flowlines) # This just checks to make sure that your lines are in GCS NAD83
+underhill_flowlines <- st_transform(underhill_flowlines, 26918) # Projects to UTM Zone 18N (the code for this is 26918)
+
+# Subdivide the river lines into finer segments (e.g., 0.5-meter resolution)
+underhill_flowlines_fine <- st_segmentize(underhill_flowlines, dfMaxLength = 0.5)
+
+## Please read note before running next line! Comment the next line out if you already reprojected the raw shapefile.
+#st_write(underhill_flowlines_fine, "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles/NHDFlowline_UnderhillBrook_UTMZONE18N_Finer.shp") #Once you run this, it will add a new shapefile to your "shapefiles" folder! It will give you a warning if it's already done. I did it for underhill already, but you'll need to repeat this process for each watershed. 
+
+
+underhill_flowlines_fine_UTMZONE18N <- line2network(path = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles", # Points to the folder in your R Project folder
+                                    layer = "NHDFlowline_UnderhillBrook_UTMZONE18N_Finer", # Identifies the shapefile you want to pull from folder
+                                    tolerance = 1) # This is the spatial tolerance used to determine connectivity between line segments) 
+
+
+plot(x=underhill_flowlines_fine_UTMZONE18N) # checks imported line
+topologydots(rivers = underhill_flowlines_fine_UTMZONE18N) # checks line topology
+
+# Setting the MOUTH of your watershed allows you to look at directional movement. The "seg = " value will be the segment that includes your mouth, which you can observe in the plot function above. In Underhill, it's segment 46. The "vert = " value identifies the correct node of that segment. Using "showends" on the segment you want will show you what vertex to select.
+plot(x=underhill_flowlines_fine_UTMZONE18N)
+showends(seg = 46, rivers = underhill_flowlines_fine_UTMZONE18N) # identifies the true mouth of your watershed
+underhill_mouth <- setmouth(seg = 46, vert = 547, rivers = underhill_flowlines_fine_UTMZONE18N) # sets the mouth to the segment and vertex you need.
+
+```
+
+2. Load your fish points for the watershed you are analyzing (do this for each watershed separately)
+```{r Load in fish points}
+
+# read in your fish points and filter by the watershed you're looking at. Make sure to have X and Y columns available in decimal degrees
+
+# Keep only points from "UNDERHILL" and also remove rows where lat or lon are NA
+underhill_points <- tracking_data_locations %>%
+  filter(river == "UNDERHILL" & !is.na(lon) & !is.na(lat))
+
+# Make Lat Lon columns numeric
+
+underhill_points_spatial <- underhill_points %>% 
+  mutate(POINT_Y = as.numeric(lat)) %>% # change to whatever your Y coord column is
+  mutate(POINT_X = as.numeric(lon)) # change to whatever your X coord column is
+coordinates(underhill_points_spatial) <- c("POINT_X","POINT_Y") # identifies the coordinate columns
+proj4string(underhill_points_spatial) <- CRS("+proj=longlat +datum=WGS84") 
+res_underhill <- spTransform(underhill_points_spatial, CRS("+proj=utm +zone=18 +ellps=WGS84")) # reprojects the points to UTM ZONE 18
+as(res_underhill, "SpatialPoints")
+res_underhill <- as.data.frame(res_underhill)
+res_underhill <- res_underhill %>% 
+  rename(POINT_X = coords.x1, POINT_Y = coords.x2) %>%  # Rename coords.x1 and coords.x2
+  mutate(Rownumber =row_number())
+underhill_segvert <- xy2segvert(x = res_underhill$POINT_X, y = res_underhill$POINT_Y, rivers = underhill_flowlines_fine_UTMZONE18N) # change the "res$" to your X and Y coord columns
+  
+## Display raw points (red dots) and snapped points (blue). Run these three lines all at once
+plot(x= underhill_flowlines_fine_UTMZONE18N)
+points(res_underhill$POINT_X, res_underhill$POINT_Y, pch=16, col="red") # shows raw points
+riverpoints(seg = underhill_segvert$seg, vert = underhill_segvert$vert, rivers = underhill_flowlines_fine_UTMZONE18N, pch = 15, col="blue")
+
+
+```
+
+```{r prepare dataset}
+
+nrow(res_underhill)  # Total points before snapping
+nrow(underhill_segvert)  # Total points successfully snapped
+
+# Assign row numbers
+underhill_segvert <- underhill_segvert %>%
+  mutate(Rownumber = row_number()) 
+
+# Merge snapped points back with the original dataset using row numbers
+underhill_locations <- left_join(res_underhill,
+                               underhill_segvert, 
+                               by = "Rownumber")
+
+# Organize dataset
+underhill_locations <- underhill_locations %>%
+  select(date, trackedTime_EST, river, shift, radioID, tempID, status, power, source, fishNotes, lon, lat, 
+         POINT_X, POINT_Y, snap_x, snap_y, seg, vert, snapdist, habitat, habitatExtra, position, substrate, 
+         substrateExtra, shade, airTemp_F, cloud, precip, ftDischarge_cfs, ftTime_EST, startTime_EST, endTime_EST,
+         streamNotes, downstreamGPS, downstreamGain, upstreamGPS, upstreamGain, isoID, length_mm, weight_g, sex, 
+         type, geneticSam, blood, section, collectionNotes)
+
+# Arrange data by fish ID and datetime to ensure chronological order
+underhill_locations <- underhill_locations %>%
+  arrange(radioID, trackedTime_EST)
+
+# Check for duplicate rows
+duplicates <- underhill_locations %>%
+  group_by(radioID, trackedTime_EST, source) %>%
+  filter(n() > 1)
+
+print(duplicates)
+
+```
+```{r Filter Receiver Points to Only Those Within 15 Minutes of an iPad Point}
+# Convert trackedTime_EST to POSIXct if not already
+underhill_locations <- underhill_locations %>%
+  mutate(trackedTime_EST = as.POSIXct(trackedTime_EST, format = "%Y-%m-%d %H:%M:%S"))
+
+# Separate iPad and receiver data
+ipad_points <- underhill_locations %>% filter(source == "iPad")
+receiver_points <- underhill_locations %>% filter(source == "receiver")
+
+# Initialize an empty data frame for matched points
+receiver_filtered <- data.frame()
+
+# Loop through each iPad point and match all receiver points within 30 minutes
+for (i in 1:nrow(ipad_points)) {
+  # Get current iPad point
+  ipad_point <- ipad_points[i, ]
+  
+  # Find all receiver points within 15 minutes of current iPad point
+  matched_receivers <- receiver_points %>%
+    filter(
+      radioID == ipad_point$radioID,  # Match by radioID
+      abs(difftime(trackedTime_EST, ipad_point$trackedTime_EST, units = "mins")) <= 15  # Time difference <= 15 minutes
+    )
+  
+  # Add matched receiver points to the receiver_filtered dataset
+  receiver_filtered <- bind_rows(receiver_filtered, matched_receivers)
+}
+
+# Merge the filtered receiver points with all iPad points
+underhill_filtered <- bind_rows(ipad_points, receiver_filtered)
+
+# View the cleaned dataset
+head(underhill_filtered)
+
+# Check for duplicate rows
+duplicates <- underhill_filtered %>%
+  group_by(radioID, trackedTime_EST, source, power) %>%
+  filter(n() > 1)
+
+print(duplicates)
+
+# Remove duplicate rows based on radioID and trackedTime_EST
+underhill_filtered <- underhill_filtered %>%
+  distinct(radioID, trackedTime_EST, source, .keep_all = TRUE)
+
+```
+```{r Calculate River Distance Between Receiver and iPad Points}
+# Initialize a column for river distance error
+underhill_filtered$river_dist_diff <- NA
+
+# Loop through each fish
+for (fish in unique(underhill_filtered$radioID)) {
+  fish_data <- underhill_filtered %>% filter(radioID == fish) %>%
+    arrange(trackedTime_EST)  # Ensure chronological order
+  
+  # Loop through each receiver point and find distance to previous iPad point
+  for (i in 2:nrow(fish_data)) {
+    if (fish_data$source[i] == "receiver" & fish_data$source[i - 1] == "iPad") {
+      
+      # Get segment & vertex for iPad and receiver points
+      from_seg <- fish_data$seg[i - 1]  # iPad segment
+      from_vert <- fish_data$vert[i - 1]  # iPad vertex
+      to_seg <- fish_data$seg[i]  # Receiver segment
+      to_vert <- fish_data$vert[i]  # Receiver vertex
+      
+      # Calculate river distance
+      dist <- riverdistance(
+        startseg = from_seg, startvert = from_vert, 
+        endseg = to_seg, endvert = to_vert, 
+        rivers = underhill_flowlines_fine_UTMZONE18N, 
+        stopiferror = FALSE
+      )
+      
+      # Store the result
+      underhill_filtered$river_dist_diff[underhill_filtered$radioID == fish & underhill_filtered$trackedTime_EST == fish_data$trackedTime_EST[i]] <- dist
+    }
+  }
+}
+
+# Replace NAs (first observation for each fish) with 0
+underhill_filtered$river_dist_diff[is.na(underhill_filtered$river_dist_diff)] <- 0
+
+# View results
+head(underhill_filtered)
+
+```
+
+```{r Visualize Accuracy vs. Receiver Power}
+# Filter for receiver points only
+receiver_only <- underhill_filtered %>% filter(source == "receiver")
+
+# Scatter plot: receiver power vs. river distance error
+ggplot(receiver_only, aes(x = power, y = river_dist_diff)) +
+  geom_point(alpha = 0.5, color = "blue") +
+  geom_smooth(method = "loess", color = "red") +  # Trend line
+  labs(
+    title = "Underhill: Receiver Power vs. River Distance Error",
+    x = "Receiver Power",
+    y = "Distance from iPad Point (meters, along river)"
+  ) +
+  theme_minimal()
+
+```
+```{r Find the Receiver Power Cutoff}
+# To determine the power threshold where receiver accuracy declines, calculate mean error per power level
+receiver_only <- receiver_only %>%
+  group_by(power) %>%
+  summarise(mean_river_distance = mean(river_dist_diff, na.rm = TRUE)) %>%
+  arrange(desc(mean_river_distance))  # Sort by worst accuracy
+
+print(receiver_only)
+```
+
+```{r Filter Out Unreliable Receiver Points}
+#underhill_filtered <- underhill_filtered %>%
+  #filter(!(source == "receiver" & power < -100))
+```
+
+## Dickey Brook
+
+1. Load your flowline shapefiles (do this for each watershed separately)
+
+```{r Load in watershed flowlines}
+
+dickey_flowlines <- lines <- st_read("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles/NHDFlowline_DickeyBrook.shp") # Reads shapefile, these shapefiles are already in geographic coordinate system NAD83
+st_crs(dickey_flowlines) # This just checks to make sure that your lines are in GCS NAD83
+dickey_flowlines <- st_transform(dickey_flowlines, 26918) # Projects to UTM Zone 18N (the code for this is 26918)
+
+# Subdivide the river lines into finer segments (e.g., 0.5-meter resolution)
+dickey_flowlines_fine <- st_segmentize(dickey_flowlines, dfMaxLength = 0.5)
+
+## Please read note before running next line! Comment the next line out if you already reprojected the raw shapefile.
+#st_write(dickey_flowlines_fine, "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles/NHDFlowline_DickeyBrook_UTMZONE18N_Finer.shp") #Once you run this, it will add a new shapefile to your "shapefiles" folder! It will give you a warning if it's already done. I did it for underhill already, but you'll need to repeat this process for each watershed. 
+
+
+dickey_flowlines_fine_UTMZONE18N <- line2network(path = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles", # Points to the folder in your R Project folder
+                                    layer = "NHDFlowline_DickeyBrook_UTMZONE18N_Finer", # Identifies the shapefile you want to pull from folder
+                                    tolerance = 1) # This is the spatial tolerance used to determine connectivity between line segments) 
+
+
+plot(x=dickey_flowlines_fine_UTMZONE18N) # checks imported line
+topologydots(rivers = dickey_flowlines_fine_UTMZONE18N) # checks line topology
+
+# Setting the MOUTH of your watershed allows you to look at directional movement. The "seg = " value will be the segment that includes your mouth, which you can observe in the plot function above. In Underhill, it's segment 46. The "vert = " value identifies the correct node of that segment. Using "showends" on the segment you want will show you what vertex to select.
+plot(x=dickey_flowlines_fine_UTMZONE18N)
+showends(seg = 43, rivers = dickey_flowlines_fine_UTMZONE18N) # identifies the true mouth of your watershed
+dickey_mouth <- setmouth(seg = 43, vert = 615, rivers = dickey_flowlines_fine_UTMZONE18N) # sets the mouth to the segment and vertex you need.
+
+```
+
+2. Load your fish points for the watershed you are analyzing (do this for each watershed separately)
+```{r Load in fish points}
+
+# read in your fish points and filter by the watershed you're looking at. Make sure to have X and Y columns available in decimal degrees
+
+# Keep only points from "DICKEY" and also remove rows where lat or lon are NA
+dickey_points <- tracking_data_locations %>%
+  filter(river == "DICKEY" & !is.na(lon) & !is.na(lat))
+
+# Make Lat Lon columns numeric
+
+dickey_points_spatial <- dickey_points %>% 
+  mutate(POINT_Y = as.numeric(lat)) %>% # change to whatever your Y coord column is
+  mutate(POINT_X = as.numeric(lon)) # change to whatever your X coord column is
+coordinates(dickey_points_spatial) <- c("POINT_X","POINT_Y") # identifies the coordinate columns
+proj4string(dickey_points_spatial) <- CRS("+proj=longlat +datum=WGS84") 
+res_dickey <- spTransform(dickey_points_spatial, CRS("+proj=utm +zone=18 +ellps=WGS84")) # reprojects the points to UTM ZONE 18
+as(res_dickey, "SpatialPoints")
+res_dickey <- as.data.frame(res_dickey)
+res_dickey <- res_dickey %>% 
+  rename(POINT_X = coords.x1, POINT_Y = coords.x2) %>%  # Rename coords.x1 and coords.x2
+  mutate(Rownumber =row_number())
+dickey_segvert <- xy2segvert(x = res_dickey$POINT_X, y = res_dickey$POINT_Y, rivers = dickey_flowlines_fine_UTMZONE18N) # change the "res$" to your X and Y coord columns
+  
+## Display raw points (red dots) and snapped points (blue). Run these three lines all at once
+plot(x= dickey_flowlines_fine_UTMZONE18N)
+points(res_dickey$POINT_X, res_dickey$POINT_Y, pch=16, col="red") # shows raw points
+riverpoints(seg = dickey_segvert$seg, vert = dickey_segvert$vert, rivers = dickey_flowlines_fine_UTMZONE18N, pch = 15, col="blue")
+
+
+```
+
+```{r prepare dataset}
+
+nrow(res_dickey)  # Total points before snapping
+nrow(dickey_segvert)  # Total points successfully snapped
+
+# Assign row numbers
+dickey_segvert <- dickey_segvert %>%
+  mutate(Rownumber = row_number()) 
+
+# Merge snapped points back with the original dataset using row numbers
+dickey_locations <- left_join(res_dickey,
+                               dickey_segvert, 
+                               by = "Rownumber")
+
+# Organize dataset
+dickey_locations <- dickey_locations %>%
+  select(date, trackedTime_EST, river, shift, radioID, tempID, status, power, source, fishNotes, lon, lat, 
+         POINT_X, POINT_Y, snap_x, snap_y, seg, vert, snapdist, habitat, habitatExtra, position, substrate, 
+         substrateExtra, shade, airTemp_F, cloud, precip, ftDischarge_cfs, ftTime_EST, startTime_EST, endTime_EST,
+         streamNotes, downstreamGPS, downstreamGain, upstreamGPS, upstreamGain, isoID, length_mm, weight_g, sex, 
+         type, geneticSam, blood, section, collectionNotes)
+
+# Arrange data by fish ID and datetime to ensure chronological order
+dickey_locations <- dickey_locations %>%
+  arrange(radioID, trackedTime_EST)
+
+# Check for duplicate rows
+duplicates <- dickey_locations %>%
+  group_by(radioID, trackedTime_EST, source) %>%
+  filter(n() > 1)
+
+print(duplicates)
+
+```
+```{r Filter Receiver Points to Only Those Within 15 Minutes of an iPad Point}
+# Convert trackedTime_EST to POSIXct if not already
+dickey_locations <- dickey_locations %>%
+  mutate(trackedTime_EST = as.POSIXct(trackedTime_EST, format = "%Y-%m-%d %H:%M:%S"))
+
+# Separate iPad and receiver data
+ipad_points <- dickey_locations %>% filter(source == "iPad")
+receiver_points <- dickey_locations %>% filter(source == "receiver")
+
+# Initialize an empty data frame for matched points
+receiver_filtered <- data.frame()
+
+# Loop through each iPad point and match all receiver points within 30 minutes
+for (i in 1:nrow(ipad_points)) {
+  # Get current iPad point
+  ipad_point <- ipad_points[i, ]
+  
+  # Find all receiver points within 15 minutes of current iPad point
+  matched_receivers <- receiver_points %>%
+    filter(
+      radioID == ipad_point$radioID,  # Match by radioID
+      abs(difftime(trackedTime_EST, ipad_point$trackedTime_EST, units = "mins")) <= 15  # Time difference <= 15 minutes
+    )
+  
+  # Add matched receiver points to the receiver_filtered dataset
+  receiver_filtered <- bind_rows(receiver_filtered, matched_receivers)
+}
+
+# Merge the filtered receiver points with all iPad points
+dickey_filtered <- bind_rows(ipad_points, receiver_filtered)
+
+# View the cleaned dataset
+head(dickey_filtered)
+
+# Check for duplicate rows
+duplicates <- dickey_filtered %>%
+  group_by(radioID, trackedTime_EST, source, power) %>%
+  filter(n() > 1)
+
+print(duplicates)
+
+# Remove duplicate rows based on radioID and trackedTime_EST
+dickey_filtered <- dickey_filtered %>%
+  distinct(radioID, trackedTime_EST, source, .keep_all = TRUE)
+
+```
+```{r Calculate River Distance Between Receiver and iPad Points}
+# Initialize a column for river distance error
+dickey_filtered$river_dist_diff <- NA
+
+# Loop through each fish
+for (fish in unique(dickey_filtered$radioID)) {
+  fish_data <- dickey_filtered %>% filter(radioID == fish) %>%
+    arrange(trackedTime_EST)  # Ensure chronological order
+  
+  # Loop through each receiver point and find distance to previous iPad point
+  for (i in 2:nrow(fish_data)) {
+    if (fish_data$source[i] == "receiver" & fish_data$source[i - 1] == "iPad") {
+      
+      # Get segment & vertex for iPad and receiver points
+      from_seg <- fish_data$seg[i - 1]  # iPad segment
+      from_vert <- fish_data$vert[i - 1]  # iPad vertex
+      to_seg <- fish_data$seg[i]  # Receiver segment
+      to_vert <- fish_data$vert[i]  # Receiver vertex
+      
+      # Calculate river distance
+      dist <- riverdistance(
+        startseg = from_seg, startvert = from_vert, 
+        endseg = to_seg, endvert = to_vert, 
+        rivers = dickey_flowlines_fine_UTMZONE18N, 
+        stopiferror = FALSE
+      )
+      
+      # Store the result
+      dickey_filtered$river_dist_diff[dickey_filtered$radioID == fish & dickey_filtered$trackedTime_EST == fish_data$trackedTime_EST[i]] <- dist
+    }
+  }
+}
+
+# Replace NAs (first observation for each fish) with 0
+dickey_filtered$river_dist_diff[is.na(dickey_filtered$river_dist_diff)] <- 0
+
+# View results
+head(dickey_filtered)
+
+```
+
+```{r Visualize Accuracy vs. Receiver Power}
+# Filter for receiver points only
+receiver_only <- dickey_filtered %>% filter(source == "receiver")
+
+# Scatter plot: receiver power vs. river distance error
+ggplot(receiver_only, aes(x = power, y = river_dist_diff)) +
+  geom_point(alpha = 0.5, color = "blue") +
+  geom_smooth(method = "loess", color = "red") +  # Trend line
+  labs(
+    title = "Dickey: Receiver Power vs. River Distance Error",
+    x = "Receiver Power",
+    y = "Distance from iPad Point (meters, along river)"
+  ) +
+  theme_minimal()
+
+```
+```{r Find the Receiver Power Cutoff}
+# To determine the power threshold where receiver accuracy declines, calculate mean error per power level
+receiver_only <- receiver_only %>%
+  group_by(power) %>%
+  summarise(mean_river_distance = mean(river_dist_diff, na.rm = TRUE)) %>%
+  arrange(desc(mean_river_distance))  # Sort by worst accuracy
+
+print(receiver_only)
+```
+
+```{r Filter Out Unreliable Receiver Points}
+#dickey_filtered <- dickey_filtered %>%
+  #filter(!(source == "receiver" & power < -100))
+```
+
+
+## Dry Brook
+
+1. Load your flowline shapefiles (do this for each watershed separately)
+
+```{r Load in watershed flowlines}
+
+dry_flowlines <- lines <- st_read("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles/NHDFlowline_DryBrook.shp") # Reads shapefile, these shapefiles are already in geographic coordinate system NAD83
+st_crs(dry_flowlines) # This just checks to make sure that your lines are in GCS NAD83
+dry_flowlines <- st_transform(dry_flowlines, 26918) # Projects to UTM Zone 18N (the code for this is 26918)
+
+# Subdivide the river lines into finer segments (e.g., 0.5-meter resolution)
+dry_flowlines_fine <- st_segmentize(dry_flowlines, dfMaxLength = 0.5)
+
+## Please read note before running next line! Comment the next line out if you already reprojected the raw shapefile.
+#st_write(dry_flowlines_fine, "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles/NHDFlowline_DryBrook_UTMZONE18N_Finer.shp") #Once you run this, it will add a new shapefile to your "shapefiles" folder! It will give you a warning if it's already done. I did it for underhill already, but you'll need to repeat this process for each watershed. 
+
+
+dry_flowlines_fine_UTMZONE18N <- line2network(path = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles", # Points to the folder in your R Project folder
+                                    layer = "NHDFlowline_DryBrook_UTMZONE18N_Finer", # Identifies the shapefile you want to pull from folder
+                                    tolerance = 1) # This is the spatial tolerance used to determine connectivity between line segments) 
+
+
+plot(x=dry_flowlines_fine_UTMZONE18N) # checks imported line
+topologydots(rivers = dry_flowlines_fine_UTMZONE18N) # checks line topology
+
+# Setting the MOUTH of your watershed allows you to look at directional movement. The "seg = " value will be the segment that includes your mouth, which you can observe in the plot function above. In Underhill, it's segment 46. The "vert = " value identifies the correct node of that segment. Using "showends" on the segment you want will show you what vertex to select.
+plot(x=dry_flowlines_fine_UTMZONE18N)
+showends(seg = 9, rivers = dry_flowlines_fine_UTMZONE18N) # identifies the true mouth of your watershed
+dry_mouth <- setmouth(seg = 9, vert = 377, rivers = dry_flowlines_fine_UTMZONE18N) # sets the mouth to the segment and vertex you need.
+
+```
+
+2. Load your fish points for the watershed you are analyzing (do this for each watershed separately)
+```{r Load in fish points}
+
+# read in your fish points and filter by the watershed you're looking at. Make sure to have X and Y columns available in decimal degrees
+
+# Keep only points from "DRY UPPER" and also remove rows where lat or lon are NA
+dry_points <- tracking_data_locations %>%
+  filter(river == "DRY UPPER" & !is.na(lon) & !is.na(lat))
+
+# Make Lat Lon columns numeric
+
+dry_points_spatial <- dry_points %>% 
+  mutate(POINT_Y = as.numeric(lat)) %>% # change to whatever your Y coord column is
+  mutate(POINT_X = as.numeric(lon)) # change to whatever your X coord column is
+coordinates(dry_points_spatial) <- c("POINT_X","POINT_Y") # identifies the coordinate columns
+proj4string(dry_points_spatial) <- CRS("+proj=longlat +datum=WGS84") 
+res_dry <- spTransform(dry_points_spatial, CRS("+proj=utm +zone=18 +ellps=WGS84")) # reprojects the points to UTM ZONE 18
+as(res_dry, "SpatialPoints")
+res_dry <- as.data.frame(res_dry)
+res_dry <- res_dry %>% 
+  rename(POINT_X = coords.x1, POINT_Y = coords.x2) %>%  # Rename coords.x1 and coords.x2
+  mutate(Rownumber =row_number())
+dry_segvert <- xy2segvert(x = res_dry$POINT_X, y = res_dry$POINT_Y, rivers = dry_flowlines_fine_UTMZONE18N) # change the "res$" to your X and Y coord columns
+  
+## Display raw points (red dots) and snapped points (blue). Run these three lines all at once
+plot(x= dry_flowlines_fine_UTMZONE18N)
+points(res_dry$POINT_X, res_dry$POINT_Y, pch=16, col="red") # shows raw points
+riverpoints(seg = dry_segvert$seg, vert = dry_segvert$vert, rivers = dry_flowlines_fine_UTMZONE18N, pch = 15, col="blue")
+
+
+```
+
+```{r prepare dataset}
+
+nrow(res_dry)  # Total points before snapping
+nrow(dry_segvert)  # Total points successfully snapped
+
+# Assign row numbers
+dry_segvert <- dry_segvert %>%
+  mutate(Rownumber = row_number()) 
+
+# Merge snapped points back with the original dataset using row numbers
+dry_locations <- left_join(res_dry,
+                               dry_segvert, 
+                               by = "Rownumber")
+
+# Organize dataset
+dry_locations <- dry_locations %>%
+  select(date, trackedTime_EST, river, shift, radioID, tempID, status, power, source, fishNotes, lon, lat, 
+         POINT_X, POINT_Y, snap_x, snap_y, seg, vert, snapdist, habitat, habitatExtra, position, substrate, 
+         substrateExtra, shade, airTemp_F, cloud, precip, ftDischarge_cfs, ftTime_EST, startTime_EST, endTime_EST,
+         streamNotes, downstreamGPS, downstreamGain, upstreamGPS, upstreamGain, isoID, length_mm, weight_g, sex, 
+         type, geneticSam, blood, section, collectionNotes)
+
+# Arrange data by fish ID and datetime to ensure chronological order
+dry_locations <- dry_locations %>%
+  arrange(radioID, trackedTime_EST)
+
+# Check for duplicate rows
+duplicates <- dry_locations %>%
+  group_by(radioID, trackedTime_EST, source) %>%
+  filter(n() > 1)
+
+print(duplicates)
+
+```
+```{r Filter Receiver Points to Only Those Within 15 Minutes of an iPad Point}
+# Convert trackedTime_EST to POSIXct if not already
+dry_locations <- dry_locations %>%
+  mutate(trackedTime_EST = as.POSIXct(trackedTime_EST, format = "%Y-%m-%d %H:%M:%S"))
+
+# Separate iPad and receiver data
+ipad_points <- dry_locations %>% filter(source == "iPad")
+receiver_points <- dry_locations %>% filter(source == "receiver")
+
+# Initialize an empty data frame for matched points
+receiver_filtered <- data.frame()
+
+# Loop through each iPad point and match all receiver points within 30 minutes
+for (i in 1:nrow(ipad_points)) {
+  # Get current iPad point
+  ipad_point <- ipad_points[i, ]
+  
+  # Find all receiver points within 15 minutes of current iPad point
+  matched_receivers <- receiver_points %>%
+    filter(
+      radioID == ipad_point$radioID,  # Match by radioID
+      abs(difftime(trackedTime_EST, ipad_point$trackedTime_EST, units = "mins")) <= 15  # Time difference <= 15 minutes
+    )
+  
+  # Add matched receiver points to the receiver_filtered dataset
+  receiver_filtered <- bind_rows(receiver_filtered, matched_receivers)
+}
+
+# Merge the filtered receiver points with all iPad points
+dry_filtered <- bind_rows(ipad_points, receiver_filtered)
+
+# View the cleaned dataset
+head(dry_filtered)
+
+# Check for duplicate rows
+duplicates <- dry_filtered %>%
+  group_by(radioID, trackedTime_EST, source, power) %>%
+  filter(n() > 1)
+
+print(duplicates)
+
+# Remove duplicate rows based on radioID and trackedTime_EST
+dry_filtered <- dry_filtered %>%
+  distinct(radioID, trackedTime_EST, source, .keep_all = TRUE)
+
+```
+```{r Calculate River Distance Between Receiver and iPad Points}
+# Initialize a column for river distance error
+dry_filtered$river_dist_diff <- NA
+
+# Loop through each fish
+for (fish in unique(dry_filtered$radioID)) {
+  fish_data <- dry_filtered %>% filter(radioID == fish) %>%
+    arrange(trackedTime_EST)  # Ensure chronological order
+  
+  # Loop through each receiver point and find distance to previous iPad point
+  for (i in 2:nrow(fish_data)) {
+    if (fish_data$source[i] == "receiver" & fish_data$source[i - 1] == "iPad") {
+      
+      # Get segment & vertex for iPad and receiver points
+      from_seg <- fish_data$seg[i - 1]  # iPad segment
+      from_vert <- fish_data$vert[i - 1]  # iPad vertex
+      to_seg <- fish_data$seg[i]  # Receiver segment
+      to_vert <- fish_data$vert[i]  # Receiver vertex
+      
+      # Calculate river distance
+      dist <- riverdistance(
+        startseg = from_seg, startvert = from_vert, 
+        endseg = to_seg, endvert = to_vert, 
+        rivers = dry_flowlines_fine_UTMZONE18N, 
+        stopiferror = FALSE
+      )
+      
+      # Store the result
+      dry_filtered$river_dist_diff[dry_filtered$radioID == fish & dry_filtered$trackedTime_EST == fish_data$trackedTime_EST[i]] <- dist
+    }
+  }
+}
+
+# Replace NAs (first observation for each fish) with 0
+dry_filtered$river_dist_diff[is.na(dry_filtered$river_dist_diff)] <- 0
+
+# View results
+head(dry_filtered)
+
+```
+
+```{r Visualize Accuracy vs. Receiver Power}
+# Filter for receiver points only
+receiver_only <- dry_filtered %>% filter(source == "receiver")
+
+# Scatter plot: receiver power vs. river distance error
+ggplot(receiver_only, aes(x = power, y = river_dist_diff)) +
+  geom_point(alpha = 0.5, color = "blue") +
+  geom_smooth(method = "loess", color = "red") +  # Trend line
+  labs(
+    title = "Dry: Receiver Power vs. River Distance Error",
+    x = "Receiver Power",
+    y = "Distance from iPad Point (meters, along river)"
+  ) +
+  theme_minimal()
+
+```
+```{r Find the Receiver Power Cutoff}
+# To determine the power threshold where receiver accuracy declines, calculate mean error per power level
+receiver_only <- receiver_only %>%
+  group_by(power) %>%
+  summarise(mean_river_distance = mean(river_dist_diff, na.rm = TRUE)) %>%
+  arrange(desc(mean_river_distance))  # Sort by worst accuracy
+
+print(receiver_only)
+```
+
+```{r Filter Out Unreliable Receiver Points}
+#dry_filtered <- dry_filtered %>%
+  #filter(!(source == "receiver" & power < -100))
+```
+
+
+
+## Amethyst Brook
+
+1. Load your flowline shapefiles (do this for each watershed separately)
+
+```{r Load in watershed flowlines}
+
+amethyst_flowlines <- lines <- st_read("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles/NHDFlowline_AmethystBrook.shp") # Reads shapefile, these shapefiles are already in geographic coordinate system NAD83
+st_crs(amethyst_flowlines) # This just checks to make sure that your lines are in GCS NAD83
+amethyst_flowlines <- st_transform(amethyst_flowlines, 26918) # Projects to UTM Zone 18N (the code for this is 26918)
+
+# Subdivide the river lines into finer segments (e.g., 0.5-meter resolution)
+amethyst_flowlines_fine <- st_segmentize(amethyst_flowlines, dfMaxLength = 0.5)
+
+## Please read note before running next line! Comment the next line out if you already reprojected the raw shapefile.
+#st_write(amethyst_flowlines_fine, "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles/NHDFlowline_AmethystBrook_UTMZONE18N_Finer.shp") #Once you run this, it will add a new shapefile to your "shapefiles" folder! It will give you a warning if it's already done. I did it for underhill already, but you'll need to repeat this process for each watershed. 
+
+
+amethyst_flowlines_fine_UTMZONE18N <- line2network(path = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles", # Points to the folder in your R Project folder
+                                    layer = "NHDFlowline_AmethystBrook_UTMZONE18N_Finer", # Identifies the shapefile you want to pull from folder
+                                    tolerance = 1) # This is the spatial tolerance used to determine connectivity between line segments) 
+
+
+plot(x=amethyst_flowlines_fine_UTMZONE18N) # checks imported line
+topologydots(rivers = amethyst_flowlines_fine_UTMZONE18N) # checks line topology
+
+# Setting the MOUTH of your watershed allows you to look at directional movement. The "seg = " value will be the segment that includes your mouth, which you can observe in the plot function above. In Underhill, it's segment 46. The "vert = " value identifies the correct node of that segment. Using "showends" on the segment you want will show you what vertex to select.
+plot(x=amethyst_flowlines_fine_UTMZONE18N)
+showends(seg = 411, rivers = amethyst_flowlines_fine_UTMZONE18N) # identifies the true mouth of your watershed
+amethyst_mouth <- setmouth(seg = 411, vert = 3984, rivers = amethyst_flowlines_fine_UTMZONE18N) # sets the mouth to the segment and vertex you need.
+
+```
+
+2. Load your fish points for the watershed you are analyzing (do this for each watershed separately)
+```{r Load in fish points}
+
+# read in your fish points and filter by the watershed you're looking at. Make sure to have X and Y columns available in decimal degrees
+
+# Keep only points from "AMETHYST", "BUFFAM", and "HARRIS" and also remove rows where lat or lon are NA
+amethyst_points <- tracking_data_locations %>%
+  filter((river == "AMETHYST" | river == "BUFFAM" | river == "HARRIS") & !is.na(lon) & !is.na(lat))
+
+# Make Lat Lon columns numeric
+
+amethyst_points_spatial <- amethyst_points %>% 
+  mutate(POINT_Y = as.numeric(lat)) %>% # change to whatever your Y coord column is
+  mutate(POINT_X = as.numeric(lon)) # change to whatever your X coord column is
+coordinates(amethyst_points_spatial) <- c("POINT_X","POINT_Y") # identifies the coordinate columns
+proj4string(amethyst_points_spatial) <- CRS("+proj=longlat +datum=WGS84") 
+res_amethyst <- spTransform(amethyst_points_spatial, CRS("+proj=utm +zone=18 +ellps=WGS84")) # reprojects the points to UTM ZONE 18
+as(res_amethyst, "SpatialPoints")
+res_amethyst <- as.data.frame(res_amethyst)
+res_amethyst <- res_amethyst %>% 
+  rename(POINT_X = coords.x1, POINT_Y = coords.x2) %>%  # Rename coords.x1 and coords.x2
+  mutate(Rownumber =row_number())
+amethyst_segvert <- xy2segvert(x = res_amethyst$POINT_X, y = res_amethyst$POINT_Y, rivers = amethyst_flowlines_fine_UTMZONE18N) # change the "res$" to your X and Y coord columns
+  
+## Display raw points (red dots) and snapped points (blue). Run these three lines all at once
+plot(x= amethyst_flowlines_fine_UTMZONE18N)
+points(res_amethyst$POINT_X, res_amethyst$POINT_Y, pch=16, col="red") # shows raw points
+riverpoints(seg = amethyst_segvert$seg, vert = amethyst_segvert$vert, rivers = amethyst_flowlines_fine_UTMZONE18N, pch = 15, col="blue")
+
+
+```
+
+```{r prepare dataset}
+
+nrow(res_amethyst)  # Total points before snapping
+nrow(amethyst_segvert)  # Total points successfully snapped
+
+# Assign row numbers
+amethyst_segvert <- amethyst_segvert %>%
+  mutate(Rownumber = row_number()) 
+
+# Merge snapped points back with the original dataset using row numbers
+amethyst_locations <- left_join(res_amethyst,
+                               amethyst_segvert, 
+                               by = "Rownumber")
+
+# Organize dataset
+amethyst_locations <- amethyst_locations %>%
+  select(date, trackedTime_EST, river, shift, radioID, tempID, status, power, source, fishNotes, lon, lat, 
+         POINT_X, POINT_Y, snap_x, snap_y, seg, vert, snapdist, habitat, habitatExtra, position, substrate, 
+         substrateExtra, shade, airTemp_F, cloud, precip, ftDischarge_cfs, ftTime_EST, startTime_EST, endTime_EST,
+         streamNotes, downstreamGPS, downstreamGain, upstreamGPS, upstreamGain, isoID, length_mm, weight_g, sex, 
+         type, geneticSam, blood, section, collectionNotes)
+
+# Arrange data by fish ID and datetime to ensure chronological order
+amethyst_locations <- amethyst_locations %>%
+  arrange(radioID, trackedTime_EST)
+
+# Check for duplicate rows
+duplicates <- amethyst_locations %>%
+  group_by(radioID, trackedTime_EST, source) %>%
+  filter(n() > 1)
+
+print(duplicates)
+
+```
+```{r Filter Receiver Points to Only Those Within 15 Minutes of an iPad Point}
+# Convert trackedTime_EST to POSIXct if not already
+amethyst_locations <- amethyst_locations %>%
+  mutate(trackedTime_EST = as.POSIXct(trackedTime_EST, format = "%Y-%m-%d %H:%M:%S"))
+
+# Separate iPad and receiver data
+ipad_points <- amethyst_locations %>% filter(source == "iPad")
+receiver_points <- amethyst_locations %>% filter(source == "receiver")
+
+# Initialize an empty data frame for matched points
+receiver_filtered <- data.frame()
+
+# Loop through each iPad point and match all receiver points within 30 minutes
+for (i in 1:nrow(ipad_points)) {
+  # Get current iPad point
+  ipad_point <- ipad_points[i, ]
+  
+  # Find all receiver points within 15 minutes of current iPad point
+  matched_receivers <- receiver_points %>%
+    filter(
+      radioID == ipad_point$radioID,  # Match by radioID
+      abs(difftime(trackedTime_EST, ipad_point$trackedTime_EST, units = "mins")) <= 15  # Time difference <= 15 minutes
+    )
+  
+  # Add matched receiver points to the receiver_filtered dataset
+  receiver_filtered <- bind_rows(receiver_filtered, matched_receivers)
+}
+
+# Merge the filtered receiver points with all iPad points
+amethyst_filtered <- bind_rows(ipad_points, receiver_filtered)
+
+# View the cleaned dataset
+head(amethyst_filtered)
+
+# Check for duplicate rows
+duplicates <- amethyst_filtered %>%
+  group_by(radioID, trackedTime_EST, source, power) %>%
+  filter(n() > 1)
+
+print(duplicates)
+
+# Remove duplicate rows based on radioID and trackedTime_EST
+amethyst_filtered <- amethyst_filtered %>%
+  distinct(radioID, trackedTime_EST, source, .keep_all = TRUE)
+
+```
+```{r Calculate River Distance Between Receiver and iPad Points}
+# Initialize a column for river distance error
+amethyst_filtered$river_dist_diff <- NA
+
+# Loop through each fish
+for (fish in unique(amethyst_filtered$radioID)) {
+  fish_data <- amethyst_filtered %>% filter(radioID == fish) %>%
+    arrange(trackedTime_EST)  # Ensure chronological order
+  
+  # Loop through each receiver point and find distance to previous iPad point
+  for (i in 2:nrow(fish_data)) {
+    if (fish_data$source[i] == "receiver" & fish_data$source[i - 1] == "iPad") {
+      
+      # Get segment & vertex for iPad and receiver points
+      from_seg <- fish_data$seg[i - 1]  # iPad segment
+      from_vert <- fish_data$vert[i - 1]  # iPad vertex
+      to_seg <- fish_data$seg[i]  # Receiver segment
+      to_vert <- fish_data$vert[i]  # Receiver vertex
+      
+      # Calculate river distance
+      dist <- riverdistance(
+        startseg = from_seg, startvert = from_vert, 
+        endseg = to_seg, endvert = to_vert, 
+        rivers = amethyst_flowlines_fine_UTMZONE18N, 
+        stopiferror = FALSE
+      )
+      
+      # Store the result
+      amethyst_filtered$river_dist_diff[amethyst_filtered$radioID == fish & amethyst_filtered$trackedTime_EST == fish_data$trackedTime_EST[i]] <- dist
+    }
+  }
+}
+
+# Replace NAs (first observation for each fish) with 0
+amethyst_filtered$river_dist_diff[is.na(amethyst_filtered$river_dist_diff)] <- 0
+
+# View results
+head(amethyst_filtered)
+
+```
+
+```{r Visualize Accuracy vs. Receiver Power}
+# Filter for receiver points only
+receiver_only <- amethyst_filtered %>% filter(source == "receiver")
+
+# Scatter plot: receiver power vs. river distance error
+ggplot(receiver_only, aes(x = power, y = river_dist_diff)) +
+  geom_point(alpha = 0.5, color = "blue") +
+  geom_smooth(method = "loess", color = "red") +  # Trend line
+  labs(
+    title = "Amethyst: Receiver Power vs. River Distance Error",
+    x = "Receiver Power",
+    y = "Distance from iPad Point (meters, along river)"
+  ) +
+  theme_minimal()
+
+```
+```{r Find the Receiver Power Cutoff}
+# To determine the power threshold where receiver accuracy declines, calculate mean error per power level
+receiver_only <- receiver_only %>%
+  group_by(power) %>%
+  summarise(mean_river_distance = mean(river_dist_diff, na.rm = TRUE)) %>%
+  arrange(desc(mean_river_distance))  # Sort by worst accuracy
+
+print(receiver_only)
+```
+
+```{r Filter Out Unreliable Receiver Points}
+#amethyst_filtered <- amethyst_filtered %>%
+  #filter(!(source == "receiver" & power < -100))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Underhill
+
+```{r Calculate Mean Distance Error by Power}
+# Calculate mean river distance error by receiver power
+power_error_summary <- underhill_filtered %>%
+  filter(source == "receiver") %>%  # Only look at receiver points
+  group_by(power) %>%
+  summarise(
+    mean_distance_error = mean(river_dist_diff, na.rm = TRUE),  # Mean distance error
+    n = n()  # Number of observations at each power level
+  ) %>%
+  ungroup()
+
+# View the summarized data
+head(power_error_summary)
+```
+
+```{r Standardize by Number of Observations}
+# Standardize mean distance error by number of observations
+power_error_summary <- power_error_summary %>%
+  mutate(
+    standardized_error = mean_distance_error / n  # Normalizing by number of observations
+  )
+
+# View the standardized results
+head(power_error_summary)
+```
+
+```{r Create the Plot}
+# Plot the mean distance error by receiver power
+ggplot(power_error_summary, aes(x = power, y = mean_distance_error)) +
+  geom_point(aes(size = n), alpha = 0.6, color = "blue") +  # Plot points, size by number of observations
+  geom_smooth(method = "loess", color = "red", se = FALSE) +  # Smoothed trend line
+  labs(
+    title = "Underhill: Mean Distance Error by Receiver Power",
+    x = "Receiver Power",
+    y = "Mean Distance Error (meters)",
+    subtitle = "Size of points represents number of observations"
+  ) +
+  theme_minimal()
+```
+```{r Visualizing Standardized Error}
+# Plot the standardized mean distance error by receiver power
+ggplot(power_error_summary, aes(x = power, y = standardized_error)) +
+  geom_point(aes(size = n), alpha = 0.6, color = "blue") +
+  geom_smooth(method = "loess", color = "red", se = FALSE) +  # Smoothed trend line
+  labs(
+    title = "Underhill: Standardized Distance Error by Receiver Power",
+    x = "Receiver Power",
+    y = "Standardized Distance Error",
+    subtitle = "Size of points represents number of observations"
+  ) +
+  theme_minimal()
+```
+
+## Dickey
+
+```{r Calculate Mean Distance Error by Power}
+# Calculate mean river distance error by receiver power
+power_error_summary <- dickey_filtered %>%
+  filter(source == "receiver") %>%  # Only look at receiver points
+  group_by(power) %>%
+  summarise(
+    mean_distance_error = mean(river_dist_diff, na.rm = TRUE),  # Mean distance error
+    n = n()  # Number of observations at each power level
+  ) %>%
+  ungroup()
+
+# View the summarized data
+head(power_error_summary)
+```
+
+```{r Standardize by Number of Observations}
+# Standardize mean distance error by number of observations
+power_error_summary <- power_error_summary %>%
+  mutate(
+    standardized_error = mean_distance_error / n  # Normalizing by number of observations
+  )
+
+# View the standardized results
+head(power_error_summary)
+```
+
+```{r Create the Plot}
+# Plot the mean distance error by receiver power
+ggplot(power_error_summary, aes(x = power, y = mean_distance_error)) +
+  geom_point(aes(size = n), alpha = 0.6, color = "blue") +  # Plot points, size by number of observations
+  geom_smooth(method = "loess", color = "red", se = FALSE) +  # Smoothed trend line
+  labs(
+    title = "Dickey: Mean Distance Error by Receiver Power",
+    x = "Receiver Power",
+    y = "Mean Distance Error (meters)",
+    subtitle = "Size of points represents number of observations"
+  ) +
+  theme_minimal()
+```
+```{r Visualizing Standardized Error}
+# Plot the standardized mean distance error by receiver power
+ggplot(power_error_summary, aes(x = power, y = standardized_error)) +
+  geom_point(aes(size = n), alpha = 0.6, color = "blue") +
+  geom_smooth(method = "loess", color = "red", se = FALSE) +  # Smoothed trend line
+  labs(
+    title = "Dickey: Standardized Distance Error by Receiver Power",
+    x = "Receiver Power",
+    y = "Standardized Distance Error",
+    subtitle = "Size of points represents number of observations"
+  ) +
+  theme_minimal()
+```
+
+
+
+## Dry
+
+```{r Calculate Mean Distance Error by Power}
+# Calculate mean river distance error by receiver power
+power_error_summary <- dry_filtered %>%
+  filter(source == "receiver") %>%  # Only look at receiver points
+  group_by(power) %>%
+  summarise(
+    mean_distance_error = mean(river_dist_diff, na.rm = TRUE),  # Mean distance error
+    n = n()  # Number of observations at each power level
+  ) %>%
+  ungroup()
+
+# View the summarized data
+head(power_error_summary)
+```
+
+```{r Standardize by Number of Observations}
+# Standardize mean distance error by number of observations
+power_error_summary <- power_error_summary %>%
+  mutate(
+    standardized_error = mean_distance_error / n  # Normalizing by number of observations
+  )
+
+# View the standardized results
+head(power_error_summary)
+```
+
+```{r Create the Plot}
+# Plot the mean distance error by receiver power
+ggplot(power_error_summary, aes(x = power, y = mean_distance_error)) +
+  geom_point(aes(size = n), alpha = 0.6, color = "blue") +  # Plot points, size by number of observations
+  geom_smooth(method = "loess", color = "red", se = FALSE) +  # Smoothed trend line
+  labs(
+    title = "Dry: Mean Distance Error by Receiver Power",
+    x = "Receiver Power",
+    y = "Mean Distance Error (meters)",
+    subtitle = "Size of points represents number of observations"
+  ) +
+  theme_minimal()
+```
+```{r Visualizing Standardized Error}
+# Plot the standardized mean distance error by receiver power
+ggplot(power_error_summary, aes(x = power, y = standardized_error)) +
+  geom_point(aes(size = n), alpha = 0.6, color = "blue") +
+  geom_smooth(method = "loess", color = "red", se = FALSE) +  # Smoothed trend line
+  labs(
+    title = "Dry: Standardized Distance Error by Receiver Power",
+    x = "Receiver Power",
+    y = "Standardized Distance Error",
+    subtitle = "Size of points represents number of observations"
+  ) +
+  theme_minimal()
+```
+
+
+
+## Amethyst
+
+```{r Calculate Mean Distance Error by Power}
+# Calculate mean river distance error by receiver power
+power_error_summary <- amethyst_filtered %>%
+  filter(source == "receiver") %>%  # Only look at receiver points
+  group_by(power) %>%
+  summarise(
+    mean_distance_error = mean(river_dist_diff, na.rm = TRUE),  # Mean distance error
+    n = n()  # Number of observations at each power level
+  ) %>%
+  ungroup()
+
+# View the summarized data
+head(power_error_summary)
+```
+
+```{r Standardize by Number of Observations}
+# Standardize mean distance error by number of observations
+power_error_summary <- power_error_summary %>%
+  mutate(
+    standardized_error = mean_distance_error / n  # Normalizing by number of observations
+  )
+
+# View the standardized results
+head(power_error_summary)
+```
+
+```{r Create the Plot}
+# Plot the mean distance error by receiver power
+ggplot(power_error_summary, aes(x = power, y = mean_distance_error)) +
+  geom_point(aes(size = n), alpha = 0.6, color = "blue") +  # Plot points, size by number of observations
+  geom_smooth(method = "loess", color = "red", se = FALSE) +  # Smoothed trend line
+  labs(
+    title = "Amethyst: Mean Distance Error by Receiver Power",
+    x = "Receiver Power",
+    y = "Mean Distance Error (meters)",
+    subtitle = "Size of points represents number of observations"
+  ) +
+  theme_minimal()
+```
+```{r Visualizing Standardized Error}
+# Plot the standardized mean distance error by receiver power
+ggplot(power_error_summary, aes(x = power, y = standardized_error)) +
+  geom_point(aes(size = n), alpha = 0.6, color = "blue") +
+  geom_smooth(method = "loess", color = "red", se = FALSE) +  # Smoothed trend line
+  labs(
+    title = "Amethyst: Standardized Distance Error by Receiver Power",
+    x = "Receiver Power",
+    y = "Standardized Distance Error",
+    subtitle = "Size of points represents number of observations"
+  ) +
+  theme_minimal()
+```
+

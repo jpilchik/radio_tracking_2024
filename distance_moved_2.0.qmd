@@ -617,9 +617,9 @@ tracking_data_locations <- tracking_data_locations %>%
   select(date, trackedTime_EST, river, shift, radioID, tempID, status, power, source, fishNotes, distMoved_m, lon, lat, POINT_X, POINT_Y, snap_x, snap_y, seg, vert, snapdist, habitat, habitatExtra, position, substrate, substrateExtra, shade, airTemp_F, cloud, precip, ftDischarge_cfs, ftTime_EST, startTime_EST, endTime_EST, streamNotes, downstreamGPS, downstreamGain, upstreamGPS, upstreamGain, isoID, length_mm, weight_g, sex, type, geneticSam, blood, section, collectionNotes)
 
 # Write the combined data to a new CSV file
-#write.csv(tracking_data_locations, 
-          #"C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/combined_data/tracking_data_locations.csv", 
-          #row.names = FALSE)
+write.csv(tracking_data_locations, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/combined_data/tracking_data_locations_fine.csv", 
+          row.names = FALSE)
 ```
 
 ```{r histogram of distance moved}
@@ -680,7 +680,7 @@ ggplot(tracking_data_locations_filtered, aes(x = movement_rate)) +
 
 tracking_data_locations_filtered$river <- as.factor(tracking_data_locations_filtered$river)
 
-ggplot(tracking_data_locations, aes(x = river, y = movement_rate)) + 
+ggplot(tracking_data_locations_filtered, aes(x = river, y = movement_rate)) + 
   geom_boxplot()
 
 ```

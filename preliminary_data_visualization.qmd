@@ -15,7 +15,7 @@ library(broom)
 ```
 ```{r read in the data}
 # Read in the data
-tracking_data_filtered <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/tracking_data_filtered.csv")
+tracking_data_all <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/combined_data/tracking_data_all.csv")
 ```
 
 ## Habitat use
@@ -24,7 +24,7 @@ tracking_data_filtered <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/M
 ```{r create a histogram representing summed habitat use throughout the 24 hour day}
 
 # Filter to only include 'iPad' as source and remove NA or blank habitats
-iPad_data <- tracking_data_filtered %>%
+iPad_data <- tracking_data_all %>%
   filter(source == "iPad" & !is.na(habitat) & habitat != "")
 
 # Convert trackedTime_EST to POSIXct
@@ -65,7 +65,7 @@ print(sum_habitat_use_hourly)
 ```{r create a histogram representing scaled habitat use throughout the 24 hour day}
 
 # Filter to only include 'iPad' as source and remove NA or blank habitats
-iPad_data <- tracking_data_filtered %>%
+iPad_data <- tracking_data_all %>%
   filter(source == "iPad" & !is.na(habitat) & habitat != "")
 
 # Convert trackedTime_EST to POSIXct
@@ -140,7 +140,7 @@ ggsave("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Trackin
 ```{r create a histogram representing summed habitat use throughout each day of the study}
 
 # Filter to only include 'iPad' as source and remove NA or blank habitats
-iPad_data <- tracking_data_filtered %>%
+iPad_data <- tracking_data_all %>%
   filter(source == "iPad" & !is.na(habitat) & habitat != "")
 
 # Convert trackedTime_EST to POSIXct
@@ -177,7 +177,7 @@ print(sum_habitat_use_daily)
 ```{r create a histogram representing scaled habitat use throughout each day of the study}
 
 # Filter to only include 'iPad' as source and remove NA or blank habitats
-iPad_data <- tracking_data_filtered %>%
+iPad_data <- tracking_data_all %>%
   filter(source == "iPad" & !is.na(habitat) & habitat != "")
 
 # Convert trackedTime_EST to POSIXct
@@ -251,12 +251,12 @@ ggsave("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Trackin
 
 ```{r}
 
-# Filter to only include 'iPad' as source and remove NA or blank habitats, and filter out NA in totalDischarge
-filtered_data <- tracking_data_filtered %>%
-  filter(source == "iPad" & !is.na(habitat) & habitat != "" & !is.na(totalDischarge))
+# Filter to only include 'iPad' as source and remove NA or blank habitats, and filter out NA in ftDischarge_cfs
+filtered_data <- tracking_data_all %>%
+  filter(source == "iPad" & !is.na(habitat) & habitat != "" & !is.na(ftDischarge_cfs))
 
 # Create the histogram with habitat use over flow conditions
-ggplot(data = filtered_data, aes(x = totalDischarge, fill = habitat)) +
+ggplot(data = filtered_data, aes(x = ftDischarge_cfs, fill = habitat)) +
   geom_histogram(binwidth = 0.5, position = "stack", stat = "count") +  # Adjust binwidth as needed
   scale_x_continuous(limits = c(-7, 22)) +  # Set x-axis limits
   scale_fill_discrete(name = "Habitat Use") +
@@ -270,16 +270,16 @@ ggplot(data = filtered_data, aes(x = totalDischarge, fill = habitat)) +
 ```{r create a line graph comparing summed habitat use by total discharge}
 
 # Filter to only include 'iPad' as source and remove NA or blank habitats
-iPad_data <- tracking_data_filtered %>%
-  filter(source == "iPad" & !is.na(habitat) & habitat != "" & !is.na(totalDischarge))
+iPad_data <- tracking_data_all %>%
+  filter(source == "iPad" & !is.na(habitat) & habitat != "" & !is.na(ftDischarge_cfs))
 
 # Group by habitat and total discharge to get summed habitat use
 summed_habitat_use <- iPad_data %>%
-  group_by(habitat, totalDischarge) %>%
+  group_by(habitat, ftDischarge_cfs) %>%
   summarise(habitat_count = n(), .groups = 'drop')  # Summing the number of each habitat per total discharge
 
 # Create the line graph for summed habitat use
-ggplot(data = summed_habitat_use, aes(x = totalDischarge, y = habitat_count, color = habitat, group = habitat)) +
+ggplot(data = summed_habitat_use, aes(x = ftDischarge_cfs, y = habitat_count, color = habitat, group = habitat)) +
   geom_line() +  # Line for habitat use
   geom_point() +  # Points for each observation
   labs(title = "Summed Habitat Use by Total Discharge",
@@ -294,19 +294,19 @@ ggplot(data = summed_habitat_use, aes(x = totalDischarge, y = habitat_count, col
 ```{r create a line graph comparing scaled habitat use by total discharge}
 
 # Filter to only include 'iPad' as source and remove NA or blank habitats
-iPad_data <- tracking_data_filtered %>%
-  filter(source == "iPad" & !is.na(habitat) & habitat != "" & !is.na(totalDischarge))
+iPad_data <- tracking_data_all %>%
+  filter(source == "iPad" & !is.na(habitat) & habitat != "" & !is.na(ftDischarge_cfs))
 
 # Group by habitat and total discharge to get proportional habitat use
 proportional_habitat_use <- iPad_data %>%
-  group_by(habitat, totalDischarge) %>%
+  group_by(habitat, ftDischarge_cfs) %>%
   summarise(habitat_count = n(), .groups = 'drop') %>%
-  group_by(totalDischarge) %>%
+  group_by(ftDischarge_cfs) %>%
   mutate(total_observations = sum(habitat_count),  # Total observations for the discharge level
          habitat_proportion = habitat_count / total_observations)  # Proportion of each habitat
 
 # Create the line graph for proportional habitat use
-ggplot(data = proportional_habitat_use, aes(x = totalDischarge, y = habitat_proportion, color = habitat, group = habitat)) +
+ggplot(data = proportional_habitat_use, aes(x = ftDischarge_cfs, y = habitat_proportion, color = habitat, group = habitat)) +
   geom_line() +  # Line for habitat proportion
   geom_point() +  # Points for each observation
   labs(title = "Proportional Habitat Use by Total Discharge",
@@ -319,19 +319,19 @@ ggplot(data = proportional_habitat_use, aes(x = totalDischarge, y = habitat_prop
 ```{r create a smoothed line graph comparing scaled habitat use by total discharge}
 
 # Filter to only include 'iPad' as source and remove NA or blank habitats
-iPad_data <- tracking_data_filtered %>%
-  filter(source == "iPad" & !is.na(habitat) & habitat != "" & !is.na(totalDischarge))
+iPad_data <- tracking_data_all %>%
+  filter(source == "iPad" & !is.na(habitat) & habitat != "" & !is.na(ftDischarge_cfs))
 
 # Group by habitat and total discharge to get proportional habitat use
 proportional_habitat_use <- iPad_data %>%
-  group_by(habitat, totalDischarge) %>%
+  group_by(habitat, ftDischarge_cfs) %>%
   summarise(habitat_count = n(), .groups = 'drop') %>%
-  group_by(totalDischarge) %>%
+  group_by(ftDischarge_cfs) %>%
   mutate(total_observations = sum(habitat_count),  # Total observations for the discharge level
          habitat_proportion = habitat_count / total_observations)  # Proportion of each habitat
 
 # Create the smoothed line graph for proportional habitat use
-ggplot(data = proportional_habitat_use, aes(x = totalDischarge, y = habitat_proportion, color = habitat, group = habitat)) +
+ggplot(data = proportional_habitat_use, aes(x = ftDischarge_cfs, y = habitat_proportion, color = habitat, group = habitat)) +
   geom_smooth(se = TRUE, method = "loess") +  # Use LOESS smoothing
   geom_point(alpha = 0.5) +  # Add points for each observation
   labs(title = "Smoothed Proportional Habitat Use by Total Discharge",
@@ -345,13 +345,13 @@ ggplot(data = proportional_habitat_use, aes(x = totalDischarge, y = habitat_prop
 ```{r create a line plot comparing habitat use by mean total discharge}
 
 # Filter to only include 'iPad' as source and remove NA or blank habitats
-iPad_data <- tracking_data_filtered %>%
+iPad_data <- tracking_data_all %>%
   filter(source == "iPad" & !is.na(habitat) & habitat != "")
 
 # Summarize the data by habitat, calculating the average total discharge
 habitat_summary <- iPad_data %>%
   group_by(habitat) %>%
-  summarise(mean_discharge = mean(totalDischarge, na.rm = TRUE))
+  summarise(mean_discharge = mean(ftDischarge_cfs, na.rm = TRUE))
 
 # Create the line plot using ggplot2
 mean_flow_habitat_use <- ggplot(habitat_summary, aes(x = habitat, y = mean_discharge, group = 1)) +
@@ -370,13 +370,13 @@ print(mean_flow_habitat_use)
 ```{r create a line plot comparing habitat use by median total discharge}
 
 # Filter to only include 'iPad' as source and remove NA or blank habitats
-iPad_data <- tracking_data_filtered %>%
+iPad_data <- tracking_data_all %>%
   filter(source == "iPad" & !is.na(habitat) & habitat != "")
 
 # Summarize the data by habitat, calculating the median total discharge
 habitat_summary <- iPad_data %>%
   group_by(habitat) %>%
-  summarise(median_discharge = median(totalDischarge, na.rm = TRUE)) 
+  summarise(median_discharge = median(ftDischarge_cfs, na.rm = TRUE)) 
 
 # Create the line plot using ggplot2
 median_flow_habitat_use <- ggplot(habitat_summary, aes(x = habitat, y = median_discharge, group = 1)) +
@@ -426,13 +426,13 @@ ggsave("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Trackin
 ```{r create a line plot comparing habitat use by mean total discharge and river}
 
 # Filter to only include 'iPad' as source and remove NA or blank habitats
-iPad_data <- tracking_data_filtered %>%
+iPad_data <- tracking_data_all %>%
   filter(source == "iPad" & !is.na(habitat) & habitat != "")
 
 # Summarize the data by habitat and river, calculating the average total discharge
 habitat_river_summary <- iPad_data %>%
   group_by(habitat, river) %>%
-  summarise(mean_discharge = mean(totalDischarge, na.rm = TRUE))
+  summarise(mean_discharge = mean(ftDischarge_cfs, na.rm = TRUE))
 
 # Create the line plot, separating by river using color
 mean_flow_river_habitat_use <- ggplot(habitat_river_summary, aes(x = habitat, y = mean_discharge, color = river, group = river)) +
@@ -451,13 +451,13 @@ print(mean_flow_river_habitat_use)
 ```{r create a line plot comparing habitat use by median total discharge and river}
 
 # Filter to only include 'iPad' as source and remove NA or blank habitats
-iPad_data <- tracking_data_filtered %>%
+iPad_data <- tracking_data_all %>%
   filter(source == "iPad" & !is.na(habitat) & habitat != "")
 
 # Summarize the data by habitat and river, calculating the median total discharge
 habitat_river_summary <- iPad_data %>%
   group_by(habitat, river) %>%
-  summarise(median_discharge = median(totalDischarge, na.rm = TRUE))
+  summarise(median_discharge = median(ftDischarge_cfs, na.rm = TRUE))
 
 # Create the line plot, separating by river using color
 median_flow_river_habitat_use <- ggplot(habitat_river_summary, aes(x = habitat, y = median_discharge, color = river, group = river)) +
@@ -512,14 +512,15 @@ ggsave("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Trackin
 
 ## Growth rates
 
-```{r plot fish growth over time using length}
+```{r plot fish growth over time using length_mm}
 
-# Filter for fish that have exactly two length measurements using tagID and length
-fish_with_two_lengths <- tracking_data_filtered %>%
+# Filter for fish that have exactly two length_mm measurements using tagID and length_mm
+fish_with_two_lengths <- tracking_data_all %>%
   filter(!is.na(radioID)) %>%  # Ensure there are valid (non-NA) tagID values
+  filter(!(radioID %in% c("UNKNOWN", "CONTROL"))) %>% 
   group_by(radioID) %>%
-  filter(!is.na(length)) %>%  # Ensure there are valid (non-NA) length values
-  filter(n() == 2) # Only keep fish with exactly two length measurements
+  filter(!is.na(length_mm)) %>%  # Ensure there are valid (non-NA) length_mm values
+  filter(n() == 2) # Only keep fish with exactly two length_mm measurements
 
 # Ensure radioID is treated as a categorical variable
 fish_with_two_lengths$radioID <- as.factor(fish_with_two_lengths$radioID)
@@ -532,11 +533,11 @@ fish_with_two_lengths <- fish_with_two_lengths %>%
 fish_with_two_lengths <- fish_with_two_lengths %>%
   mutate(date = as.Date(date))
 
-# Plot the growth figure using length
-length_gr <- ggplot(fish_with_two_lengths, aes(x = date, y = length, group = radioID)) +
+# Plot the growth figure using length_mm
+length_gr <- ggplot(fish_with_two_lengths, aes(x = date, y = length_mm, group = radioID)) +
   geom_point(aes(color = river_grouped), size = 3) +  # Add points for initial and final sizes, and color points by tagID
   geom_line(aes(color = river_grouped)) +  # Add lines connecting the points for each fish and color lines by radioID
-  labs(x = "Date", y = "Length (mm)", title = "Fish Growth Over Time") +
+  labs(x = "Date", y = "length (mm)", title = "Fish Growth Over Time") +
   scale_color_discrete(name = "River") +  # Add a legend with the new river groups
   theme_minimal()
 
@@ -545,14 +546,15 @@ print(length_gr)
 
 ```
 
-```{r plot fish growth over time using weight}
+```{r plot fish growth over time using weight_g}
 
-# Filter for fish that have exactly two weight measurements using radioID and length
-fish_with_two_weights <- tracking_data_filtered %>%
+# Filter for fish that have exactly two weight_g measurements using radioID and length_mm
+fish_with_two_weights <- tracking_data_all %>%
   filter(!is.na(radioID)) %>%  # Ensure there are valid (non-NA) radioID values
+  filter(!(radioID %in% c("UNKNOWN", "CONTROL"))) %>% 
   group_by(radioID) %>%
-  filter(!is.na(weight)) %>%  # Ensure there are valid (non-NA) weight values
-  filter(n() == 2) # Only keep fish with exactly two weight measurements
+  filter(!is.na(weight_g)) %>%  # Ensure there are valid (non-NA) weight_g values
+  filter(n() == 2) # Only keep fish with exactly two weight_g measurements
 
 # Ensure radioID is treated as a categorical variable
 fish_with_two_weights$radioID <- as.factor(fish_with_two_weights$radioID)
@@ -565,11 +567,11 @@ fish_with_two_weights <- fish_with_two_weights %>%
 fish_with_two_weights <- fish_with_two_weights %>%
   mutate(date = as.Date(date))
 
-# Plot the growth figure using length
-weight_gr <- ggplot(fish_with_two_weights, aes(x = date, y = weight, group = radioID)) +
+# Plot the growth figure using length_mm
+weight_gr <- ggplot(fish_with_two_weights, aes(x = date, y = weight_g, group = radioID)) +
   geom_point(aes(color = river_grouped), size = 3) +  # Add points for initial and final sizes, and color points by tagID
   geom_line(aes(color = river_grouped)) +  # Add lines connecting the points for each fish and color lines by radioID
-  labs(x = "Date", y = "Weight (g)", title = "Fish Growth Over Time") +
+  labs(x = "Date", y = "weight (g)", title = "Fish Growth Over Time") +
   scale_color_discrete(name = "River") +  # Add a legend with the new river groups
   theme_minimal()
 
@@ -580,7 +582,7 @@ print(weight_gr)
 
 ```{r arrange growth rate plots}
 
-# Adjust theme settings for both length and weight plots
+# Adjust theme settings for both length_mm and weight_g plots
 length_gr <- length_gr +
   theme(
     plot.title = element_text(size = 22),   # Increase title size
@@ -613,26 +615,27 @@ ggsave("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Trackin
 
 ### Growth linear models and residuals
 
-#### Weights
+#### weight_gs
 
-```{r weight growth linear model plot}
+```{r weight_g growth linear model plot}
 
-# Separate initial and final weights
-fish_weights <- tracking_data_filtered %>%
+# Separate initial and final weight_gs
+fish_weights <- tracking_data_all %>%
   filter(!is.na(radioID)) %>%   # Ensure there are valid (non-NA) radioID values
+  filter(!(radioID %in% c("UNKNOWN", "CONTROL"))) %>% 
   group_by(radioID) %>%
-  filter(!is.na(weight)) %>%  # Ensure there are valid (non-NA) weight values
+  filter(!is.na(weight_g)) %>%  # Ensure there are valid (non-NA) weight_g values
   arrange(date) %>%           # Ensure the data is sorted by date so that we get the correct initial and final measurements
-  mutate(initial_weight = first(weight),   # The first weight recorded for each fish
-         final_weight = last(weight)) %>%  # The last weight recorded for each fish
-  filter(n() == 2)  # Only keep fish with exactly two weight measurements
+  mutate(initial_weight = first(weight_g),   # The first weight_g recorded for each fish
+         final_weight = last(weight_g)) %>%  # The last weight_g recorded for each fish
+  filter(n() == 2)  # Only keep fish with exactly two weight_g measurements
 
-# Create the plot with initial vs final weight
+# Create the plot with initial vs final weight_g
 weight_plot <- ggplot(fish_weights, aes(x = initial_weight, y = final_weight)) +
   geom_point(size = 3) +  # Add points for each fish
   geom_smooth(method = "lm", se = FALSE, color = "blue") +  # Add best fit line (linear model)
   geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +  # Add 1:1 line
-  labs(x = "Initial Weight (g)", y = "Final Weight (g)", title = "Initial vs Final Weight") +
+  labs(x = "Initial weight (g)", y = "Final weight (g)", title = "Initial vs Final weight") +
   xlim(40, 90) +  # Set x-axis range from 40 to 90
   ylim(40, 90) +  # Set y-axis range from 40 to 90
   theme_minimal()
@@ -643,73 +646,74 @@ print(weight_plot)
 
 ```
 
-```{r weight growth residuals plot}
+```{r weight_g growth residuals plot}
 
 # Fit a linear model for residuals
-weights_lm_fit <- lm(final_weight ~ initial_weight, data = fish_weights)
+weight_lm_fit <- lm(final_weight ~ initial_weight, data = fish_weights)
 
 # Compute residuals and plot them
-weights_residuals_data <- augment(weights_lm_fit)
+weight_residuals_data <- augment(weight_lm_fit)
 
 # Plot residuals
-weights_residuals_plot <- ggplot(weights_residuals_data, 
+weight_residuals_plot <- ggplot(weight_residuals_data, 
                                  aes(x = initial_weight, y = .resid)) +
   geom_point(size = 3) +  # Plot the residuals
   geom_hline(yintercept = 0, linetype = "dashed", color = "red") +  # Add a dashed line at 0
-  labs(x = "Initial Weight (g)", y = "Residuals", title = "Residuals (Weight)") +
+  labs(x = "Initial weight (g)", y = "Residuals", title = "Residuals (weight)") +
   xlim(40, 90) +  # Set x-axis range from 40 to 90
   theme_minimal()
 
 # Display the residuals plot
-print(weights_residuals_plot)
+print(weight_residuals_plot)
 
 ```
 
 ```{r}
 
-# Fit a linear model for final weight based on initial weight
-weights_lm_fit <- lm(final_weight ~ initial_weight, data = fish_weights)
+# Fit a linear model for final weight_g based on initial weight_g
+weight_lm_fit <- lm(final_weight ~ initial_weight, data = fish_weights)
 
 # Compute residuals and other information using broom::augment()
-weights_residuals_data <- augment(weights_lm_fit)
+weight_residuals_data <- augment(weight_lm_fit)
 
 # Add the initial_weight back to the residuals_data for plotting
-weights_residuals_data$initial_weight <- fish_weights$initial_weight
+weight_residuals_data$initial_weight <- fish_weights$initial_weight
 
-# Plot residuals against initial weight to see if there's a pattern
-weights_residuals_by_size <- ggplot(weights_residuals_data, 
+# Plot residuals against initial weight_g to see if there's a pattern
+weight_gs_residuals_by_size <- ggplot(weight_residuals_data, 
                                     aes(x = initial_weight, y = .resid)) +
   geom_point(size = 3) +  # Plot residuals as points
   geom_smooth(method = "lm", color = "blue") +  # Add a trend line to see if residuals vary by initial size
   geom_hline(yintercept = 0, linetype = "dashed", color = "red") +  # Add a reference line at 0
-  labs(x = "Initial Weight (g)", y = "Residuals", 
-       title = "Residuals vs Initial Weight (Size at Tagging)") +
+  labs(x = "Initial weight_g (g)", y = "Residuals", 
+       title = "Residuals vs Initial weight_g (Size at Tagging)") +
   theme_minimal()
 
 # Display the residuals plot
-print(weights_residuals_by_size)
+print(weight_gs_residuals_by_size)
 
 ```
-#### Lengths
+#### length_mms
 
-```{r length growth linear model plot}
+```{r length_mm growth linear model plot}
 
-# Separate initial and final lengths
-fish_lengths <- tracking_data_filtered %>%
+# Separate initial and final length_mms
+fish_lengths <- tracking_data_all %>%
   filter(!is.na(radioID)) %>%   # Ensure there are valid (non-NA) radioID values
+  filter(!(radioID %in% c("UNKNOWN", "CONTROL"))) %>% 
   group_by(radioID) %>%
-  filter(!is.na(length)) %>%  # Ensure there are valid (non-NA) length values
+  filter(!is.na(length_mm)) %>%  # Ensure there are valid (non-NA) length_mm values
   arrange(date) %>%           # Ensure the data is sorted by date so that we get the correct initial and final measurements
-  mutate(initial_length = first(length),   # The first length recorded for each fish
-         final_length = last(length)) %>%  # The last length recorded for each fish
-  filter(n() == 2)  # Only keep fish with exactly two length measurements
+  mutate(initial_length = first(length_mm),   # The first length_mm recorded for each fish
+         final_length = last(length_mm)) %>%  # The last length_mm recorded for each fish
+  filter(n() == 2)  # Only keep fish with exactly two length_mm measurements
 
-# Create the plot with initial vs final length
+# Create the plot with initial vs final length_mm
 length_plot <- ggplot(fish_lengths, aes(x = initial_length, y = final_length)) +
   geom_point(size = 3) +  # Add points for each fish
   geom_smooth(method = "lm", se = FALSE, color = "blue") +  # Add best fit line (linear model)
   geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +  # Add 1:1 line
-  labs(x = "Initial Length (mm)", y = "Final Length (mm)", title = "Initial vs Final Length") +
+  labs(x = "Initial length (mm)", y = "Final length (mm)", title = "Initial vs Final length") +
   xlim(150, 190) +  # Set x-axis range from 150 to 190
   ylim(150, 190) +  # Set y-axis range from 150 to 190
   theme_minimal()
@@ -719,77 +723,78 @@ print(length_plot)
 
 ```
 
-```{r length growth residuals plot}
+```{r length_mm growth residuals plot}
 
 # Fit a linear model for residuals
-lengths_lm_fit <- lm(final_length ~ initial_length, data = fish_lengths)
+length_lm_fit <- lm(final_length ~ initial_length, data = fish_lengths)
 
 # Compute residuals and plot them
-lengths_residuals_data <- augment(lengths_lm_fit)
+length_residuals_data <- augment(length_lm_fit)
 
 # Plot residuals
-lengths_residuals_plot <- ggplot(lengths_residuals_data, 
+length_residuals_plot <- ggplot(length_residuals_data, 
                                  aes(x = initial_length, y = .resid)) +
   geom_point(size = 3) +  # Plot the residuals
   geom_hline(yintercept = 0, linetype = "dashed", color = "red") +  # Add a dashed line at 0
-  labs(x = "Initial Length (mm)", y = "Residuals", title = "Residuals (Length)") +
+  labs(x = "Initial length (mm)", y = "Residuals", title = "Residuals (length_mm)") +
   xlim(150, 190) +  # Set x-axis range from 150 to 190
   theme_minimal()
 
 # Display the residuals plot
-print(lengths_residuals_plot)
+print(length_residuals_plot)
 
 ```
 
 ```{r}
 
-# Fit a linear model for final length based on initial length
-lengths_lm_fit <- lm(final_length ~ initial_length, data = fish_lengths)
+# Fit a linear model for final length_mm based on initial length_mm
+length_lm_fit <- lm(final_length ~ initial_length, data = fish_lengths)
 
 # Compute residuals and other information using broom::augment()
-lengths_residuals_data <- augment(lengths_lm_fit)
+length_residuals_data <- augment(length_lm_fit)
 
 # Add the initial_length back to the residuals_data for plotting
-lengths_residuals_data$initial_length <- fish_lengths$initial_length
+length_residuals_data$initial_length <- fish_lengths$initial_length
 
-# Plot residuals against initial length to see if there's a pattern
-lengths_residuals_by_size <- ggplot(lengths_residuals_data, 
+# Plot residuals against initial length_mm to see if there's a pattern
+length_mms_residuals_by_size <- ggplot(length_residuals_data, 
                                     aes(x = initial_length, y = .resid)) +
   geom_point(size = 3) +  # Plot residuals as points
   geom_smooth(method = "lm", color = "blue") +  # Add a trend line to see if residuals vary by initial size
   geom_hline(yintercept = 0, linetype = "dashed", color = "red") +  # Add a reference line at 0
-  labs(x = "Initial Length (mm)", y = "Residuals", 
-       title = "Residuals vs Initial Length (Size at Tagging)") +
+  labs(x = "Initial length (mm)", y = "Residuals", 
+       title = "Residuals vs Initial length_mm (Size at Tagging)") +
   theme_minimal()
 
 # Display the residuals plot
-print(lengths_residuals_by_size)
+print(length_mms_residuals_by_size)
 
 ```
 
 #### Only including combined tags
 
-##### Weights
+##### weight_g
 
-```{r weight growth linear model plot (combined tags only)}
+```{r weight_g growth linear model plot (combined tags only)}
 
-# Separate initial and final weights
-fish_weights_ctags <- tracking_data_filtered %>%
+# Separate initial and final weight_gs
+fish_weights_ctags <- tracking_data_all %>%
   filter(!is.na(radioID)) %>%   # Ensure there are valid (non-NA) radioID values
+  filter(!(radioID %in% c("UNKNOWN", "CONTROL"))) %>% 
   group_by(radioID) %>%
-  filter(!is.na(weight)) %>%  # Ensure there are valid (non-NA) weight values
+  filter(!is.na(weight_g)) %>%  # Ensure there are valid (non-NA) weight_g values
   arrange(date) %>%           # Ensure the data is sorted by date so that we get the correct initial and final measurements
-  mutate(initial_weight = first(weight),   # The first weight recorded for each fish
-         final_weight = last(weight)) %>%  # The last weight recorded for each fish
-  filter(n() == 2) %>%  # Only keep fish with exactly two weight measurements
+  mutate(initial_weight = first(weight_g),   # The first weight_g recorded for each fish
+         final_weight = last(weight_g)) %>%  # The last weight_g recorded for each fish
+  filter(n() == 2) %>%  # Only keep fish with exactly two weight_g measurements
   filter(radioID != 21.0) # Remove radio tag only fish
 
-# Create the plot with initial vs final weight
+# Create the plot with initial vs final weight_g
 weight_plot_ctags <- ggplot(fish_weights_ctags, aes(x = initial_weight, y = final_weight)) +
   geom_point(size = 3) +  # Add points for each fish
   geom_smooth(method = "lm", se = FALSE, color = "blue") +  # Add best fit line (linear model)
   geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +  # Add 1:1 line
-  labs(x = "Initial Weight (g)", y = "Final Weight (g)", title = "Initial vs Final Weight - Combined Tags Only") +
+  labs(x = "Initial weight (g)", y = "Final weight_g (g)", title = "Initial vs Final weight_g - Combined Tags Only") +
   xlim(40, 90) +  # Set x-axis range from 40 to 90
   ylim(40, 90) +  # Set y-axis range from 40 to 90
   theme_minimal()
@@ -800,74 +805,75 @@ print(weight_plot_ctags)
 
 ```
 
-```{r weight growth residuals plot (combined tags only)}
+```{r weight_g growth residuals plot (combined tags only)}
 
 # Fit a linear model for residuals
-weights_lm_fit_ctags <- lm(final_weight ~ initial_weight, data = fish_weights_ctags)
+weight_lm_fit_ctags <- lm(final_weight ~ initial_weight, data = fish_weights_ctags)
 
 # Compute residuals and plot them
-weights_residuals_data_ctags <- augment(weights_lm_fit_ctags)
+weight_residuals_data_ctags <- augment(weight_lm_fit_ctags)
 
 # Plot residuals
-weights_residuals_plot_ctags <- ggplot(weights_residuals_data_ctags, 
+weight_residuals_plot_ctags <- ggplot(weight_residuals_data_ctags, 
                                  aes(x = initial_weight, y = .resid)) +
   geom_point(size = 3) +  # Plot the residuals
   geom_hline(yintercept = 0, linetype = "dashed", color = "red") +  # Add a dashed line at 0
-  labs(x = "Initial Weight (g)", y = "Residuals", title = "Residuals (Weight) - Combined Tags Only") +
+  labs(x = "Initial weight (g)", y = "Residuals", title = "Residuals (weight_g) - Combined Tags Only") +
   xlim(40, 90) +  # Set x-axis range from 40 to 90
   theme_minimal()
 
 # Display the residuals plot
-print(weights_residuals_plot_ctags)
+print(weight_residuals_plot_ctags)
 
 ```
 
 ```{r}
 
-# Fit a linear model for final weight based on initial weight
-weights_lm_fit_ctags <- lm(final_weight ~ initial_weight, data = fish_weights_ctags)
+# Fit a linear model for final weight_g based on initial weight_g
+weight_lm_fit_ctags <- lm(final_weight ~ initial_weight, data = fish_weights_ctags)
 
 # Compute residuals and other information using broom::augment()
-weights_residuals_data_ctags <- augment(weights_lm_fit_ctags)
+weight_residuals_data_ctags <- augment(weight_lm_fit_ctags)
 
 # Add the initial_weight back to the residuals_data for plotting
-weights_residuals_data_ctags$initial_weight <- fish_weights_ctags$initial_weight
+weight_residuals_data_ctags$initial_weight <- fish_weights_ctags$initial_weight
 
-# Plot residuals against initial weight to see if there's a pattern
-weights_residuals_by_size_ctags <- ggplot(weights_residuals_data_ctags, 
+# Plot residuals against initial weight_g to see if there's a pattern
+weight_gs_residuals_by_size_ctags <- ggplot(weight_residuals_data_ctags, 
                                     aes(x = initial_weight, y = .resid)) +
   geom_point(size = 3) +  # Plot residuals as points
   geom_smooth(method = "lm", color = "blue") +  # Add a trend line to see if residuals vary by initial size
   geom_hline(yintercept = 0, linetype = "dashed", color = "red") +  # Add a reference line at 0
-  labs(x = "Initial Weight (g)", y = "Residuals", 
-       title = "Residuals vs Initial Weight (Size at Tagging) - Combined Tags Only") +
+  labs(x = "Initial weight (g)", y = "Residuals", 
+       title = "Residuals vs Initial weight_g (Size at Tagging) - Combined Tags Only") +
   theme_minimal()
 
 # Display the residuals plot
-print(weights_residuals_by_size_ctags)
+print(weight_gs_residuals_by_size_ctags)
 
 ```
-##### Lengths
+##### length_mm
 
-```{r length growth linear model plot (combined tags only)}
+```{r length_mm growth linear model plot (combined tags only)}
 
-# Separate initial and final lengths
-fish_lengths_ctags <- tracking_data_filtered %>%
+# Separate initial and final length_mms
+fish_lengths_ctags <- tracking_data_all %>%
   filter(!is.na(radioID)) %>%   # Ensure there are valid (non-NA) radioID values
+  filter(!(radioID %in% c("UNKNOWN", "CONTROL"))) %>% 
   group_by(radioID) %>%
-  filter(!is.na(length)) %>%  # Ensure there are valid (non-NA) length values
+  filter(!is.na(length_mm)) %>%  # Ensure there are valid (non-NA) length_mm values
   arrange(date) %>%           # Ensure the data is sorted by date so that we get the correct initial and final measurements
-  mutate(initial_length = first(length),   # The first length recorded for each fish
-         final_length = last(length)) %>%  # The last length recorded for each fish
-  filter(n() == 2) %>% # Only keep fish with exactly two length measurements
+  mutate(initial_length = first(length_mm),   # The first length_mm recorded for each fish
+         final_length = last(length_mm)) %>%  # The last length_mm recorded for each fish
+  filter(n() == 2) %>% # Only keep fish with exactly two length_mm measurements
   filter(radioID != 21.0) # Remove radio tag only fish
 
-# Create the plot with initial vs final length
+# Create the plot with initial vs final length_mm
 length_plot_ctags <- ggplot(fish_lengths_ctags, aes(x = initial_length, y = final_length)) +
   geom_point(size = 3) +  # Add points for each fish
   geom_smooth(method = "lm", se = FALSE, color = "blue") +  # Add best fit line (linear model)
   geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +  # Add 1:1 line
-  labs(x = "Initial Length (mm)", y = "Final Length (mm)", title = "Initial vs Final Length - Combined Tags Only") +
+  labs(x = "Initial length (mm)", y = "Final length (mm)", title = "Initial vs Final length - Combined Tags Only") +
   xlim(150, 190) +  # Set x-axis range from 150 to 190
   ylim(150, 190) +  # Set y-axis range from 150 to 190
   theme_minimal()
@@ -876,50 +882,50 @@ length_plot_ctags <- ggplot(fish_lengths_ctags, aes(x = initial_length, y = fina
 print(length_plot_ctags)
 
 ```
-```{r length growth residuals plot}
+```{r length_mm growth residuals plot}
 
 # Fit a linear model for residuals
 lengths_lm_fit_ctags <- lm(final_length ~ initial_length, data = fish_lengths_ctags)
 
 # Compute residuals and plot them
-lengths_residuals_data_ctags <- augment(lengths_lm_fit_ctags)
+length_residuals_data_ctags <- augment(lengths_lm_fit_ctags)
 
 # Plot residuals
-lengths_residuals_plot_ctags <- ggplot(lengths_residuals_data_ctags, 
+length_residuals_plot_ctags <- ggplot(length_residuals_data_ctags, 
                                  aes(x = initial_length, y = .resid)) +
   geom_point(size = 3) +  # Plot the residuals
   geom_hline(yintercept = 0, linetype = "dashed", color = "red") +  # Add a dashed line at 0
-  labs(x = "Initial Length (mm)", y = "Residuals", title = "Residuals (Length) - Combined Tags Only") +
+  labs(x = "Initial length (mm)", y = "Residuals", title = "Residuals (length) - Combined Tags Only") +
   xlim(150, 190) +  # Set x-axis range from 150 to 190
   theme_minimal()
 
 # Display the residuals plot
-print(lengths_residuals_plot_ctags)
+print(length_residuals_plot_ctags)
 
 ```
 ```{r}
 
-# Fit a linear model for final length based on initial length
+# Fit a linear model for final length_mm based on initial length_mm
 lengths_lm_fit_ctags <- lm(final_length ~ initial_length, data = fish_lengths_ctags)
 
 # Compute residuals and other information using broom::augment()
-lengths_residuals_data_ctags <- augment(lengths_lm_fit_ctags)
+length_residuals_data_ctags <- augment(lengths_lm_fit_ctags)
 
 # Add the initial_length back to the residuals_data for plotting
-lengths_residuals_data_ctags$initial_length <- fish_lengths_ctags$initial_length
+length_residuals_data_ctags$initial_length <- fish_lengths_ctags$initial_length
 
-# Plot residuals against initial length to see if there's a pattern
-lengths_residuals_by_size_ctags <- ggplot(lengths_residuals_data_ctags, 
+# Plot residuals against initial length_mm to see if there's a pattern
+length_residuals_by_size_ctags <- ggplot(length_residuals_data_ctags, 
                                     aes(x = initial_length, y = .resid)) +
   geom_point(size = 3) +  # Plot residuals as points
   geom_smooth(method = "lm", color = "blue") +  # Add a trend line to see if residuals vary by initial size
   geom_hline(yintercept = 0, linetype = "dashed", color = "red") +  # Add a reference line at 0
-  labs(x = "Initial Length (mm)", y = "Residuals", 
-       title = "Residuals vs Initial Length (Size at Tagging) - Combined Tags Only") +
+  labs(x = "Initial length (mm)", y = "Residuals", 
+       title = "Residuals vs Initial length (Size at Tagging) - Combined Tags Only") +
   theme_minimal()
 
 # Display the residuals plot
-print(lengths_residuals_by_size_ctags)
+print(length_residuals_by_size_ctags)
 
 ```
 #### Combine
@@ -931,7 +937,7 @@ weight_plot <- weight_plot +
   theme(plot.title = element_text(size = 10, lineheight = 0.9))  # Adjust size and add wrapping
 
 # Adjust titles and text wrapping in individual plots
-weights_residuals_plot <- weights_residuals_plot + 
+weight_residuals_plot <- weight_residuals_plot + 
   theme(plot.title = element_text(size = 10, lineheight = 0.9))  # Adjust size and add wrapping
 
 # Adjust titles and text wrapping in individual plots
@@ -939,7 +945,7 @@ length_plot <- length_plot +
   theme(plot.title = element_text(size = 10, lineheight = 0.9))  # Adjust size and add wrapping
 
 # Adjust titles and text wrapping in individual plots
-lengths_residuals_plot <- lengths_residuals_plot + 
+length_residuals_plot <- length_residuals_plot + 
   theme(plot.title = element_text(size = 10, lineheight = 0.9))  # Adjust size and add wrapping
 
 # Adjust titles and text wrapping in individual plots
@@ -947,7 +953,7 @@ weight_plot_ctags <- weight_plot_ctags +
   theme(plot.title = element_text(size = 6, hjust = 0.5, lineheight = 0.9))  # Adjust size and add wrapping
 
 # Adjust titles and text wrapping in individual plots
-weights_residuals_plot_ctags <- weights_residuals_plot_ctags + 
+weight_residuals_plot_ctags <- weight_residuals_plot_ctags + 
   theme(plot.title = element_text(size = 6, hjust = 0.6, lineheight = 0.9))  # Adjust size and add wrapping
 
 # Adjust titles and text wrapping in individual plots
@@ -955,14 +961,14 @@ length_plot_ctags <- length_plot_ctags +
   theme(plot.title = element_text(size = 6, hjust = 0.6, lineheight = 0.9))  # Adjust size and add wrapping
 
 # Adjust titles and text wrapping in individual plots
-lengths_residuals_plot_ctags <- lengths_residuals_plot_ctags + 
+length_residuals_plot_ctags <- length_residuals_plot_ctags + 
   theme(plot.title = element_text(size = 6, hjust = 0.8, lineheight = 0.9))  # Adjust size and add wrapping
 
 # Arrange the plots into a 4x2 grid
-growth_lm_res <- grid.arrange(weight_plot, weights_residuals_plot, 
-                              length_plot, lengths_residuals_plot, 
-                              weight_plot_ctags, weights_residuals_plot_ctags, 
-                              length_plot_ctags, lengths_residuals_plot_ctags, 
+growth_lm_res <- grid.arrange(weight_plot, weight_residuals_plot, 
+                              length_plot, length_residuals_plot, 
+                              weight_plot_ctags, weight_residuals_plot_ctags, 
+                              length_plot_ctags, length_residuals_plot_ctags, 
                               nrow = 2, ncol = 4)
 
 # Save the enlarged plot
@@ -973,22 +979,23 @@ ggsave("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Trackin
 
 ### Instantaneous growth rates
 
-#### Weights
+#### weight_g
 
-```{r instantaneous weight growth rates all fish}
+```{r instantaneous weight_g growth rates all fish}
 
-# Filter for fish with exactly two weight measurements (initial and final)
-fish_weights <- tracking_data_filtered %>%
+# Filter for fish with exactly two weight_g measurements (initial and final)
+fish_weights <- tracking_data_all %>%
   filter(!is.na(radioID)) %>%
+  filter(!(radioID %in% c("UNKNOWN", "CONTROL"))) %>% 
   group_by(radioID) %>%
-  filter(!is.na(weight)) %>%
-  filter(n() == 2)  # Keep fish with exactly two weight measurements
+  filter(!is.na(weight_g)) %>%
+  filter(n() == 2)  # Keep fish with exactly two weight_g measurements
 
-# Separate initial and final weights and dates
+# Separate initial and final weight_gs and dates
 fish_weights <- fish_weights %>%
   arrange(radioID, date) %>%
-  mutate(initial_weight = first(weight), 
-         final_weight = last(weight),
+  mutate(initial_weight = first(weight_g), 
+         final_weight = last(weight_g),
          days_between = as.numeric(difftime(last(date), first(date), units = "days"))) %>%
   distinct(radioID, .keep_all = TRUE)
 
@@ -1000,7 +1007,7 @@ fish_weights <- fish_weights %>%
 instant_weight_growth_plot <- ggplot(fish_weights, aes(x = instant_growth_rate)) +
   geom_freqpoly(binwidth = 0.001, size = 1.2, show.legend = FALSE) +  # Smaller binwidth for more detail
   labs(x = "Instantaneous growth rate in mass (g/day)", y = "Frequency",
-       title = "Instantaneous Growth Rate Distribution (Weight)") +
+       title = "Instantaneous Growth Rate Distribution (weight)") +
   theme_minimal() +
   coord_cartesian(xlim = c(-0.005, 0.003))  # Zoom in to focus on the range of interest
 
@@ -1019,7 +1026,7 @@ fish_weights <- fish_weights %>%
          final_weight_g = final_weight, 
          instant_growth_rate_g = instant_growth_rate)
 
-# Convert initial and final weights from grams to milligrams
+# Convert initial and final weight_gs from grams to milligrams
 fish_weights <- fish_weights %>%
   mutate(initial_weight_mg = initial_weight_g * 1000,  # Convert grams to milligrams
          final_weight_mg = final_weight_g * 1000)     # Convert grams to milligrams
@@ -1038,21 +1045,22 @@ write.csv(fish_weights,
 
 ```
 
-```{r instantaneous weight growth rates combined tags only}
+```{r instantaneous weight_g growth rates combined tags only}
 
-# Filter for fish with exactly two weight measurements (initial and final)
-fish_weights_ctags <- tracking_data_filtered %>%
+# Filter for fish with exactly two weight_g measurements (initial and final)
+fish_weights_ctags <- tracking_data_all %>%
   filter(!is.na(radioID)) %>%
+  filter(!(radioID %in% c("UNKNOWN", "CONTROL"))) %>% 
   group_by(radioID) %>%
-  filter(!is.na(weight)) %>%
-  filter(n() == 2) %>%  # Only keep fish with exactly two weight measurements
+  filter(!is.na(weight_g)) %>%
+  filter(n() == 2) %>%  # Only keep fish with exactly two weight_g measurements
   filter(radioID != 21.0) # Remove radio tag only fish
 
-# Separate initial and final weights and dates
+# Separate initial and final weight_gs and dates
 fish_weights_ctags <- fish_weights_ctags %>%
   arrange(radioID, date) %>%
-  mutate(initial_weight = first(weight), 
-         final_weight = last(weight),
+  mutate(initial_weight = first(weight_g), 
+         final_weight = last(weight_g),
          days_between = as.numeric(difftime(last(date), first(date), units = "days"))) %>%
   distinct(radioID, .keep_all = TRUE)
 
@@ -1064,7 +1072,7 @@ fish_weights_ctags <- fish_weights_ctags %>%
 instant_weight_growth_plot_ctags <- ggplot(fish_weights_ctags, aes(x = instant_growth_rate)) +
   geom_freqpoly(binwidth = 0.001, size = 1.2, show.legend = FALSE) +  # Smaller binwidth for more detail
   labs(x = "Instantaneous growth rate in mass (g/day)", y = "Frequency",
-       title = "Instantaneous Growth Rate Distribution (Weight) - Combined Tags Only") +
+       title = "Instantaneous Growth Rate Distribution (weight) - Combined Tags Only") +
   theme_minimal() +
   coord_cartesian(xlim = c(-0.005, 0.003))  # Zoom in to focus on the range of interest
 
@@ -1072,22 +1080,23 @@ instant_weight_growth_plot_ctags <- ggplot(fish_weights_ctags, aes(x = instant_g
 print(instant_weight_growth_plot_ctags)
 
 ```
-#### Lengths
+#### length_mm
 
-```{r instantaneous length growth rates all fish}
+```{r instantaneous length_mm growth rates all fish}
 
-# Filter for fish with exactly two length measurements (initial and final)
-fish_lengths <- tracking_data_filtered %>%
+# Filter for fish with exactly two length_mm measurements (initial and final)
+fish_lengths <- tracking_data_all %>%
   filter(!is.na(radioID)) %>%
+  filter(!(radioID %in% c("UNKNOWN", "CONTROL"))) %>% 
   group_by(radioID) %>%
-  filter(!is.na(length)) %>%
-  filter(n() == 2)  # Keep fish with exactly two length measurements
+  filter(!is.na(length_mm)) %>%
+  filter(n() == 2)  # Keep fish with exactly two length_mm measurements
 
-# Separate initial and final lengths and dates
+# Separate initial and final length_mms and dates
 fish_lengths <- fish_lengths %>%
   arrange(radioID, date) %>%
-  mutate(initial_length = first(length), 
-         final_length = last(length),
+  mutate(initial_length = first(length_mm), 
+         final_length = last(length_mm),
          days_between = as.numeric(difftime(last(date), first(date), units = "days"))) %>%
   distinct(radioID, .keep_all = TRUE)
 
@@ -1099,7 +1108,7 @@ fish_lengths <- fish_lengths %>%
 instant_length_growth_plot <- ggplot(fish_lengths, aes(x = instant_growth_rate)) +
   geom_freqpoly(binwidth = 0.01, size = 1.2, show.legend = FALSE) +  # Smaller binwidth for more detail
   labs(x = "Instantaneous growth rate in length (mm/day)", y = "Frequency",
-       title = "Instantaneous Growth Rate Distribution (Length)") +
+       title = "Instantaneous Growth Rate Distribution (length)") +
   theme_minimal() +
   coord_cartesian(xlim = c(-0.09, 0.06))  # Zoom in to focus on the range of interest
 
@@ -1110,21 +1119,22 @@ print(instant_length_growth_plot)
 
 ```
 
-```{r instantaneous length growth rates combined tags only}
+```{r instantaneous length_mm growth rates combined tags only}
 
-# Filter for fish with exactly two length measurements (initial and final)
-fish_lengths_ctags <- tracking_data_filtered %>%
+# Filter for fish with exactly two length_mm measurements (initial and final)
+fish_lengths_ctags <- tracking_data_all %>%
   filter(!is.na(radioID)) %>%
+  filter(!(radioID %in% c("UNKNOWN", "CONTROL"))) %>% 
   group_by(radioID) %>%
-  filter(!is.na(length)) %>%
-  filter(n() == 2) %>%  # Only keep fish with exactly two length measurements
+  filter(!is.na(length_mm)) %>%
+  filter(n() == 2) %>%  # Only keep fish with exactly two length_mm measurements
   filter(radioID != 21.0) # Remove radio tag only fish
 
-# Separate initial and final lengths and dates
+# Separate initial and final length_mms and dates
 fish_lengths_ctags <- fish_lengths_ctags %>%
   arrange(radioID, date) %>%
-  mutate(initial_length = first(length), 
-         final_length = last(length),
+  mutate(initial_length = first(length_mm), 
+         final_length = last(length_mm),
          days_between = as.numeric(difftime(last(date), first(date), units = "days"))) %>%
   distinct(radioID, .keep_all = TRUE)
 
@@ -1136,7 +1146,7 @@ fish_lengths_ctags <- fish_lengths_ctags %>%
 instant_length_growth_plot_ctags <- ggplot(fish_lengths_ctags, aes(x = instant_growth_rate)) +
   geom_freqpoly(binwidth = 0.01, size = 1.2, show.legend = FALSE) +  # Smaller binwidth for more detail
   labs(x = "Instantaneous growth rate in length (mm/day)", y = "Frequency",
-       title = "Instantaneous Growth Rate Distribution (Length) - Combined Tags Only") +
+       title = "Instantaneous Growth Rate Distribution (length) - Combined Tags Only") +
   theme_minimal() +
   coord_cartesian(xlim = c(-0.09, 0.06))  # Zoom in to focus on the range of interest
 
@@ -1396,7 +1406,7 @@ dryPlot <- ggplot() +
   geom_line(data = dryDepth, aes(x = dateTime, y = temp), color = "black", size = 1) +
   
   # Add labels and themes
-  labs(title = "Temperature Over Time for Tag 16 and an Dry Upper Logger", 
+  labs(title = "Temperature Over Time for Fish 16 and a Dry Upper Logger", 
        x = "DateTime", y = "Temperature (°C)") +
   theme_minimal() +
   ylim(10, 25) # Adjust y-axis limits as needed

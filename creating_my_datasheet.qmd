@@ -1581,7 +1581,7 @@ flow_tracker_1 <- flow_tracker_1 %>%
 # Create rows representing Amethyst brook discharge and temperature by combining Buffam and Harris measurements per shift
 amethyst_combined <- flow_tracker_1 %>%
   filter(river %in% c("BUFFAM", "HARRIS")) %>%   # Filter BUFFAM and HARRIS
-  group_by(shift) %>%  # Group by date and shift
+  group_by(shift) %>%  # Group by shift
   summarise(
     river = "AMETHYST",                          # Set river to AMETHYST
     ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE), # Sum ftDischarge_cfs
@@ -1630,7 +1630,7 @@ flow_tracker_2 <- flow_tracker_2 %>%
 # Create rows representing Amethyst brook discharge and temperature by combining Buffam and Harris measurements per shift
 amethyst_combined <- flow_tracker_2 %>%
   filter(river %in% c("BUFFAM", "HARRIS")) %>%   # Filter BUFFAM and HARRIS
-  group_by(shift) %>%  # Group by date and shift
+  group_by(shift) %>%  # Group by shift
   summarise(
     river = "AMETHYST",                          # Set river to AMETHYST
     ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE), # Sum ftDischarge_cfs
@@ -1679,7 +1679,7 @@ flow_tracker_3 <- flow_tracker_3 %>%
 # Create rows representing Amethyst brook discharge and temperature by combining Buffam and Harris measurements per shift
 amethyst_combined <- flow_tracker_3 %>%
   filter(river %in% c("BUFFAM", "HARRIS")) %>%   # Filter BUFFAM and HARRIS
-  group_by(shift) %>%  # Group by date and shift
+  group_by(shift) %>%  # Group by shift
   summarise(
     river = "AMETHYST",                          # Set river to AMETHYST
     ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE), # Sum ftDischarge_cfs
@@ -1728,7 +1728,7 @@ flow_tracker_4 <- flow_tracker_4 %>%
 # Create rows representing Amethyst brook discharge and temperature by combining Buffam and Harris measurements per shift
 amethyst_combined <- flow_tracker_4 %>%
   filter(river %in% c("BUFFAM", "HARRIS")) %>%   # Filter BUFFAM and HARRIS
-  group_by(shift) %>%  # Group by date and shift
+  group_by(shift) %>%  # Group by shift
   summarise(
     river = "AMETHYST",                          # Set river to AMETHYST
     ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE), # Sum ftDischarge_cfs
@@ -1777,7 +1777,7 @@ flow_tracker_5 <- flow_tracker_5 %>%
 # Create rows representing Amethyst brook discharge and temperature by combining Buffam and Harris measurements per shift
 amethyst_combined <- flow_tracker_5 %>%
   filter(river %in% c("BUFFAM", "HARRIS")) %>%   # Filter BUFFAM and HARRIS
-  group_by(shift) %>%  # Group by date and shift
+  group_by(shift) %>%  # Group by shift
   summarise(
     river = "AMETHYST",                          # Set river to AMETHYST
     ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE), # Sum ftDischarge_cfs
@@ -1826,7 +1826,7 @@ flow_tracker_6 <- flow_tracker_6 %>%
 # Create rows representing Amethyst brook discharge and temperature by combining Buffam and Harris measurements per shift
 amethyst_combined <- flow_tracker_6 %>%
   filter(river %in% c("BUFFAM", "HARRIS")) %>%   # Filter BUFFAM and HARRIS
-  group_by(shift) %>%  # Group by date and shift
+  group_by(shift) %>%  # Group by shift
   summarise(
     river = "AMETHYST",                          # Set river to AMETHYST
     ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE), # Sum ftDischarge_cfs
@@ -1875,7 +1875,7 @@ flow_tracker_7 <- flow_tracker_7 %>%
 # Create rows representing Amethyst brook discharge and temperature by combining Buffam and Harris measurements per shift
 amethyst_combined <- flow_tracker_7 %>%
   filter(river %in% c("BUFFAM", "HARRIS")) %>%   # Filter BUFFAM and HARRIS
-  group_by(shift) %>%  # Group by date and shift
+  group_by(shift) %>%  # Group by shift
   summarise(
     river = "AMETHYST",                          # Set river to AMETHYST
     ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE), # Sum ftDischarge_cfs
@@ -1924,7 +1924,7 @@ flow_tracker_8 <- flow_tracker_8 %>%
 # Create rows representing Amethyst brook discharge and temperature by combining Buffam and Harris measurements per shift
 amethyst_combined <- flow_tracker_8 %>%
   filter(river %in% c("BUFFAM", "HARRIS")) %>%   # Filter BUFFAM and HARRIS
-  group_by(shift) %>%  # Group by date and shift
+  group_by(shift) %>%  # Group by shift
   summarise(
     river = "AMETHYST",                          # Set river to AMETHYST
     ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE), # Sum ftDischarge_cfs
@@ -1973,7 +1973,7 @@ flow_tracker_9 <- flow_tracker_9 %>%
 # Create rows representing Amethyst brook discharge and temperature by combining Buffam and Harris measurements per shift
 amethyst_combined <- flow_tracker_9 %>%
   filter(river %in% c("BUFFAM", "HARRIS")) %>%   # Filter BUFFAM and HARRIS
-  group_by(shift) %>%  # Group by date and shift
+  group_by(shift) %>%  # Group by shift
   summarise(
     river = "AMETHYST",                          # Set river to AMETHYST
     ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE), # Sum ftDischarge_cfs
@@ -2022,7 +2022,7 @@ flow_tracker_10 <- flow_tracker_10 %>%
 # Create rows representing Amethyst brook discharge and temperature by combining Buffam and Harris measurements per shift
 amethyst_combined <- flow_tracker_10 %>%
   filter(river %in% c("BUFFAM", "HARRIS")) %>%   # Filter BUFFAM and HARRIS
-  group_by(shift) %>%  # Group by date and shift
+  group_by(shift) %>%  # Group by shift
   summarise(
     river = "AMETHYST",                          # Set river to AMETHYST
     ftDischarge_cfs = sum(ftDischarge_cfs, na.rm = TRUE), # Sum ftDischarge_cfs
@@ -2406,8 +2406,12 @@ write.csv(fish_flow_10,
 fish_survey_11 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/fish_survey_data/fish_survey_11.csv")
 flow_tracker_11 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/flow_tracker_data/flow_tracker_11.csv")
 
+# Ensure both date columns are in Date format before joining
+fish_survey_11$date <- as.Date(fish_survey_11$date)
+flow_tracker_11$date <- as.Date(flow_tracker_11$ftTime_EST)
+
 # Combine the datasets by shift and river columns
-fish_flow_11 <- left_join(fish_survey_11, flow_tracker_11, by = c("shift", "river"))
+fish_flow_11 <- left_join(fish_survey_11, flow_tracker_11, by = c("shift", "river", "date"))
 
 # Display the first few rows of the combined data
 head(fish_flow_11)
@@ -4590,5 +4594,16 @@ write.csv(tracking_data_all,
           row.names = FALSE)
 ```
 
+```{r}
+# Filter to keep rows where 'source' is not NA
+duplicates <- filter(tracking_data_all, !is.na(source))
+
+# Check for duplicate rows
+duplicates <- duplicates %>%
+  group_by(radioID, trackedTime_EST, source, power) %>%
+  filter(n() > 1)
+
+print(duplicates)
+```
 
 
