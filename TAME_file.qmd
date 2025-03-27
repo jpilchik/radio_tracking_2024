@@ -1,0 +1,31 @@
+---
+title: "TAME_file"
+---
+
+```{r}
+library(tidyverse)
+```
+
+
+```{r load and filter fish data}
+tracking_data_all <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/combined_data/tracking_data_all.csv")
+
+TAME_file <- tracking_data_all %>%
+  filter(!is.na(lon) & !is.na(lat))
+  
+# Select iPad points or receiver with highest power when no iPad exists for the day/shift
+TAME_file <- TAME_file %>%
+  group_by(radioID, date, shift) %>%
+  mutate(has_iPad = any(source == "iPad"), 
+         has_receiver = any(source == "receiver")) %>%  # Check if any receiver points exist
+  filter(
+    (has_iPad & source == "iPad") |  # Keep iPad points if they exist
+    (has_receiver & !has_iPad & source == "receiver" & power == max(power, na.rm = TRUE))  # Only filter receiver points with max power if receiver exists
+  ) %>%
+  ungroup()
+
+# Write new tagging data csv
+write.csv(TAME_file, 
+          file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/TAME/tracking_data_TAME.csv", 
+          row.names = FALSE)
+```

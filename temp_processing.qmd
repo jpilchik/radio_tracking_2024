@@ -1,0 +1,1825 @@
+---
+title: "temp_processing"
+---
+```{r load libraries}
+# Load required libraries
+library(dplyr)
+library(lubridate)
+library(readxl)
+library(leaflet)
+library(tidyverse)
+library(tidyr)
+library(stringr)
+```
+
+```{r load and filter fish data}
+tracking_data_all <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/combined_data/tracking_data_all.csv")
+
+tracking_data_status <- tracking_data_all %>%
+  filter(!is.na(trackedTime_EST) & !is.na(status))
+```
+
+```{r latest observation for each fish}
+tracking_data_status <- tracking_data_status %>%
+  mutate(trackedTime_EST = as.POSIXct(trackedTime_EST, format = "%Y-%m-%d %H:%M:%S"))
+
+# Filter to either the first "OUT OF FISH" or, if missing, the "RECOVERED" observation
+latest_observations <- tracking_data_status %>%
+  group_by(radioID) %>%
+  filter(
+    (status == "OUT OF FISH" & trackedTime_EST == min(trackedTime_EST[status == "OUT OF FISH"])) |
+    (!any(status == "OUT OF FISH") & status == "RECOVERED")
+  ) %>%
+  ungroup()
+
+# View the result
+print(latest_observations)
+```
+
+
+# Tag 16
+
+```{r temp by time visualization for fish 16}
+
+# View latest observation
+latest_observations %>%
+  filter(radioID == "16") %>%
+  slice_head(n = 1) %>%
+  print()
+
+# Read the Excel file
+tag16_323 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTempTagData/16_323.xlsx")
+
+# Rename columns
+tag16_323 <- tag16_323 %>%
+  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+
+# Step 1: Explicitly tell R that the datetime is in EDT
+tag16_323 <- tag16_323 %>%
+  mutate(dateTime_EDT = force_tz(as.POSIXct(dateTime, format = "%Y-%m-%d %H:%M:%S"), tzone = "America/New_York"))
+
+# Step 2: Convert to EST (UTC-5) by subtracting 1 hour
+tag16_323 <- tag16_323 %>%
+  mutate(dateTime_EST = dateTime_EDT - hours(1))
+
+# Step 3: Ensure it's set to EST without daylight savings
+tag16_323 <- tag16_323 %>%
+  mutate(dateTime_EST = force_tz(dateTime_EST, tzone = "Etc/GMT+5")) # EST (UTC-5)
+
+# Define the start time as the first day of tracking at Dry Upper
+start_datetime <- as.POSIXct("2024-06-14 00:00:00", tz = "EST")
+
+# Define the last known alive point as a POSIXct object
+last_alive_datetime <- as.POSIXct("2024-08-22 08:59:00", tz = "EST")
+
+# Filter dataset up to and including the last known alive point
+tag16_323 <- tag16_323 %>%
+  filter(dateTime_EST >= start_datetime & dateTime_EST <= last_alive_datetime)
+
+# Filter to only the needed columns going forward
+tag16_323 <- tag16_323 %>%
+    select(temp, dateTime_EST)
+
+# Ensure dateTime is POSIXct and temp is numeric
+tag16_323 <- tag16_323 %>%
+  mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
+         temp = as.numeric(temp))
+
+# Set a common color gradient across all plots (10 to 30 degrees Celsius)
+colorMin <- 10
+colorMax <- 30
+
+# Plot the temperature data
+tag16Plot <- ggplot(tag16_323, aes(x = dateTime_EST, y = temp, color = temp)) +
+  geom_line() +
+  scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
+  labs(title = "Fish 16's Internal Temperature Over Time in Dry Upper", 
+       x = "DateTime", y = "Internal Fish Temperature (°C)") +
+  theme_minimal() +
+  ylim(10, 25)  # Set y-axis limits
+
+# View plot
+tag16Plot
+
+```
+
+# Tag 19
+
+```{r temp by time visualization for fish 19}
+
+# View latest observation
+latest_observations %>%
+  filter(radioID == "19") %>%
+  slice_head(n = 1) %>%
+  print()
+
+# Read the Excel file
+tag19_329 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTempTagData/19_329.xlsx")
+
+# Rename columns
+tag19_329 <- tag19_329 %>%
+  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+
+# Step 1: Explicitly tell R that the datetime is in EDT
+tag19_329 <- tag19_329 %>%
+  mutate(dateTime_EDT = force_tz(as.POSIXct(dateTime, format = "%Y-%m-%d %H:%M:%S"), tzone = "America/New_York"))
+
+# Step 2: Convert to EST (UTC-5) by subtracting 1 hour
+tag19_329 <- tag19_329 %>%
+  mutate(dateTime_EST = dateTime_EDT - hours(1))
+
+# Step 3: Ensure it's set to EST without daylight savings
+tag19_329 <- tag19_329 %>%
+  mutate(dateTime_EST = force_tz(dateTime_EST, tzone = "Etc/GMT+5")) # EST (UTC-5)
+
+# Define the start time as the first day of tracking at Amethyst
+start_datetime <- as.POSIXct("2024-06-11 00:00:00", tz = "EST")
+
+# Define the last known alive point as a POSIXct object
+last_alive_datetime <- as.POSIXct("2024-08-23 12:28:00", tz = "EST")
+
+# Filter dataset up to and including the last known alive point
+tag19_329 <- tag19_329 %>%
+  filter(dateTime_EST >= start_datetime & dateTime_EST <= last_alive_datetime)
+
+# Filter to only the needed columns going forward
+tag19_329 <- tag19_329 %>%
+    select(temp, dateTime_EST)
+
+# Ensure dateTime is POSIXct and temp is numeric
+tag19_329 <- tag19_329 %>%
+  mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
+         temp = as.numeric(temp))
+
+# Set a common color gradient across all plots (10 to 30 degrees Celsius)
+colorMin <- 10
+colorMax <- 30
+
+# Plot the temperature data
+tag19Plot <- ggplot(tag19_329, aes(x = dateTime_EST, y = temp, color = temp)) +
+  geom_line() +
+  scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
+  labs(title = "Fish 19's Internal Temperature Over Time in Amethyst", 
+       x = "DateTime", y = "Internal Fish Temperature (°C)") +
+  theme_minimal() +
+  ylim(10, 25)  # Set y-axis limits
+
+# View plot
+tag19Plot
+
+```
+
+# Tag 22
+
+```{r temp by time visualization for fish 22}
+
+# View latest observation
+latest_observations %>%
+  filter(radioID == "22") %>%
+  slice_head(n = 1) %>%
+  print()
+
+# Read the Excel file
+tag22_320 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTempTagData/22_320.xlsx")
+
+# Rename columns
+tag22_320 <- tag22_320 %>%
+  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+
+# Step 1: Explicitly tell R that the datetime is in EDT
+tag22_320 <- tag22_320 %>%
+  mutate(dateTime_EDT = force_tz(as.POSIXct(dateTime, format = "%Y-%m-%d %H:%M:%S"), tzone = "America/New_York"))
+
+# Step 2: Convert to EST (UTC-5) by subtracting 1 hour
+tag22_320 <- tag22_320 %>%
+  mutate(dateTime_EST = dateTime_EDT - hours(1))
+
+# Step 3: Ensure it's set to EST without daylight savings
+tag22_320 <- tag22_320 %>%
+  mutate(dateTime_EST = force_tz(dateTime_EST, tzone = "Etc/GMT+5")) # EST (UTC-5)
+
+# Define the start time as the first day of tracking at Dry Upper
+start_datetime <- as.POSIXct("2024-06-14 00:00:00", tz = "EST")
+
+# Define the last known alive point as a POSIXct object
+last_alive_datetime <- as.POSIXct("2024-07-18 05:44:00", tz = "EST")
+
+# Filter dataset up to and including the last known alive point
+tag22_320 <- tag22_320 %>%
+  filter(dateTime_EST >= start_datetime & dateTime_EST <= last_alive_datetime)
+
+# Filter to only the needed columns going forward
+tag22_320 <- tag22_320 %>%
+    select(temp, dateTime_EST)
+
+# Ensure dateTime is POSIXct and temp is numeric
+tag22_320 <- tag22_320 %>%
+  mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
+         temp = as.numeric(temp))
+
+# Set a common color gradient across all plots (10 to 30 degrees Celsius)
+colorMin <- 10
+colorMax <- 30
+
+# Plot the temperature data
+tag22Plot <- ggplot(tag22_320, aes(x = dateTime_EST, y = temp, color = temp)) +
+  geom_line() +
+  scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
+  labs(title = "Fish 22's Internal Temperature Over Time in Dry Upper", 
+       x = "DateTime", y = "Internal Fish Temperature (°C)") +
+  theme_minimal() +
+  ylim(10, 25)  # Set y-axis limits
+
+# View plot
+tag22Plot
+
+```
+
+# Tag 23
+
+```{r temp by time visualization for fish 23}
+
+# View latest observation
+latest_observations %>%
+  filter(radioID == "23") %>%
+  slice_head(n = 1) %>%
+  print()
+
+# Read the Excel file
+tag23_322 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTempTagData/23_322.xlsx")
+
+# Rename columns
+tag23_322 <- tag23_322 %>%
+  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+
+# Step 1: Explicitly tell R that the datetime is in EDT
+tag23_322 <- tag23_322 %>%
+  mutate(dateTime_EDT = force_tz(as.POSIXct(dateTime, format = "%Y-%m-%d %H:%M:%S"), tzone = "America/New_York"))
+
+# Step 2: Convert to EST (UTC-5) by subtracting 1 hour
+tag23_322 <- tag23_322 %>%
+  mutate(dateTime_EST = dateTime_EDT - hours(1))
+
+# Step 3: Ensure it's set to EST without daylight savings
+tag23_322 <- tag23_322 %>%
+  mutate(dateTime_EST = force_tz(dateTime_EST, tzone = "Etc/GMT+5")) # EST (UTC-5)
+
+# Define the start time as the first day of tracking at Dry Upper
+start_datetime <- as.POSIXct("2024-06-14 00:00:00", tz = "EST")
+
+# Define the last known alive point as a POSIXct object
+last_alive_datetime <- as.POSIXct("2024-07-23 09:06:00", tz = "EST")
+
+# Filter dataset up to and including the last known alive point
+tag23_322 <- tag23_322 %>%
+  filter(dateTime_EST >= start_datetime & dateTime_EST <= last_alive_datetime)
+
+# Filter to only the needed columns going forward
+tag23_322 <- tag23_322 %>%
+    select(temp, dateTime_EST)
+
+# Ensure dateTime is POSIXct and temp is numeric
+tag23_322 <- tag23_322 %>%
+  mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
+         temp = as.numeric(temp))
+
+# Set a common color gradient across all plots (10 to 30 degrees Celsius)
+colorMin <- 10
+colorMax <- 30
+
+# Plot the temperature data
+tag23Plot <- ggplot(tag23_322, aes(x = dateTime_EST, y = temp, color = temp)) +
+  geom_line() +
+  scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
+  labs(title = "Fish 23's Internal Temperature Over Time in Dry Upper", 
+       x = "DateTime", y = "Internal Fish Temperature (°C)") +
+  theme_minimal() +
+  ylim(10, 30)  # Set y-axis limits
+
+# View plot
+tag23Plot
+
+```
+
+# Tag 24 
+
+```{r temp by time visualization for fish 24}
+
+# View latest observation
+latest_observations %>%
+  filter(radioID == "24") %>%
+  slice_head(n = 1) %>%
+  print()
+
+# Read the Excel file
+tag24_319 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTempTagData/24_319.xlsx")
+
+# Rename columns
+tag24_319 <- tag24_319 %>%
+  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+
+# Step 1: Explicitly tell R that the datetime is in EDT
+tag24_319 <- tag24_319 %>%
+  mutate(dateTime_EDT = force_tz(as.POSIXct(dateTime, format = "%Y-%m-%d %H:%M:%S"), tzone = "America/New_York"))
+
+# Step 2: Convert to EST (UTC-5) by subtracting 1 hour
+tag24_319 <- tag24_319 %>%
+  mutate(dateTime_EST = dateTime_EDT - hours(1))
+
+# Step 3: Ensure it's set to EST without daylight savings
+tag24_319 <- tag24_319 %>%
+  mutate(dateTime_EST = force_tz(dateTime_EST, tzone = "Etc/GMT+5")) # EST (UTC-5)
+
+# Define the start time as the first day of tracking at Dry Upper
+start_datetime <- as.POSIXct("2024-06-14 00:00:00", tz = "EST")
+
+# Define the last known alive point as a POSIXct object
+last_alive_datetime <- as.POSIXct("2024-07-12 09:37:00", tz = "EST")
+
+# Filter dataset up to and including the last known alive point
+tag24_319 <- tag24_319 %>%
+  filter(dateTime_EST >= start_datetime & dateTime_EST <= last_alive_datetime)
+
+# Filter to only the needed columns going forward
+tag24_319 <- tag24_319 %>%
+    select(temp, dateTime_EST)
+
+# Ensure dateTime is POSIXct and temp is numeric
+tag24_319 <- tag24_319 %>%
+  mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
+         temp = as.numeric(temp))
+
+# Set a common color gradient across all plots (10 to 30 degrees Celsius)
+colorMin <- 10
+colorMax <- 30
+
+# Plot the temperature data
+tag24Plot <- ggplot(tag24_319, aes(x = dateTime_EST, y = temp, color = temp)) +
+  geom_line() +
+  scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
+  labs(title = "Fish 24's Internal Temperature Over Time in Dry Upper", 
+       x = "DateTime", y = "Internal Fish Temperature (°C)") +
+  theme_minimal() +
+  ylim(10, 35)  # Set y-axis limits
+
+# View plot
+tag24Plot
+
+```
+
+# Tag 27 
+
+```{r temp by time visualization for fish 27}
+
+# View latest observation
+latest_observations %>%
+  filter(radioID == "27") %>%
+  slice_head(n = 1) %>%
+  print()
+
+# Read the Excel file
+tag27_303 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTempTagData/27_303.xlsx")
+
+# Rename columns
+tag27_303 <- tag27_303 %>%
+  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+
+# Step 1: Explicitly tell R that the datetime is in EDT
+tag27_303 <- tag27_303 %>%
+  mutate(dateTime_EDT = force_tz(as.POSIXct(dateTime, format = "%Y-%m-%d %H:%M:%S"), tzone = "America/New_York"))
+
+# Step 2: Convert to EST (UTC-5) by subtracting 1 hour
+tag27_303 <- tag27_303 %>%
+  mutate(dateTime_EST = dateTime_EDT - hours(1))
+
+# Step 3: Ensure it's set to EST without daylight savings
+tag27_303 <- tag27_303 %>%
+  mutate(dateTime_EST = force_tz(dateTime_EST, tzone = "Etc/GMT+5")) # EST (UTC-5)
+
+# Define the start time as the first day of tracking at Underhill
+start_datetime <- as.POSIXct("2024-06-12 00:00:00", tz = "EST")
+
+# Define the last known alive point as a POSIXct object
+last_alive_datetime <- as.POSIXct("2024-07-26 08:06:00", tz = "EST")
+
+# Filter dataset up to and including the last known alive point
+tag27_303 <- tag27_303 %>%
+  filter(dateTime_EST >= start_datetime & dateTime_EST <= last_alive_datetime)
+
+# Filter to only the needed columns going forward
+tag27_303 <- tag27_303 %>%
+    select(temp, dateTime_EST)
+
+# Ensure dateTime is POSIXct and temp is numeric
+tag27_303 <- tag27_303 %>%
+  mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
+         temp = as.numeric(temp))
+
+# Set a common color gradient across all plots (10 to 30 degrees Celsius)
+colorMin <- 10
+colorMax <- 30
+
+# Plot the temperature data
+tag27Plot <- ggplot(tag27_303, aes(x = dateTime_EST, y = temp, color = temp)) +
+  geom_line() +
+  scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
+  labs(title = "Fish 27's Internal Temperature Over Time in Underhill", 
+       x = "DateTime", y = "Internal Fish Temperature (°C)") +
+  theme_minimal() +
+  ylim(10, 25)  # Set y-axis limits
+
+# View plot
+tag27Plot
+
+```
+
+# Tag 28 
+
+```{r temp by time visualization for fish 28}
+
+# View latest observation
+latest_observations %>%
+  filter(radioID == "28") %>%
+  slice_head(n = 1) %>%
+  print()
+
+# Read the Excel file
+tag28_306 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTempTagData/28_306.xlsx")
+
+# Rename columns
+tag28_306 <- tag28_306 %>%
+  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+
+# Step 1: Explicitly tell R that the datetime is in EDT
+tag28_306 <- tag28_306 %>%
+  mutate(dateTime_EDT = force_tz(as.POSIXct(dateTime, format = "%Y-%m-%d %H:%M:%S"), tzone = "America/New_York"))
+
+# Step 2: Convert to EST (UTC-5) by subtracting 1 hour
+tag28_306 <- tag28_306 %>%
+  mutate(dateTime_EST = dateTime_EDT - hours(1))
+
+# Step 3: Ensure it's set to EST without daylight savings
+tag28_306 <- tag28_306 %>%
+  mutate(dateTime_EST = force_tz(dateTime_EST, tzone = "Etc/GMT+5")) # EST (UTC-5)
+
+# Define the start time as the first day of tracking at Dickey
+start_datetime <- as.POSIXct("2024-06-13 00:00:00", tz = "EST")
+
+# Define the last known alive point as a POSIXct object
+last_alive_datetime <- as.POSIXct("2024-07-24 07:28:00", tz = "EST")
+
+# Filter dataset up to and including the last known alive point
+tag28_306 <- tag28_306 %>%
+  filter(dateTime_EST >= start_datetime & dateTime_EST <= last_alive_datetime)
+
+# Filter to only the needed columns going forward
+tag28_306 <- tag28_306 %>%
+    select(temp, dateTime_EST)
+
+# Ensure dateTime is POSIXct and temp is numeric
+tag28_306 <- tag28_306 %>%
+  mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
+         temp = as.numeric(temp))
+
+# Set a common color gradient across all plots (10 to 30 degrees Celsius)
+colorMin <- 10
+colorMax <- 30
+
+# Plot the temperature data
+tag28Plot <- ggplot(tag28_306, aes(x = dateTime_EST, y = temp, color = temp)) +
+  geom_line() +
+  scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
+  labs(title = "Fish 28's Internal Temperature Over Time in Dickey", 
+       x = "DateTime", y = "Internal Fish Temperature (°C)") +
+  theme_minimal() +
+  ylim(10, 30)  # Set y-axis limits
+
+# View plot
+tag28Plot
+
+```
+
+# Tag 29.1 
+
+```{r temp by time visualization for fish 29.1}
+
+# View latest observation
+latest_observations %>%
+  filter(radioID == "29.1") %>%
+  slice_head(n = 1) %>%
+  print()
+
+# Read the Excel file
+tag29.1_325 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTempTagData/29.1_325.xlsx")
+
+# Rename columns
+tag29.1_325 <- tag29.1_325 %>%
+  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+
+# Step 1: Explicitly tell R that the datetime is in EDT
+tag29.1_325 <- tag29.1_325 %>%
+  mutate(dateTime_EDT = force_tz(as.POSIXct(dateTime, format = "%Y-%m-%d %H:%M:%S"), tzone = "America/New_York"))
+
+# Step 2: Convert to EST (UTC-5) by subtracting 1 hour
+tag29.1_325 <- tag29.1_325 %>%
+  mutate(dateTime_EST = dateTime_EDT - hours(1))
+
+# Step 3: Ensure it's set to EST without daylight savings
+tag29.1_325 <- tag29.1_325 %>%
+  mutate(dateTime_EST = force_tz(dateTime_EST, tzone = "Etc/GMT+5")) # EST (UTC-5)
+
+# Define the start time as the day after retagging at Dry Upper
+start_datetime <- as.POSIXct("2024-07-19 00:00:00", tz = "EST")
+
+# Define the last known alive point as a POSIXct object
+last_alive_datetime <- as.POSIXct("2024-08-22 10:19:00", tz = "EST")
+
+# Filter dataset up to and including the last known alive point
+tag29.1_325 <- tag29.1_325 %>%
+  filter(dateTime_EST >= start_datetime & dateTime_EST <= last_alive_datetime)
+
+# Filter to only the needed columns going forward
+tag29.1_325 <- tag29.1_325 %>%
+    select(temp, dateTime_EST)
+
+# Ensure dateTime is POSIXct and temp is numeric
+tag29.1_325 <- tag29.1_325 %>%
+  mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
+         temp = as.numeric(temp))
+
+# Set a common color gradient across all plots (10 to 30 degrees Celsius)
+colorMin <- 10
+colorMax <- 30
+
+# Plot the temperature data
+tag29.1Plot <- ggplot(tag29.1_325, aes(x = dateTime_EST, y = temp, color = temp)) +
+  geom_line() +
+  scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
+  labs(title = "Fish 29.1's Internal Temperature Over Time in Dry Upper", 
+       x = "DateTime", y = "Internal Fish Temperature (°C)") +
+  theme_minimal() +
+  ylim(10, 25)  # Set y-axis limits
+
+# View plot
+tag29.1Plot
+
+```
+
+# Tag 29 
+
+```{r temp by time visualization for fish 29}
+
+# View latest observation
+latest_observations %>%
+  filter(radioID == "29") %>%
+  slice_head(n = 1) %>%
+  print()
+
+# Read the Excel file
+tag29_304 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTempTagData/29_304.xlsx")
+
+# Rename columns
+tag29_304 <- tag29_304 %>%
+  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+
+# Step 1: Explicitly tell R that the datetime is in EDT
+tag29_304 <- tag29_304 %>%
+  mutate(dateTime_EDT = force_tz(as.POSIXct(dateTime, format = "%Y-%m-%d %H:%M:%S"), tzone = "America/New_York"))
+
+# Step 2: Convert to EST (UTC-5) by subtracting 1 hour
+tag29_304 <- tag29_304 %>%
+  mutate(dateTime_EST = dateTime_EDT - hours(1))
+
+# Step 3: Ensure it's set to EST without daylight savings
+tag29_304 <- tag29_304 %>%
+  mutate(dateTime_EST = force_tz(dateTime_EST, tzone = "Etc/GMT+5")) # EST (UTC-5)
+
+# Define the start time as the first day of tracking at Dickey
+start_datetime <- as.POSIXct("2024-06-13 00:00:00", tz = "EST")
+
+# Define the last known alive point as a POSIXct object
+last_alive_datetime <- as.POSIXct("2024-06-17 15:51:00", tz = "EST")
+
+# Filter dataset up to and including the last known alive point
+tag29_304 <- tag29_304 %>%
+  filter(dateTime_EST >= start_datetime & dateTime_EST <= last_alive_datetime)
+
+# Filter to only the needed columns going forward
+tag29_304 <- tag29_304 %>%
+    select(temp, dateTime_EST)
+
+# Ensure dateTime is POSIXct and temp is numeric
+tag29_304 <- tag29_304 %>%
+  mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
+         temp = as.numeric(temp))
+
+# Set a common color gradient across all plots (10 to 30 degrees Celsius)
+colorMin <- 10
+colorMax <- 30
+
+# Plot the temperature data
+tag29Plot <- ggplot(tag29_304, aes(x = dateTime_EST, y = temp, color = temp)) +
+  geom_line() +
+  scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
+  labs(title = "Fish 29's Internal Temperature Over Time in Dickey", 
+       x = "DateTime", y = "Internal Fish Temperature (°C)") +
+  theme_minimal() +
+  ylim(10, 30)  # Set y-axis limits
+
+# View plot
+tag29Plot
+
+```
+
+# Tag 30.1 
+
+```{r temp by time visualization for fish 30.1}
+
+# View latest observation
+latest_observations %>%
+  filter(radioID == "30.1") %>%
+  slice_head(n = 1) %>%
+  print()
+
+# Read the Excel file
+tag30.1_319 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTempTagData/30.1_319.xlsx")
+
+# Rename columns
+tag30.1_319 <- tag30.1_319 %>%
+  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+
+# Step 1: Explicitly tell R that the datetime is in EDT
+tag30.1_319 <- tag30.1_319 %>%
+  mutate(dateTime_EDT = force_tz(as.POSIXct(dateTime, format = "%Y-%m-%d %H:%M:%S"), tzone = "America/New_York"))
+
+# Step 2: Convert to EST (UTC-5) by subtracting 1 hour
+tag30.1_319 <- tag30.1_319 %>%
+  mutate(dateTime_EST = dateTime_EDT - hours(1))
+
+# Step 3: Ensure it's set to EST without daylight savings
+tag30.1_319 <- tag30.1_319 %>%
+  mutate(dateTime_EST = force_tz(dateTime_EST, tzone = "Etc/GMT+5")) # EST (UTC-5)
+
+# Define the start time as the day after retagging at Dry Upper
+start_datetime <- as.POSIXct("2024-07-19 00:00:00", tz = "EST")
+
+# Define the last known alive point as a POSIXct object
+last_alive_datetime <- as.POSIXct("2024-08-22 09:42:00", tz = "EST")
+
+# Filter dataset up to and including the last known alive point
+tag30.1_319 <- tag30.1_319 %>%
+  filter(dateTime_EST >= start_datetime & dateTime_EST <= last_alive_datetime)
+
+# Filter to only the needed columns going forward
+tag30.1_319 <- tag30.1_319 %>%
+    select(temp, dateTime_EST)
+
+# Ensure dateTime is POSIXct and temp is numeric
+tag30.1_319 <- tag30.1_319 %>%
+  mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
+         temp = as.numeric(temp))
+
+# Set a common color gradient across all plots (10 to 30 degrees Celsius)
+colorMin <- 10
+colorMax <- 30
+
+# Plot the temperature data
+tag30.1Plot <- ggplot(tag30.1_319, aes(x = dateTime_EST, y = temp, color = temp)) +
+  geom_line() +
+  scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
+  labs(title = "Fish 30.1's Internal Temperature Over Time in Dry Upper", 
+       x = "DateTime", y = "Internal Fish Temperature (°C)") +
+  theme_minimal() +
+  ylim(10, 25)  # Set y-axis limits
+
+# View plot
+tag30.1Plot
+
+```
+
+# Tag 31 
+
+```{r temp by time visualization for fish 31}
+
+# View latest observation
+latest_observations %>%
+  filter(radioID == "31") %>%
+  slice_head(n = 1) %>%
+  print()
+
+# Read the Excel file
+tag31_302 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTempTagData/31_302.xlsx")
+
+# Rename columns
+tag31_302 <- tag31_302 %>%
+  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+
+# Step 1: Explicitly tell R that the datetime is in EDT
+tag31_302 <- tag31_302 %>%
+  mutate(dateTime_EDT = force_tz(as.POSIXct(dateTime, format = "%Y-%m-%d %H:%M:%S"), tzone = "America/New_York"))
+
+# Step 2: Convert to EST (UTC-5) by subtracting 1 hour
+tag31_302 <- tag31_302 %>%
+  mutate(dateTime_EST = dateTime_EDT - hours(1))
+
+# Step 3: Ensure it's set to EST without daylight savings
+tag31_302 <- tag31_302 %>%
+  mutate(dateTime_EST = force_tz(dateTime_EST, tzone = "Etc/GMT+5")) # EST (UTC-5)
+
+# Define the start time as the first day of tracking at Dickey
+start_datetime <- as.POSIXct("2024-06-13 00:00:00", tz = "EST")
+
+# Define the last known alive point as a POSIXct object
+last_alive_datetime <- as.POSIXct("2024-08-15 13:55:00", tz = "EST")
+
+# Filter dataset up to and including the last known alive point
+tag31_302 <- tag31_302 %>%
+  filter(dateTime_EST >= start_datetime & dateTime_EST <= last_alive_datetime)
+
+# Filter to only the needed columns going forward
+tag31_302 <- tag31_302 %>%
+    select(temp, dateTime_EST)
+
+# Ensure dateTime is POSIXct and temp is numeric
+tag31_302 <- tag31_302 %>%
+  mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
+         temp = as.numeric(temp))
+
+# Set a common color gradient across all plots (10 to 30 degrees Celsius)
+colorMin <- 10
+colorMax <- 30
+
+# Plot the temperature data
+tag31Plot <- ggplot(tag31_302, aes(x = dateTime_EST, y = temp, color = temp)) +
+  geom_line() +
+  scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
+  labs(title = "Fish 31's Internal Temperature Over Time in Dickey", 
+       x = "DateTime", y = "Internal Fish Temperature (°C)") +
+  theme_minimal() +
+  ylim(10, 30)  # Set y-axis limits
+
+# View plot
+tag31Plot
+
+```
+
+# Tag 32 
+
+```{r temp by time visualization for fish 32}
+
+# View latest observation
+latest_observations %>%
+  filter(radioID == "32") %>%
+  slice_head(n = 1) %>%
+  print()
+
+# Read the Excel file
+tag32_298 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTempTagData/32_298.xlsx")
+
+# Rename columns
+tag32_298 <- tag32_298 %>%
+  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+
+# Step 1: Explicitly tell R that the datetime is in EDT
+tag32_298 <- tag32_298 %>%
+  mutate(dateTime_EDT = force_tz(as.POSIXct(dateTime, format = "%Y-%m-%d %H:%M:%S"), tzone = "America/New_York"))
+
+# Step 2: Convert to EST (UTC-5) by subtracting 1 hour
+tag32_298 <- tag32_298 %>%
+  mutate(dateTime_EST = dateTime_EDT - hours(1))
+
+# Step 3: Ensure it's set to EST without daylight savings
+tag32_298 <- tag32_298 %>%
+  mutate(dateTime_EST = force_tz(dateTime_EST, tzone = "Etc/GMT+5")) # EST (UTC-5)
+
+# Define the start time as the first day of tracking at Dickey
+start_datetime <- as.POSIXct("2024-06-13 00:00:00", tz = "EST")
+
+# Define the last known alive point as a POSIXct object
+last_alive_datetime <- as.POSIXct("2024-07-30 04:42:00", tz = "EST")
+
+# Filter dataset up to and including the last known alive point
+tag32_298 <- tag32_298 %>%
+  filter(dateTime_EST >= start_datetime & dateTime_EST <= last_alive_datetime)
+
+# Filter to only the needed columns going forward
+tag32_298 <- tag32_298 %>%
+    select(temp, dateTime_EST)
+
+# Ensure dateTime is POSIXct and temp is numeric
+tag32_298 <- tag32_298 %>%
+  mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
+         temp = as.numeric(temp))
+
+# Set a common color gradient across all plots (10 to 30 degrees Celsius)
+colorMin <- 10
+colorMax <- 30
+
+# Plot the temperature data
+tag32Plot <- ggplot(tag32_298, aes(x = dateTime_EST, y = temp, color = temp)) +
+  geom_line() +
+  scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
+  labs(title = "Fish 32's Internal Temperature Over Time in Dickey", 
+       x = "DateTime", y = "Internal Fish Temperature (°C)") +
+  theme_minimal() +
+  ylim(10, 30)  # Set y-axis limits
+
+# View plot
+tag32Plot
+
+```
+
+# Tag 33 
+
+```{r temp by time visualization for fish 33}
+
+# View latest observation
+latest_observations %>%
+  filter(radioID == "33") %>%
+  slice_head(n = 1) %>%
+  print()
+
+# Read the Excel file
+tag33_305 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTempTagData/33_305.xlsx")
+
+# Rename columns
+tag33_305 <- tag33_305 %>%
+  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+
+# Step 1: Explicitly tell R that the datetime is in EDT
+tag33_305 <- tag33_305 %>%
+  mutate(dateTime_EDT = force_tz(as.POSIXct(dateTime, format = "%Y-%m-%d %H:%M:%S"), tzone = "America/New_York"))
+
+# Step 2: Convert to EST (UTC-5) by subtracting 1 hour
+tag33_305 <- tag33_305 %>%
+  mutate(dateTime_EST = dateTime_EDT - hours(1))
+
+# Step 3: Ensure it's set to EST without daylight savings
+tag33_305 <- tag33_305 %>%
+  mutate(dateTime_EST = force_tz(dateTime_EST, tzone = "Etc/GMT+5")) # EST (UTC-5)
+
+# Define the start time as the first day of tracking at Underhill
+start_datetime <- as.POSIXct("2024-06-12 00:00:00", tz = "EST")
+
+# Define the last known alive point as a POSIXct object
+last_alive_datetime <- as.POSIXct("2024-08-21 08:30:00", tz = "EST")
+
+# Filter dataset up to and including the last known alive point
+tag33_305 <- tag33_305 %>%
+  filter(dateTime_EST >= start_datetime & dateTime_EST <= last_alive_datetime)
+
+# Filter to only the needed columns going forward
+tag33_305 <- tag33_305 %>%
+    select(temp, dateTime_EST)
+
+# Ensure dateTime is POSIXct and temp is numeric
+tag33_305 <- tag33_305 %>%
+  mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
+         temp = as.numeric(temp))
+
+# Set a common color gradient across all plots (10 to 30 degrees Celsius)
+colorMin <- 10
+colorMax <- 30
+
+# Plot the temperature data
+tag33Plot <- ggplot(tag33_305, aes(x = dateTime_EST, y = temp, color = temp)) +
+  geom_line() +
+  scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
+  labs(title = "Fish 33's Internal Temperature Over Time in Underhill", 
+       x = "DateTime", y = "Internal Fish Temperature (°C)") +
+  theme_minimal() +
+  ylim(10, 25)  # Set y-axis limits
+
+# View plot
+tag33Plot
+
+```
+
+# Tag 34 
+
+```{r temp by time visualization for fish 34}
+
+# View latest observation
+latest_observations %>%
+  filter(radioID == "34") %>%
+  slice_head(n = 1) %>%
+  print()
+
+# Read the Excel file
+tag34_296 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTempTagData/34_296.xlsx")
+
+# Rename columns
+tag34_296 <- tag34_296 %>%
+  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+
+# Step 1: Explicitly tell R that the datetime is in EDT
+tag34_296 <- tag34_296 %>%
+  mutate(dateTime_EDT = force_tz(as.POSIXct(dateTime, format = "%Y-%m-%d %H:%M:%S"), tzone = "America/New_York"))
+
+# Step 2: Convert to EST (UTC-5) by subtracting 1 hour
+tag34_296 <- tag34_296 %>%
+  mutate(dateTime_EST = dateTime_EDT - hours(1))
+
+# Step 3: Ensure it's set to EST without daylight savings
+tag34_296 <- tag34_296 %>%
+  mutate(dateTime_EST = force_tz(dateTime_EST, tzone = "Etc/GMT+5")) # EST (UTC-5)
+
+# Define the start time as the first day of tracking at Underhill
+start_datetime <- as.POSIXct("2024-06-12 00:00:00", tz = "EST")
+
+# Define the last known alive point as a POSIXct object
+last_alive_datetime <- as.POSIXct("2024-08-01 04:20:00", tz = "EST")
+
+# Filter dataset up to and including the last known alive point
+tag34_296 <- tag34_296 %>%
+  filter(dateTime_EST >= start_datetime & dateTime_EST <= last_alive_datetime)
+
+# Filter to only the needed columns going forward
+tag34_296 <- tag34_296 %>%
+    select(temp, dateTime_EST)
+
+# Ensure dateTime is POSIXct and temp is numeric
+tag34_296 <- tag34_296 %>%
+  mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
+         temp = as.numeric(temp))
+
+# Set a common color gradient across all plots (10 to 30 degrees Celsius)
+colorMin <- 10
+colorMax <- 30
+
+# Plot the temperature data
+tag34Plot <- ggplot(tag34_296, aes(x = dateTime_EST, y = temp, color = temp)) +
+  geom_line() +
+  scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
+  labs(title = "Fish 34's Internal Temperature Over Time in Underhill", 
+       x = "DateTime", y = "Internal Fish Temperature (°C)") +
+  theme_minimal() +
+  ylim(10, 25)  # Set y-axis limits
+
+# View plot
+tag34Plot
+
+```
+
+# Tag 36 
+
+```{r temp by time visualization for fish 36}
+
+# View latest observation
+latest_observations %>%
+  filter(radioID == "36") %>%
+  slice_head(n = 1) %>%
+  print()
+
+# Read the Excel file
+tag36_301 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTempTagData/36_301.xlsx")
+
+# Rename columns
+tag36_301 <- tag36_301 %>%
+  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+
+# Step 1: Explicitly tell R that the datetime is in EDT
+tag36_301 <- tag36_301 %>%
+  mutate(dateTime_EDT = force_tz(as.POSIXct(dateTime, format = "%Y-%m-%d %H:%M:%S"), tzone = "America/New_York"))
+
+# Step 2: Convert to EST (UTC-5) by subtracting 1 hour
+tag36_301 <- tag36_301 %>%
+  mutate(dateTime_EST = dateTime_EDT - hours(1))
+
+# Step 3: Ensure it's set to EST without daylight savings
+tag36_301 <- tag36_301 %>%
+  mutate(dateTime_EST = force_tz(dateTime_EST, tzone = "Etc/GMT+5")) # EST (UTC-5)
+
+# Define the start time as the first day of tracking at Underhill
+start_datetime <- as.POSIXct("2024-06-12 00:00:00", tz = "EST")
+
+# Define the last known alive point as a POSIXct object
+last_alive_datetime <- as.POSIXct("2024-07-19 04:01:00", tz = "EST")
+
+# Filter dataset up to and including the last known alive point
+tag36_301 <- tag36_301 %>%
+  filter(dateTime_EST >= start_datetime & dateTime_EST <= last_alive_datetime)
+
+# Filter to only the needed columns going forward
+tag36_301 <- tag36_301 %>%
+    select(temp, dateTime_EST)
+
+# Ensure dateTime is POSIXct and temp is numeric
+tag36_301 <- tag36_301 %>%
+  mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
+         temp = as.numeric(temp))
+
+# Set a common color gradient across all plots (10 to 30 degrees Celsius)
+colorMin <- 10
+colorMax <- 30
+
+# Plot the temperature data
+tag36Plot <- ggplot(tag36_301, aes(x = dateTime_EST, y = temp, color = temp)) +
+  geom_line() +
+  scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
+  labs(title = "Fish 36's Internal Temperature Over Time in Underhill", 
+       x = "DateTime", y = "Internal Fish Temperature (°C)") +
+  theme_minimal() +
+  ylim(10, 25)  # Set y-axis limits
+
+# View plot
+tag36Plot
+
+```
+
+# Tag 37 
+
+```{r temp by time visualization for fish 37}
+
+# View latest observation
+latest_observations %>%
+  filter(radioID == "37") %>%
+  slice_head(n = 1) %>%
+  print()
+
+# Read the Excel file
+tag37_308 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTempTagData/37_308.xlsx")
+
+# Rename columns
+tag37_308 <- tag37_308 %>%
+  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+
+# Step 1: Explicitly tell R that the datetime is in EDT
+tag37_308 <- tag37_308 %>%
+  mutate(dateTime_EDT = force_tz(as.POSIXct(dateTime, format = "%Y-%m-%d %H:%M:%S"), tzone = "America/New_York"))
+
+# Step 2: Convert to EST (UTC-5) by subtracting 1 hour
+tag37_308 <- tag37_308 %>%
+  mutate(dateTime_EST = dateTime_EDT - hours(1))
+
+# Step 3: Ensure it's set to EST without daylight savings
+tag37_308 <- tag37_308 %>%
+  mutate(dateTime_EST = force_tz(dateTime_EST, tzone = "Etc/GMT+5")) # EST (UTC-5)
+
+# Define the start time as the first day of tracking at Dickey
+start_datetime <- as.POSIXct("2024-06-13 00:00:00", tz = "EST")
+
+# Define the last known alive point as a POSIXct object
+last_alive_datetime <- as.POSIXct("2024-08-09 11:25:00", tz = "EST")
+
+# Filter dataset up to and including the last known alive point
+tag37_308 <- tag37_308 %>%
+  filter(dateTime_EST >= start_datetime & dateTime_EST <= last_alive_datetime)
+
+# Filter to only the needed columns going forward
+tag37_308 <- tag37_308 %>%
+    select(temp, dateTime_EST)
+
+# Ensure dateTime is POSIXct and temp is numeric
+tag37_308 <- tag37_308 %>%
+  mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
+         temp = as.numeric(temp))
+
+# Set a common color gradient across all plots (10 to 30 degrees Celsius)
+colorMin <- 10
+colorMax <- 30
+
+# Plot the temperature data
+tag37Plot <- ggplot(tag37_308, aes(x = dateTime_EST, y = temp, color = temp)) +
+  geom_line() +
+  scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
+  labs(title = "Fish 37's Internal Temperature Over Time in Dickey", 
+       x = "DateTime", y = "Internal Fish Temperature (°C)") +
+  theme_minimal() +
+  ylim(10, 30)  # Set y-axis limits
+
+# View plot
+tag37Plot
+
+```
+
+# Tag 38 
+
+```{r temp by time visualization for fish 38}
+
+# View latest observation
+latest_observations %>%
+  filter(radioID == "38") %>%
+  slice_head(n = 1) %>%
+  print()
+
+# Read the Excel file
+tag38_315 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTempTagData/38_315.xlsx")
+
+# Rename columns
+tag38_315 <- tag38_315 %>%
+  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+
+# Step 1: Explicitly tell R that the datetime is in EDT
+tag38_315 <- tag38_315 %>%
+  mutate(dateTime_EDT = force_tz(as.POSIXct(dateTime, format = "%Y-%m-%d %H:%M:%S"), tzone = "America/New_York"))
+
+# Step 2: Convert to EST (UTC-5) by subtracting 1 hour
+tag38_315 <- tag38_315 %>%
+  mutate(dateTime_EST = dateTime_EDT - hours(1))
+
+# Step 3: Ensure it's set to EST without daylight savings
+tag38_315 <- tag38_315 %>%
+  mutate(dateTime_EST = force_tz(dateTime_EST, tzone = "Etc/GMT+5")) # EST (UTC-5)
+
+# Define the start time as the first day of tracking at Dickey
+start_datetime <- as.POSIXct("2024-06-13 00:00:00", tz = "EST")
+
+# Define the last known alive point as a POSIXct object
+last_alive_datetime <- as.POSIXct("2024-08-15 14:16:00", tz = "EST")
+
+# Filter dataset up to and including the last known alive point
+tag38_315 <- tag38_315 %>%
+  filter(dateTime_EST >= start_datetime & dateTime_EST <= last_alive_datetime)
+
+# Filter to only the needed columns going forward
+tag38_315 <- tag38_315 %>%
+    select(temp, dateTime_EST)
+
+# Ensure dateTime is POSIXct and temp is numeric
+tag38_315 <- tag38_315 %>%
+  mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
+         temp = as.numeric(temp))
+
+# Set a common color gradient across all plots (10 to 30 degrees Celsius)
+colorMin <- 10
+colorMax <- 30
+
+# Plot the temperature data
+tag38Plot <- ggplot(tag38_315, aes(x = dateTime_EST, y = temp, color = temp)) +
+  geom_line() +
+  scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
+  labs(title = "Fish 38's Internal Temperature Over Time in Dickey", 
+       x = "DateTime", y = "Internal Fish Temperature (°C)") +
+  theme_minimal() +
+  ylim(10, 30)  # Set y-axis limits
+
+# View plot
+tag38Plot
+
+```
+
+# Tag 40 
+
+```{r temp by time visualization for fish 40}
+
+# View latest observation
+latest_observations %>%
+  filter(radioID == "40") %>%
+  slice_head(n = 1) %>%
+  print()
+
+# Read the Excel file
+tag40_312 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTempTagData/40_312.xlsx")
+
+# Rename columns
+tag40_312 <- tag40_312 %>%
+  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+
+# Step 1: Explicitly tell R that the datetime is in EDT
+tag40_312 <- tag40_312 %>%
+  mutate(dateTime_EDT = force_tz(as.POSIXct(dateTime, format = "%Y-%m-%d %H:%M:%S"), tzone = "America/New_York"))
+
+# Step 2: Convert to EST (UTC-5) by subtracting 1 hour
+tag40_312 <- tag40_312 %>%
+  mutate(dateTime_EST = dateTime_EDT - hours(1))
+
+# Step 3: Ensure it's set to EST without daylight savings
+tag40_312 <- tag40_312 %>%
+  mutate(dateTime_EST = force_tz(dateTime_EST, tzone = "Etc/GMT+5")) # EST (UTC-5)
+
+# Define the start time as the first day of tracking at Underhill
+start_datetime <- as.POSIXct("2024-06-12 00:00:00", tz = "EST")
+
+# Define the last known alive point as a POSIXct object
+last_alive_datetime <- as.POSIXct("2024-07-26 11:10:00", tz = "EST")
+
+# Filter dataset up to and including the last known alive point
+tag40_312 <- tag40_312 %>%
+  filter(dateTime_EST >= start_datetime & dateTime_EST <= last_alive_datetime)
+
+# Filter to only the needed columns going forward
+tag40_312 <- tag40_312 %>%
+    select(temp, dateTime_EST)
+
+# Ensure dateTime is POSIXct and temp is numeric
+tag40_312 <- tag40_312 %>%
+  mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
+         temp = as.numeric(temp))
+
+# Set a common color gradient across all plots (10 to 30 degrees Celsius)
+colorMin <- 10
+colorMax <- 30
+
+# Plot the temperature data
+tag40Plot <- ggplot(tag40_312, aes(x = dateTime_EST, y = temp, color = temp)) +
+  geom_line() +
+  scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
+  labs(title = "Fish 40's Internal Temperature Over Time in Underhill", 
+       x = "DateTime", y = "Internal Fish Temperature (°C)") +
+  theme_minimal() +
+  ylim(10, 25)  # Set y-axis limits
+
+# View plot
+tag40Plot
+
+```
+
+# Tag 42 
+
+```{r temp by time visualization for fish 42}
+
+# View latest observation
+latest_observations %>%
+  filter(radioID == "42") %>%
+  slice_head(n = 1) %>%
+  print()
+
+# Read the Excel file
+tag42_325 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTempTagData/42_325.xlsx")
+
+# Rename columns
+tag42_325 <- tag42_325 %>%
+  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+
+# Step 1: Explicitly tell R that the datetime is in EDT
+tag42_325 <- tag42_325 %>%
+  mutate(dateTime_EDT = force_tz(as.POSIXct(dateTime, format = "%Y-%m-%d %H:%M:%S"), tzone = "America/New_York"))
+
+# Step 2: Convert to EST (UTC-5) by subtracting 1 hour
+tag42_325 <- tag42_325 %>%
+  mutate(dateTime_EST = dateTime_EDT - hours(1))
+
+# Step 3: Ensure it's set to EST without daylight savings
+tag42_325 <- tag42_325 %>%
+  mutate(dateTime_EST = force_tz(dateTime_EST, tzone = "Etc/GMT+5")) # EST (UTC-5)
+
+# Define the start time as the first day of tracking at Dry Upper
+start_datetime <- as.POSIXct("2024-06-14 00:00:00", tz = "EST")
+
+# Define the last known alive point as a POSIXct object
+last_alive_datetime <- as.POSIXct("2024-07-12 08:51:00", tz = "EST")
+
+# Filter dataset up to and including the last known alive point
+tag42_325 <- tag42_325 %>%
+  filter(dateTime_EST >= start_datetime & dateTime_EST <= last_alive_datetime)
+
+# Filter to only the needed columns going forward
+tag42_325 <- tag42_325 %>%
+    select(temp, dateTime_EST)
+
+# Ensure dateTime is POSIXct and temp is numeric
+tag42_325 <- tag42_325 %>%
+  mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
+         temp = as.numeric(temp))
+
+# Set a common color gradient across all plots (10 to 30 degrees Celsius)
+colorMin <- 10
+colorMax <- 30
+
+# Plot the temperature data
+tag42Plot <- ggplot(tag42_325, aes(x = dateTime_EST, y = temp, color = temp)) +
+  geom_line() +
+  scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
+  labs(title = "Fish 42's Internal Temperature Over Time in Dry Upper", 
+       x = "DateTime", y = "Internal Fish Temperature (°C)") +
+  theme_minimal() +
+  ylim(10, 25)  # Set y-axis limits
+
+# View plot
+tag42Plot
+
+```
+
+# Tag 43 
+
+```{r temp by time visualization for fish 43}
+
+# View latest observation
+latest_observations %>%
+  filter(radioID == "43") %>%
+  slice_head(n = 1) %>%
+  print()
+
+# Read the Excel file
+tag43_309 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTempTagData/43_309.xlsx")
+
+# Rename columns
+tag43_309 <- tag43_309 %>%
+  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+
+# Step 1: Explicitly tell R that the datetime is in EDT
+tag43_309 <- tag43_309 %>%
+  mutate(dateTime_EDT = force_tz(as.POSIXct(dateTime, format = "%Y-%m-%d %H:%M:%S"), tzone = "America/New_York"))
+
+# Step 2: Convert to EST (UTC-5) by subtracting 1 hour
+tag43_309 <- tag43_309 %>%
+  mutate(dateTime_EST = dateTime_EDT - hours(1))
+
+# Step 3: Ensure it's set to EST without daylight savings
+tag43_309 <- tag43_309 %>%
+  mutate(dateTime_EST = force_tz(dateTime_EST, tzone = "Etc/GMT+5")) # EST (UTC-5)
+
+# Define the start time as the first day of tracking at Underhill
+start_datetime <- as.POSIXct("2024-06-12 00:00:00", tz = "EST")
+
+# Define the last known alive point as a POSIXct object
+last_alive_datetime <- as.POSIXct("2024-08-21 10:30:00", tz = "EST")
+
+# Filter dataset up to and including the last known alive point
+tag43_309 <- tag43_309 %>%
+  filter(dateTime_EST >= start_datetime & dateTime_EST <= last_alive_datetime)
+
+# Filter to only the needed columns going forward
+tag43_309 <- tag43_309 %>%
+    select(temp, dateTime_EST)
+
+# Ensure dateTime is POSIXct and temp is numeric
+tag43_309 <- tag43_309 %>%
+  mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
+         temp = as.numeric(temp))
+
+# Set a common color gradient across all plots (10 to 30 degrees Celsius)
+colorMin <- 10
+colorMax <- 30
+
+# Plot the temperature data
+tag43Plot <- ggplot(tag43_309, aes(x = dateTime_EST, y = temp, color = temp)) +
+  geom_line() +
+  scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
+  labs(title = "Fish 43's Internal Temperature Over Time in Underhill", 
+       x = "DateTime", y = "Internal Fish Temperature (°C)") +
+  theme_minimal() +
+  ylim(10, 25)  # Set y-axis limits
+
+# View plot
+tag43Plot
+
+```
+
+# Tag 46.1 
+
+```{r temp by time visualization for fish 46.1}
+
+# View latest observation
+latest_observations %>%
+  filter(radioID == "46.1") %>%
+  slice_head(n = 1) %>%
+  print()
+
+# Read the Excel file
+tag46.1_317 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTempTagData/46.1_317.xlsx")
+
+# Rename columns
+tag46.1_317 <- tag46.1_317 %>%
+  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+
+# Step 1: Explicitly tell R that the datetime is in EDT
+tag46.1_317 <- tag46.1_317 %>%
+  mutate(dateTime_EDT = force_tz(as.POSIXct(dateTime, format = "%Y-%m-%d %H:%M:%S"), tzone = "America/New_York"))
+
+# Step 2: Convert to EST (UTC-5) by subtracting 1 hour
+tag46.1_317 <- tag46.1_317 %>%
+  mutate(dateTime_EST = dateTime_EDT - hours(1))
+
+# Step 3: Ensure it's set to EST without daylight savings
+tag46.1_317 <- tag46.1_317 %>%
+  mutate(dateTime_EST = force_tz(dateTime_EST, tzone = "Etc/GMT+5")) # EST (UTC-5)
+
+# Define the start time as the day after retagging at Dry Upper
+start_datetime <- as.POSIXct("2024-07-19 00:00:00", tz = "EST")
+
+# Define the last known alive point as a POSIXct object
+last_alive_datetime <- as.POSIXct("2024-07-23 07:56:00", tz = "EST")
+
+# Filter dataset up to and including the last known alive point
+tag46.1_317 <- tag46.1_317 %>%
+  filter(dateTime_EST >= start_datetime & dateTime_EST <= last_alive_datetime)
+
+# Filter to only the needed columns going forward
+tag46.1_317 <- tag46.1_317 %>%
+    select(temp, dateTime_EST)
+
+# Ensure dateTime is POSIXct and temp is numeric
+tag46.1_317 <- tag46.1_317 %>%
+  mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
+         temp = as.numeric(temp))
+
+# Set a common color gradient across all plots (10 to 30 degrees Celsius)
+colorMin <- 10
+colorMax <- 30
+
+# Plot the temperature data
+tag46.1Plot <- ggplot(tag46.1_317, aes(x = dateTime_EST, y = temp, color = temp)) +
+  geom_line() +
+  scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
+  labs(title = "Fish 46.1's Internal Temperature Over Time in Dry Upper", 
+       x = "DateTime", y = "Internal Fish Temperature (°C)") +
+  theme_minimal() +
+  ylim(10, 25)  # Set y-axis limits
+
+# View plot
+tag46.1Plot
+
+```
+
+# Tag 46 
+
+```{r temp by time visualization for fish 46}
+
+# View latest observation
+latest_observations %>%
+  filter(radioID == "46") %>%
+  slice_head(n = 1) %>%
+  print()
+
+# Read the Excel file
+tag46_317 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTempTagData/46_317.xlsx")
+
+# Rename columns
+tag46_317 <- tag46_317 %>%
+  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+
+# Step 1: Explicitly tell R that the datetime is in EDT
+tag46_317 <- tag46_317 %>%
+  mutate(dateTime_EDT = force_tz(as.POSIXct(dateTime, format = "%Y-%m-%d %H:%M:%S"), tzone = "America/New_York"))
+
+# Step 2: Convert to EST (UTC-5) by subtracting 1 hour
+tag46_317 <- tag46_317 %>%
+  mutate(dateTime_EST = dateTime_EDT - hours(1))
+
+# Step 3: Ensure it's set to EST without daylight savings
+tag46_317 <- tag46_317 %>%
+  mutate(dateTime_EST = force_tz(dateTime_EST, tzone = "Etc/GMT+5")) # EST (UTC-5)
+
+# Define the start time as the first day of tracking at Dickey
+start_datetime <- as.POSIXct("2024-06-13 00:00:00", tz = "EST")
+
+# Define the last known alive point as a POSIXct object
+last_alive_datetime <- as.POSIXct("2024-06-28 06:49:00", tz = "EST")
+
+# Filter dataset up to and including the last known alive point
+tag46_317 <- tag46_317 %>%
+  filter(dateTime_EST >= start_datetime & dateTime_EST <= last_alive_datetime)
+
+# Filter to only the needed columns going forward
+tag46_317 <- tag46_317 %>%
+    select(temp, dateTime_EST)
+
+# Ensure dateTime is POSIXct and temp is numeric
+tag46_317 <- tag46_317 %>%
+  mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
+         temp = as.numeric(temp))
+
+# Set a common color gradient across all plots (10 to 30 degrees Celsius)
+colorMin <- 10
+colorMax <- 30
+
+# Plot the temperature data
+tag46Plot <- ggplot(tag46_317, aes(x = dateTime_EST, y = temp, color = temp)) +
+  geom_line() +
+  scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
+  labs(title = "Fish 46's Internal Temperature Over Time in Dickey", 
+       x = "DateTime", y = "Internal Fish Temperature (°C)") +
+  theme_minimal() +
+  ylim(10, 25)  # Set y-axis limits
+
+# View plot
+tag46Plot
+
+```
+
+# Tag 52 
+
+```{r temp by time visualization for fish 52}
+
+# View latest observation
+latest_observations %>%
+  filter(radioID == "52") %>%
+  slice_head(n = 1) %>%
+  print()
+
+# Read the Excel file
+tag52_326 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTempTagData/52_326.xlsx")
+
+# Rename columns
+tag52_326 <- tag52_326 %>%
+  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+
+# Step 1: Explicitly tell R that the datetime is in EDT
+tag52_326 <- tag52_326 %>%
+  mutate(dateTime_EDT = force_tz(as.POSIXct(dateTime, format = "%Y-%m-%d %H:%M:%S"), tzone = "America/New_York"))
+
+# Step 2: Convert to EST (UTC-5) by subtracting 1 hour
+tag52_326 <- tag52_326 %>%
+  mutate(dateTime_EST = dateTime_EDT - hours(1))
+
+# Step 3: Ensure it's set to EST without daylight savings
+tag52_326 <- tag52_326 %>%
+  mutate(dateTime_EST = force_tz(dateTime_EST, tzone = "Etc/GMT+5")) # EST (UTC-5)
+
+# Define the start time as the first day of tracking at Dry Upper
+start_datetime <- as.POSIXct("2024-06-14 00:00:00", tz = "EST")
+
+# Define the last known alive point as a POSIXct object
+last_alive_datetime <- as.POSIXct("2024-07-18 08:16:00", tz = "EST")
+
+# Filter dataset up to and including the last known alive point
+tag52_326 <- tag52_326 %>%
+  filter(dateTime_EST >= start_datetime & dateTime_EST <= last_alive_datetime)
+
+# Filter to only the needed columns going forward
+tag52_326 <- tag52_326 %>%
+    select(temp, dateTime_EST)
+
+# Ensure dateTime is POSIXct and temp is numeric
+tag52_326 <- tag52_326 %>%
+  mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
+         temp = as.numeric(temp))
+
+# Set a common color gradient across all plots (10 to 30 degrees Celsius)
+colorMin <- 10
+colorMax <- 30
+
+# Plot the temperature data
+tag52Plot <- ggplot(tag52_326, aes(x = dateTime_EST, y = temp, color = temp)) +
+  geom_line() +
+  scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
+  labs(title = "Fish 52's Internal Temperature Over Time in Dry Upper", 
+       x = "DateTime", y = "Internal Fish Temperature (°C)") +
+  theme_minimal() +
+  ylim(10, 25)  # Set y-axis limits
+
+# View plot
+tag52Plot
+
+```
+
+# Tag 54
+
+```{r temp by time visualization for fish 54}
+
+# View latest observation
+latest_observations %>%
+  filter(radioID == "54") %>%
+  slice_head(n = 1) %>%
+  print()
+
+# Read the Excel file
+tag54_328 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTempTagData/54_328.xlsx")
+
+# Rename columns
+tag54_328 <- tag54_328 %>%
+  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+
+# Step 1: Explicitly tell R that the datetime is in EDT
+tag54_328 <- tag54_328 %>%
+  mutate(dateTime_EDT = force_tz(as.POSIXct(dateTime, format = "%Y-%m-%d %H:%M:%S"), tzone = "America/New_York"))
+
+# Step 2: Convert to EST (UTC-5) by subtracting 1 hour
+tag54_328 <- tag54_328 %>%
+  mutate(dateTime_EST = dateTime_EDT - hours(1))
+
+# Step 3: Ensure it's set to EST without daylight savings
+tag54_328 <- tag54_328 %>%
+  mutate(dateTime_EST = force_tz(dateTime_EST, tzone = "Etc/GMT+5")) # EST (UTC-5)
+
+# Define the start time as the first day of tracking at Dry Upper
+start_datetime <- as.POSIXct("2024-06-14 00:00:00", tz = "EST")
+
+# Define the last known alive point as a POSIXct object
+last_alive_datetime <- as.POSIXct("2024-08-22 08:28:00", tz = "EST")
+
+# Filter dataset up to and including the last known alive point
+tag54_328 <- tag54_328 %>%
+  filter(dateTime_EST >= start_datetime & dateTime_EST <= last_alive_datetime)
+
+# Filter to only the needed columns going forward
+tag54_328 <- tag54_328 %>%
+    select(temp, dateTime_EST)
+
+# Ensure dateTime is POSIXct and temp is numeric
+tag54_328 <- tag54_328 %>%
+  mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
+         temp = as.numeric(temp))
+
+# Set a common color gradient across all plots (10 to 30 degrees Celsius)
+colorMin <- 10
+colorMax <- 30
+
+# Plot the temperature data
+tag54Plot <- ggplot(tag54_328, aes(x = dateTime_EST, y = temp, color = temp)) +
+  geom_line() +
+  scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
+  labs(title = "Fish 54's Internal Temperature Over Time in Dry Upper", 
+       x = "DateTime", y = "Internal Fish Temperature (°C)") +
+  theme_minimal() +
+  ylim(10, 25)  # Set y-axis limits
+
+# View plot
+tag54Plot
+
+```
+
+# Tag 57 
+
+```{r temp by time visualization for fish 57}
+
+# View latest observation
+latest_observations %>%
+  filter(radioID == "57") %>%
+  slice_head(n = 1) %>%
+  print()
+
+# Read the Excel file
+tag57_337 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTempTagData/57_337.xlsx")
+
+# Rename columns
+tag57_337 <- tag57_337 %>%
+  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+
+# Step 1: Explicitly tell R that the datetime is in EDT
+tag57_337 <- tag57_337 %>%
+  mutate(dateTime_EDT = force_tz(as.POSIXct(dateTime, format = "%Y-%m-%d %H:%M:%S"), tzone = "America/New_York"))
+
+# Step 2: Convert to EST (UTC-5) by subtracting 1 hour
+tag57_337 <- tag57_337 %>%
+  mutate(dateTime_EST = dateTime_EDT - hours(1))
+
+# Step 3: Ensure it's set to EST without daylight savings
+tag57_337 <- tag57_337 %>%
+  mutate(dateTime_EST = force_tz(dateTime_EST, tzone = "Etc/GMT+5")) # EST (UTC-5)
+
+# Define the start time as the first day of tracking at Amethyst
+start_datetime <- as.POSIXct("2024-06-11 00:00:00", tz = "EST")
+
+# Define the last known alive point as a POSIXct object
+last_alive_datetime <- as.POSIXct("2024-07-31 05:58:00", tz = "EST")
+
+# Filter dataset up to and including the last known alive point
+tag57_337 <- tag57_337 %>%
+  filter(dateTime_EST >= start_datetime & dateTime_EST <= last_alive_datetime)
+
+# Filter to only the needed columns going forward
+tag57_337 <- tag57_337 %>%
+    select(temp, dateTime_EST)
+
+# Ensure dateTime is POSIXct and temp is numeric
+tag57_337 <- tag57_337 %>%
+  mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
+         temp = as.numeric(temp))
+
+# Set a common color gradient across all plots (10 to 30 degrees Celsius)
+colorMin <- 10
+colorMax <- 30
+
+# Plot the temperature data
+tag57Plot <- ggplot(tag57_337, aes(x = dateTime_EST, y = temp, color = temp)) +
+  geom_line() +
+  scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
+  labs(title = "Fish 57's Internal Temperature Over Time in Amethyst", 
+       x = "DateTime", y = "Internal Fish Temperature (°C)") +
+  theme_minimal() +
+  ylim(10, 25)  # Set y-axis limits
+
+# View plot
+tag57Plot
+
+```
+
+# Tag 60 
+
+```{r temp by time visualization for fish 60}
+
+# View latest observation
+latest_observations %>%
+  filter(radioID == "60") %>%
+  slice_head(n = 1) %>%
+  print()
+
+# Read the Excel file
+tag60_338 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTempTagData/60_338.xlsx")
+
+# Rename columns
+tag60_338 <- tag60_338 %>%
+  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+
+# Step 1: Explicitly tell R that the datetime is in EDT
+tag60_338 <- tag60_338 %>%
+  mutate(dateTime_EDT = force_tz(as.POSIXct(dateTime, format = "%Y-%m-%d %H:%M:%S"), tzone = "America/New_York"))
+
+# Step 2: Convert to EST (UTC-5) by subtracting 1 hour
+tag60_338 <- tag60_338 %>%
+  mutate(dateTime_EST = dateTime_EDT - hours(1))
+
+# Step 3: Ensure it's set to EST without daylight savings
+tag60_338 <- tag60_338 %>%
+  mutate(dateTime_EST = force_tz(dateTime_EST, tzone = "Etc/GMT+5")) # EST (UTC-5)
+
+# Define the start time as the first day of tracking at Amethyst
+start_datetime <- as.POSIXct("2024-06-11 00:00:00", tz = "EST")
+
+# Define the last known alive point as a POSIXct object
+last_alive_datetime <- as.POSIXct("2024-08-20 11:41:00", tz = "EST")
+
+# Filter dataset up to and including the last known alive point
+tag60_338 <- tag60_338 %>%
+  filter(dateTime_EST >= start_datetime & dateTime_EST <= last_alive_datetime)
+
+# Filter to only the needed columns going forward
+tag60_338 <- tag60_338 %>%
+    select(temp, dateTime_EST)
+
+# Ensure dateTime is POSIXct and temp is numeric
+tag60_338 <- tag60_338 %>%
+  mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
+         temp = as.numeric(temp))
+
+# Set a common color gradient across all plots (10 to 30 degrees Celsius)
+colorMin <- 10
+colorMax <- 30
+
+# Plot the temperature data
+tag60Plot <- ggplot(tag60_338, aes(x = dateTime_EST, y = temp, color = temp)) +
+  geom_line() +
+  scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
+  labs(title = "Fish 60's Internal Temperature Over Time in Amethyst", 
+       x = "DateTime", y = "Internal Fish Temperature (°C)") +
+  theme_minimal() +
+  ylim(10, 25)  # Set y-axis limits
+
+# View plot
+tag60Plot
+
+```
+
+# Tag 62 
+
+```{r temp by time visualization for fish 62}
+
+# View latest observation
+latest_observations %>%
+  filter(radioID == "62") %>%
+  slice_head(n = 1) %>%
+  print()
+
+# Read the Excel file
+tag62_334 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTempTagData/62_334.xlsx")
+
+# Rename columns
+tag62_334 <- tag62_334 %>%
+  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+
+# Step 1: Explicitly tell R that the datetime is in EDT
+tag62_334 <- tag62_334 %>%
+  mutate(dateTime_EDT = force_tz(as.POSIXct(dateTime, format = "%Y-%m-%d %H:%M:%S"), tzone = "America/New_York"))
+
+# Step 2: Convert to EST (UTC-5) by subtracting 1 hour
+tag62_334 <- tag62_334 %>%
+  mutate(dateTime_EST = dateTime_EDT - hours(1))
+
+# Step 3: Ensure it's set to EST without daylight savings
+tag62_334 <- tag62_334 %>%
+  mutate(dateTime_EST = force_tz(dateTime_EST, tzone = "Etc/GMT+5")) # EST (UTC-5)
+
+# Define the start time as the first day of tracking at Amethyst
+start_datetime <- as.POSIXct("2024-06-11 00:00:00", tz = "EST")
+
+# Define the last known alive point as a POSIXct object
+last_alive_datetime <- as.POSIXct("2024-08-23 10:50:00", tz = "EST")
+
+# Filter dataset up to and including the last known alive point
+tag62_334 <- tag62_334 %>%
+  filter(dateTime_EST >= start_datetime & dateTime_EST <= last_alive_datetime)
+
+# Filter to only the needed columns going forward
+tag62_334 <- tag62_334 %>%
+    select(temp, dateTime_EST)
+
+# Ensure dateTime is POSIXct and temp is numeric
+tag62_334 <- tag62_334 %>%
+  mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
+         temp = as.numeric(temp))
+
+# Set a common color gradient across all plots (10 to 30 degrees Celsius)
+colorMin <- 10
+colorMax <- 30
+
+# Plot the temperature data
+tag62Plot <- ggplot(tag62_334, aes(x = dateTime_EST, y = temp, color = temp)) +
+  geom_line() +
+  scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
+  labs(title = "Fish 62's Internal Temperature Over Time in Amethyst", 
+       x = "DateTime", y = "Internal Fish Temperature (°C)") +
+  theme_minimal() +
+  ylim(10, 30)  # Set y-axis limits
+
+# View plot
+tag62Plot
+
+```
+
+
+
+
+

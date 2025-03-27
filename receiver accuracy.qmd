@@ -234,6 +234,20 @@ ggplot(receiver_only, aes(x = power, y = river_dist_diff)) +
   theme_minimal()
 
 ```
+```{r Visualize Accuracy vs. Receiver Power Logarithmically}
+ggplot(receiver_only, aes(x = power, y = river_dist_diff)) +
+  geom_point(alpha = 0.5, color = "blue") +
+  geom_smooth(method = "loess", color = "red", se = TRUE) +  # Smoothed trend line
+  scale_y_log10() +  # Log-transform the y-axis
+  labs(
+    title = "Underhill: Receiver Power vs. River Distance Error (Logarithmic)",
+    x = "Receiver Power",
+    y = "Distance from iPad Point (log scale, meters)",
+    subtitle = "Smoothed trend line (LOESS) with confidence intervals"
+  ) +
+  theme_minimal()
+```
+
 ```{r Find the Receiver Power Cutoff}
 # To determine the power threshold where receiver accuracy declines, calculate mean error per power level
 receiver_only <- receiver_only %>%
@@ -450,6 +464,20 @@ ggplot(receiver_only, aes(x = power, y = river_dist_diff)) +
   theme_minimal()
 
 ```
+```{r Visualize Accuracy vs. Receiver Power Logarithmically}
+ggplot(receiver_only, aes(x = power, y = river_dist_diff)) +
+  geom_point(alpha = 0.5, color = "blue") +
+  geom_smooth(method = "loess", color = "red", se = TRUE) +  # Smoothed trend line
+  scale_y_log10() +  # Log-transform the y-axis
+  labs(
+    title = "Dickey: Receiver Power vs. River Distance Error (Logarithmic)",
+    x = "Receiver Power",
+    y = "Distance from iPad Point (log scale, meters)",
+    subtitle = "Smoothed trend line (LOESS) with confidence intervals"
+  ) +
+  theme_minimal()
+```
+
 ```{r Find the Receiver Power Cutoff}
 # To determine the power threshold where receiver accuracy declines, calculate mean error per power level
 receiver_only <- receiver_only %>%
@@ -667,6 +695,20 @@ ggplot(receiver_only, aes(x = power, y = river_dist_diff)) +
   theme_minimal()
 
 ```
+```{r Visualize Accuracy vs. Receiver Power Logarithmically}
+ggplot(receiver_only, aes(x = power, y = river_dist_diff)) +
+  geom_point(alpha = 0.5, color = "blue") +
+  geom_smooth(method = "loess", color = "red", se = TRUE) +  # Smoothed trend line
+  scale_y_log10() +  # Log-transform the y-axis
+  labs(
+    title = "Dry: Receiver Power vs. River Distance Error (Logarithmic)",
+    x = "Receiver Power",
+    y = "Distance from iPad Point (log scale, meters)",
+    subtitle = "Smoothed trend line (LOESS) with confidence intervals"
+  ) +
+  theme_minimal()
+```
+
 ```{r Find the Receiver Power Cutoff}
 # To determine the power threshold where receiver accuracy declines, calculate mean error per power level
 receiver_only <- receiver_only %>%
@@ -885,6 +927,21 @@ ggplot(receiver_only, aes(x = power, y = river_dist_diff)) +
   theme_minimal()
 
 ```
+```{r Visualize Accuracy vs. Receiver Power Logarithmically}
+ggplot(receiver_only, aes(x = power, y = river_dist_diff)) +
+  geom_point(alpha = 0.5, color = "blue") +
+  geom_smooth(method = "loess", color = "red", se = TRUE) +  # Smoothed trend line
+  scale_y_log10() +  # Log-transform the y-axis
+  labs(
+    title = "Amethyst: Receiver Power vs. River Distance Error (Logarithmic)",
+    x = "Receiver Power",
+    y = "Distance from iPad Point (log scale, meters)",
+    subtitle = "Smoothed trend line (LOESS) with confidence intervals"
+  ) +
+  theme_minimal()
+```
+
+
 ```{r Find the Receiver Power Cutoff}
 # To determine the power threshold where receiver accuracy declines, calculate mean error per power level
 receiver_only <- receiver_only %>%
@@ -969,6 +1026,20 @@ ggplot(power_error_summary, aes(x = power, y = mean_distance_error)) +
   ) +
   theme_minimal()
 ```
+```{r Visualizing logarithmic error}
+ggplot(power_error_summary, aes(x = power, y = mean_distance_error)) +
+  geom_point(aes(size = n), alpha = 0.6, color = "blue") +
+  geom_smooth(method = "loess", color = "red", se = TRUE) +  # Smoothed trend line
+  scale_y_log10() +  # Log-transform the y-axis
+  labs(
+    title = "Underhill: Mean Distance Error by Receiver Power (Logarithmic)",
+    x = "Receiver Power",
+    y = "Mean Distance Error (log scale, meters)",
+    subtitle = "Smoothed trend line (LOESS) with confidence intervals"
+  ) +
+  theme_minimal()
+```
+
 ```{r Visualizing Standardized Error}
 # Plot the standardized mean distance error by receiver power
 ggplot(power_error_summary, aes(x = power, y = standardized_error)) +
@@ -1024,6 +1095,20 @@ ggplot(power_error_summary, aes(x = power, y = mean_distance_error)) +
   ) +
   theme_minimal()
 ```
+```{r Visualizing logarithmic error}
+ggplot(power_error_summary, aes(x = power, y = mean_distance_error)) +
+  geom_point(aes(size = n), alpha = 0.6, color = "blue") +
+  geom_smooth(method = "loess", color = "red", se = TRUE) +  # Smoothed trend line
+  scale_y_log10() +  # Log-transform the y-axis
+  labs(
+    title = "Dickey: Mean Distance Error by Receiver Power (Logarithmic)",
+    x = "Receiver Power",
+    y = "Mean Distance Error (log scale, meters)",
+    subtitle = "Smoothed trend line (LOESS) with confidence intervals"
+  ) +
+  theme_minimal()
+```
+
 ```{r Visualizing Standardized Error}
 # Plot the standardized mean distance error by receiver power
 ggplot(power_error_summary, aes(x = power, y = standardized_error)) +
@@ -1081,6 +1166,20 @@ ggplot(power_error_summary, aes(x = power, y = mean_distance_error)) +
   ) +
   theme_minimal()
 ```
+```{r Visualizing logarithmic error}
+ggplot(power_error_summary, aes(x = power, y = mean_distance_error)) +
+  geom_point(aes(size = n), alpha = 0.6, color = "blue") +
+  geom_smooth(method = "loess", color = "red", se = TRUE) +  # Smoothed trend line
+  scale_y_log10() +  # Log-transform the y-axis
+  labs(
+    title = "Dry: Mean Distance Error by Receiver Power (Logarithmic)",
+    x = "Receiver Power",
+    y = "Mean Distance Error (log scale, meters)",
+    subtitle = "Smoothed trend line (LOESS) with confidence intervals"
+  ) +
+  theme_minimal()
+```
+
 ```{r Visualizing Standardized Error}
 # Plot the standardized mean distance error by receiver power
 ggplot(power_error_summary, aes(x = power, y = standardized_error)) +
@@ -1138,6 +1237,21 @@ ggplot(power_error_summary, aes(x = power, y = mean_distance_error)) +
   ) +
   theme_minimal()
 ```
+```{r Visualizing logarithmic error}
+ggplot(power_error_summary, aes(x = power, y = mean_distance_error)) +
+  geom_point(aes(size = n), alpha = 0.6, color = "blue") +
+  geom_smooth(method = "loess", color = "red", se = TRUE) +  # Smoothed trend line
+  scale_y_log10() +  # Log-transform the y-axis
+  labs(
+    title = "Amethyst: Mean Distance Error by Receiver Power (Logarithmic)",
+    x = "Receiver Power",
+    y = "Mean Distance Error (log scale, meters)",
+    subtitle = "Smoothed trend line (LOESS) with confidence intervals"
+  ) +
+  theme_minimal()
+```
+
+
 ```{r Visualizing Standardized Error}
 # Plot the standardized mean distance error by receiver power
 ggplot(power_error_summary, aes(x = power, y = standardized_error)) +

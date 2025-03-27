@@ -1,5 +1,5 @@
 ---
-title: "distance_moved_iPad"
+title: "distance_moved_3.0"
 ---
 
 ##################################################
@@ -47,25 +47,22 @@ underhill_flowlines <- lines <- st_read("C:/Users/jpilchik/OneDrive - DOI/Docume
 st_crs(underhill_flowlines) # This just checks to make sure that your lines are in GCS NAD83
 underhill_flowlines <- st_transform(underhill_flowlines, 26918) # Projects to UTM Zone 18N (the code for this is 26918)
 
-# Subdivide the river lines into finer segments (e.g., 0.5-meter resolution)
-underhill_flowlines_fine <- st_segmentize(underhill_flowlines, dfMaxLength = 0.5)
-
 ## Please read note before running next line! Comment the next line out if you already reprojected the raw shapefile.
-#st_write(underhill_flowlines_fine, "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles/NHDFlowline_UnderhillBrook_UTMZONE18N_Finer.shp") #Once you run this, it will add a new shapefile to your "shapefiles" folder! It will give you a warning if it's already done. I did it for underhill already, but you'll need to repeat this process for each watershed. 
+#st_write(underhill_flowlines, "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles/NHDFlowline_UnderhillBrook_UTMZONE18N.shp") #Once you run this, it will add a new shapefile to your "shapefiles" folder! It will give you a warning if it's already done. I did it for underhill already, but you'll need to repeat this process for each watershed. 
 
 
-underhill_flowlines_fine_UTMZONE18N <- line2network(path = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles", # Points to the folder in your R Project folder
-                                    layer = "NHDFlowline_UnderhillBrook_UTMZONE18N_Finer", # Identifies the shapefile you want to pull from folder
-                                    tolerance = 1) # This is the spatial tolerance used to determine connectivity between line segments) 
+underhill_flowlines_UTMZONE18N <- line2network(path = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles", # Points to the folder in your R Project folder
+                                    layer = "NHDFlowline_UnderhillBrook_UTMZONE18N", # Identifies the shapefile you want to pull from folder
+                                    tolerance = 10) # This is the spatial tolerance used to determine connectivity between line segments) 
 
 
-plot(x=underhill_flowlines_fine_UTMZONE18N) # checks imported line
-topologydots(rivers = underhill_flowlines_fine_UTMZONE18N) # checks line topology
+plot(x=underhill_flowlines_UTMZONE18N) # checks imported line
+topologydots(rivers = underhill_flowlines_UTMZONE18N) # checks line topology
 
 # Setting the MOUTH of your watershed allows you to look at directional movement. The "seg = " value will be the segment that includes your mouth, which you can observe in the plot function above. In Underhill, it's segment 46. The "vert = " value identifies the correct node of that segment. Using "showends" on the segment you want will show you what vertex to select.
-plot(x=underhill_flowlines_fine_UTMZONE18N)
-showends(seg = 46, rivers = underhill_flowlines_fine_UTMZONE18N) # identifies the true mouth of your watershed
-underhill_mouth <- setmouth(seg = 46, vert = 547, rivers = underhill_flowlines_fine_UTMZONE18N) # sets the mouth to the segment and vertex you need.
+plot(x=underhill_flowlines_UTMZONE18N)
+showends(seg = 46, rivers = underhill_flowlines_UTMZONE18N) # identifies the true mouth of your watershed
+underhill_mouth <- setmouth(seg = 46, vert = 4, rivers = underhill_flowlines_UTMZONE18N) # sets the mouth to the segment and vertex you need.
 
 ```
 
@@ -91,12 +88,12 @@ res_underhill <- as.data.frame(res_underhill)
 res_underhill <- res_underhill %>% 
   rename(POINT_X = coords.x1, POINT_Y = coords.x2) %>%  # Rename coords.x1 and coords.x2
   mutate(Rownumber =row_number())
-underhill_segvert <- xy2segvert(x = res_underhill$POINT_X, y = res_underhill$POINT_Y, rivers = underhill_flowlines_fine_UTMZONE18N) # change the "res$" to your X and Y coord columns
+underhill_segvert <- xy2segvert(x = res_underhill$POINT_X, y = res_underhill$POINT_Y, rivers = underhill_flowlines_UTMZONE18N) # change the "res$" to your X and Y coord columns
   
 ## Display raw points (red dots) and snapped points (blue). Run these three lines all at once
-plot(x= underhill_flowlines_fine_UTMZONE18N)
+plot(x= underhill_flowlines_UTMZONE18N)
 points(res_underhill$POINT_X, res_underhill$POINT_Y, pch=16, col="red") # shows raw points
-riverpoints(seg = underhill_segvert$seg, vert = underhill_segvert$vert, rivers = underhill_flowlines_fine_UTMZONE18N, pch = 15, col="blue")
+riverpoints(seg = underhill_segvert$seg, vert = underhill_segvert$vert, rivers = underhill_flowlines_UTMZONE18N, pch = 15, col="blue")
 
 
 ```
@@ -105,11 +102,60 @@ riverpoints(seg = underhill_segvert$seg, vert = underhill_segvert$vert, rivers =
 hist(underhill_segvert$snapdist, main="snapping distance (m)")
 ```
 ```{r displaying point data in river locations}
-zoomtoseg(seg=c(6, 44, 18), rivers= underhill_flowlines_fine_UTMZONE18N)
+zoomtoseg(seg=c(6, 44, 18), rivers= underhill_flowlines_UTMZONE18N)
 points(res_underhill$POINT_X, res_underhill$POINT_Y, pch=16, col="red")
-riverpoints(seg=underhill_segvert$seg, vert=underhill_segvert$vert, rivers= underhill_flowlines_fine_UTMZONE18N, 
+riverpoints(seg=underhill_segvert$seg, vert=underhill_segvert$vert, rivers= underhill_flowlines_UTMZONE18N, 
             pch=15, 
             col="blue")
+```
+```{r}
+underhill_flowlines_trim <- trimriver(trimto=c(13,6,40,18,25,44,12), rivers=underhill_flowlines_UTMZONE18N)
+plot(x=underhill_flowlines_trim)
+
+# Adding vertices every 1 meter to the river network
+underhill_flowlines_split <- addverts(underhill_flowlines_trim, mindist=1)
+plot(x=underhill_flowlines_split)
+
+# Checking connectedness
+topologydots(rivers=underhill_flowlines_split)
+
+# Setting the MOUTH of your watershed allows you to look at directional movement. The "seg = " value will be the segment that includes your mouth, which you can observe in the plot function above. In Underhill, it's segment 46. The "vert = " value identifies the correct node of that segment. Using "showends" on the segment you want will show you what vertex to select.
+showends(seg = 6, rivers = underhill_flowlines_split) # identifies the true mouth of your watershed
+underhill_mouth <- setmouth(seg = 6, vert = 452, rivers = underhill_flowlines_split) # sets the mouth to the segment and vertex you need.
+
+# Cleaning up river network
+#underhill_flowlines_fixed <- cleanup(underhill_flowlines_split)  # fixing many problems
+
+# read in your fish points and filter by the watershed you're looking at. Make sure to have X and Y columns available in decimal degrees
+
+# Keep only points from "UNDERHILL" and also remove rows where lat or lon are NA
+underhill_points <- tracking_data_locations %>%
+  filter(river == "UNDERHILL" & !is.na(lon) & !is.na(lat))
+
+# Make Lat Lon columns numeric
+
+underhill_points_spatial <- underhill_points %>% 
+  mutate(POINT_Y = as.numeric(lat)) %>% # change to whatever your Y coord column is
+  mutate(POINT_X = as.numeric(lon)) # change to whatever your X coord column is
+coordinates(underhill_points_spatial) <- c("POINT_X","POINT_Y") # identifies the coordinate columns
+proj4string(underhill_points_spatial) <- CRS("+proj=longlat +datum=WGS84") 
+res_underhill <- spTransform(underhill_points_spatial, CRS("+proj=utm +zone=18 +ellps=WGS84")) # reprojects the points to UTM ZONE 18
+as(res_underhill, "SpatialPoints")
+res_underhill <- as.data.frame(res_underhill)
+res_underhill <- res_underhill %>% 
+  rename(POINT_X = coords.x1, POINT_Y = coords.x2) %>%  # Rename coords.x1 and coords.x2
+  mutate(Rownumber =row_number())
+underhill_segvert <- xy2segvert(x = res_underhill$POINT_X, y = res_underhill$POINT_Y, rivers = underhill_flowlines_split) # change the "res$" to your X and Y coord columns
+  
+## Display raw points (red dots) and snapped points (blue). Run these three lines all at once
+plot(x= underhill_flowlines_split)
+points(res_underhill$POINT_X, res_underhill$POINT_Y, pch=16, col="red") # shows raw points
+riverpoints(seg = underhill_segvert$seg, vert = underhill_segvert$vert, rivers = underhill_flowlines_split, pch = 15, col="blue")
+
+
+```
+```{r snapping distance}
+hist(underhill_segvert$snapdist, main="snapping distance (m)")
 ```
 
 ```{r prepare for and calculate distance moved}
@@ -159,7 +205,7 @@ for (fish in unique(underhill_locations$radioID)) {
       # Calculate distance
       dist <- riverdistance(startseg = from_seg, startvert = from_vert, 
                             endseg = to_seg, endvert = to_vert, 
-                            rivers = underhill_flowlines_fine_UTMZONE18N, stopiferror = FALSE)
+                            rivers = underhill_flowlines_split, stopiferror = FALSE)
       
       # Store the result
       underhill_locations$distMoved_m[underhill_locations$radioID == fish & underhill_locations$trackedTime_EST == fish_data$trackedTime_EST[i]] <- dist
@@ -175,7 +221,7 @@ underhill_locations$distMoved_m[is.na(underhill_locations$distMoved_m)] <- 0
 ```{r histogram of distance moved}
 hist(underhill_locations$distMoved_m, main="distance moved (m)")
 ```
-######################################
+
 ```{r}
 underhill_locations <- underhill_locations %>%
   group_by(radioID) %>%
@@ -183,13 +229,11 @@ underhill_locations <- underhill_locations %>%
   mutate(observation = row_number()) %>%
   ungroup()
 
-seqbysurvey <- riverdistanceseq(unique=underhill_locations$radioID, survey=underhill_locations$observation,
-      seg=underhill_locations$seg, vert=underhill_locations$vert, rivers=underhill_flowlines_fine_UTMZONE18N)
-seqbysurvey
-plotseq(seqbysurvey)
+underhill_seqbysurvey <- riverdistanceseq(unique=underhill_locations$radioID, survey=underhill_locations$observation,
+      seg=underhill_locations$seg, vert=underhill_locations$vert, rivers=underhill_flowlines_split)
+underhill_seqbysurvey
+plotseq(underhill_seqbysurvey)
 ```
-
-######################################
 
 ### Dickey Brook
 
@@ -201,25 +245,22 @@ dickey_flowlines <- lines <- st_read("C:/Users/jpilchik/OneDrive - DOI/Documents
 st_crs(dickey_flowlines) # This just checks to make sure that your lines are in GCS NAD83
 dickey_flowlines <- st_transform(dickey_flowlines, 26918) # Projects to UTM Zone 18N (the code for this is 26918)
 
-# Subdivide the river lines into finer segments (e.g., 0.5-meter resolution)
-dickey_flowlines_fine <- st_segmentize(dickey_flowlines, dfMaxLength = 0.5)
-
 ## Please read note before running next line! Comment the next line out if you already reprojected the raw shapefile.
-#st_write(dickey_flowlines_fine, "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles/NHDFlowline_DickeyBrook_UTMZONE18N_Finer.shp") #Once you run this, it will add a new shapefile to your "shapefiles" folder! It will give you a warning if it's already done. I did it for underhill already, but you'll need to repeat this process for each watershed. 
+#st_write(dickey_flowlines, "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles/NHDFlowline_DickeyBrook_UTMZONE18N.shp") #Once you run this, it will add a new shapefile to your "shapefiles" folder! It will give you a warning if it's already done. I did it for underhill already, but you'll need to repeat this process for each watershed. 
 
 
-dickey_flowlines_fine_UTMZONE18N <- line2network(path = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles", # Points to the folder in your R Project folder
-                                    layer = "NHDFlowline_DickeyBrook_UTMZONE18N_Finer", # Identifies the shapefile you want to pull from folder
-                                    tolerance = 1) # This is the spatial tolerance used to determine connectivity between line segments) 
+dickey_flowlines_UTMZONE18N <- line2network(path = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles", # Points to the folder in your R Project folder
+                                    layer = "NHDFlowline_DickeyBrook_UTMZONE18N", # Identifies the shapefile you want to pull from folder
+                                    tolerance = 10) # This is the spatial tolerance used to determine connectivity between line segments) 
 
 
-plot(x=dickey_flowlines_fine_UTMZONE18N) # checks imported line
-topologydots(rivers = dickey_flowlines_fine_UTMZONE18N) # checks line topology
+plot(x=dickey_flowlines_UTMZONE18N) # checks imported line
+topologydots(rivers = dickey_flowlines_UTMZONE18N) # checks line topology
 
 # Setting the MOUTH of your watershed allows you to look at directional movement. The "seg = " value will be the segment that includes your mouth, which you can observe in the plot function above. In Underhill, it's segment 46. The "vert = " value identifies the correct node of that segment. Using "showends" on the segment you want will show you what vertex to select.
-plot(x=dickey_flowlines_fine_UTMZONE18N)
-showends(seg = 43, rivers = dickey_flowlines_fine_UTMZONE18N) # identifies the true mouth of your watershed
-dickey_mouth <- setmouth(seg = 43, vert = 615, rivers = dickey_flowlines_fine_UTMZONE18N) # sets the mouth to the segment and vertex you need.
+plot(x=dickey_flowlines_UTMZONE18N)
+showends(seg = 42, rivers = dickey_flowlines_UTMZONE18N) # identifies the true mouth of your watershed
+dickey_mouth <- setmouth(seg = 42, vert = 19, rivers = dickey_flowlines_UTMZONE18N) # sets the mouth to the segment and vertex you need.
 
 ```
 
@@ -245,12 +286,12 @@ res_dickey <- as.data.frame(res_dickey)
 res_dickey <- res_dickey %>% 
   rename(POINT_X = coords.x1, POINT_Y = coords.x2) %>%  # Rename coords.x1 and coords.x2
   mutate(Rownumber =row_number())
-dickey_segvert <- xy2segvert(x = res_dickey$POINT_X, y = res_dickey$POINT_Y, rivers = dickey_flowlines_fine_UTMZONE18N) # change the "res$" to your X and Y coord columns
+dickey_segvert <- xy2segvert(x = res_dickey$POINT_X, y = res_dickey$POINT_Y, rivers = dickey_flowlines_UTMZONE18N) # change the "res$" to your X and Y coord columns
   
 ## Display raw points (red dots) and snapped points (blue). Run these three lines all at once
-plot(x= dickey_flowlines_fine_UTMZONE18N)
+plot(x= dickey_flowlines_UTMZONE18N)
 points(res_dickey$POINT_X, res_dickey$POINT_Y, pch=16, col="red") # shows raw points
-riverpoints(seg = dickey_segvert$seg, vert = dickey_segvert$vert, rivers = dickey_flowlines_fine_UTMZONE18N, pch = 15, col="blue")
+riverpoints(seg = dickey_segvert$seg, vert = dickey_segvert$vert, rivers = dickey_flowlines_UTMZONE18N, pch = 15, col="blue")
 
 
 ```
@@ -259,9 +300,9 @@ hist(dickey_segvert$snapdist, main="snapping distance (m)")
 ```
 
 ```{r displaying point data in river locations}
-zoomtoseg(seg=c(43, 8, 86), rivers= dickey_flowlines_fine_UTMZONE18N)
+zoomtoseg(seg=c(42, 8, 83), rivers= dickey_flowlines_UTMZONE18N)
 points(res_dickey$POINT_X, res_dickey$POINT_Y, pch=16, col="red")
-riverpoints(seg=dickey_segvert$seg, vert=dickey_segvert$vert, rivers= dickey_flowlines_fine_UTMZONE18N, 
+riverpoints(seg=dickey_segvert$seg, vert=dickey_segvert$vert, rivers= dickey_flowlines_UTMZONE18N, 
             pch=15, 
             col="blue")
 ```
@@ -313,7 +354,7 @@ for (fish in unique(dickey_locations$radioID)) {
       # Calculate distance
       dist <- riverdistance(startseg = from_seg, startvert = from_vert, 
                             endseg = to_seg, endvert = to_vert, 
-                            rivers = dickey_flowlines_fine_UTMZONE18N, stopiferror = FALSE)
+                            rivers = dickey_flowlines_UTMZONE18N, stopiferror = FALSE)
       
       # Store the result
       dickey_locations$distMoved_m[dickey_locations$radioID == fish & dickey_locations$trackedTime_EST == fish_data$trackedTime_EST[i]] <- dist
@@ -340,25 +381,22 @@ dry_flowlines <- lines <- st_read("C:/Users/jpilchik/OneDrive - DOI/Documents/My
 st_crs(dry_flowlines) # This just checks to make sure that your lines are in GCS NAD83
 dry_flowlines <- st_transform(dry_flowlines, 26918) # Projects to UTM Zone 18N (the code for this is 26918)
 
-# Subdivide the river lines into finer segments (e.g., 0.5-meter resolution)
-dry_flowlines_fine <- st_segmentize(dry_flowlines, dfMaxLength = 0.5)
-
 ## Please read note before running next line! Comment the next line out if you already reprojected the raw shapefile.
-#st_write(dry_flowlines_fine, "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles/NHDFlowline_DryBrook_UTMZONE18N_Finer.shp") #Once you run this, it will add a new shapefile to your "shapefiles" folder! It will give you a warning if it's already done. I did it for underhill already, but you'll need to repeat this process for each watershed. 
+#st_write(dry_flowlines, "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles/NHDFlowline_DryBrook_UTMZONE18N.shp") #Once you run this, it will add a new shapefile to your "shapefiles" folder! It will give you a warning if it's already done. I did it for underhill already, but you'll need to repeat this process for each watershed. 
 
 
-dry_flowlines_fine_UTMZONE18N <- line2network(path = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles", # Points to the folder in your R Project folder
-                                    layer = "NHDFlowline_DryBrook_UTMZONE18N_Finer", # Identifies the shapefile you want to pull from folder
-                                    tolerance = 1) # This is the spatial tolerance used to determine connectivity between line segments) 
+dry_flowlines_UTMZONE18N <- line2network(path = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles", # Points to the folder in your R Project folder
+                                    layer = "NHDFlowline_DryBrook_UTMZONE18N", # Identifies the shapefile you want to pull from folder
+                                    tolerance = 10) # This is the spatial tolerance used to determine connectivity between line segments) 
 
 
-plot(x=dry_flowlines_fine_UTMZONE18N) # checks imported line
-topologydots(rivers = dry_flowlines_fine_UTMZONE18N) # checks line topology
+plot(x=dry_flowlines_UTMZONE18N) # checks imported line
+topologydots(rivers = dry_flowlines_UTMZONE18N) # checks line topology
 
 # Setting the MOUTH of your watershed allows you to look at directional movement. The "seg = " value will be the segment that includes your mouth, which you can observe in the plot function above. In Underhill, it's segment 46. The "vert = " value identifies the correct node of that segment. Using "showends" on the segment you want will show you what vertex to select.
-plot(x=dry_flowlines_fine_UTMZONE18N)
-showends(seg = 9, rivers = dry_flowlines_fine_UTMZONE18N) # identifies the true mouth of your watershed
-dry_mouth <- setmouth(seg = 9, vert = 377, rivers = dry_flowlines_fine_UTMZONE18N) # sets the mouth to the segment and vertex you need.
+plot(x=dry_flowlines_UTMZONE18N)
+showends(seg = 9, rivers = dry_flowlines_UTMZONE18N) # identifies the true mouth of your watershed
+dry_mouth <- setmouth(seg = 9, vert = 19, rivers = dry_flowlines_UTMZONE18N) # sets the mouth to the segment and vertex you need.
 
 ```
 
@@ -384,12 +422,12 @@ res_dry <- as.data.frame(res_dry)
 res_dry <- res_dry %>% 
   rename(POINT_X = coords.x1, POINT_Y = coords.x2) %>%  # Rename coords.x1 and coords.x2
   mutate(Rownumber =row_number())
-dry_segvert <- xy2segvert(x = res_dry$POINT_X, y = res_dry$POINT_Y, rivers = dry_flowlines_fine_UTMZONE18N) # change the "res$" to your X and Y coord columns
+dry_segvert <- xy2segvert(x = res_dry$POINT_X, y = res_dry$POINT_Y, rivers = dry_flowlines_UTMZONE18N) # change the "res$" to your X and Y coord columns
   
 ## Display raw points (red dots) and snapped points (blue). Run these three lines all at once
-plot(x= dry_flowlines_fine_UTMZONE18N)
+plot(x= dry_flowlines_UTMZONE18N)
 points(res_dry$POINT_X, res_dry$POINT_Y, pch=16, col="red") # shows raw points
-riverpoints(seg = dry_segvert$seg, vert = dry_segvert$vert, rivers = dry_flowlines_fine_UTMZONE18N, pch = 15, col="blue")
+riverpoints(seg = dry_segvert$seg, vert = dry_segvert$vert, rivers = dry_flowlines_UTMZONE18N, pch = 15, col="blue")
 
 
 ```
@@ -399,9 +437,9 @@ hist(dry_segvert$snapdist, main="snapping distance (m)")
 ```
 
 ```{r displaying point data in river locations}
-zoomtoseg(seg=c(23, 20), rivers= dry_flowlines_fine_UTMZONE18N)
+zoomtoseg(seg=c(23, 20), rivers= dry_flowlines_UTMZONE18N)
 points(res_dry$POINT_X, res_dry$POINT_Y, pch=16, col="red")
-riverpoints(seg=dry_segvert$seg, vert=dry_segvert$vert, rivers= dry_flowlines_fine_UTMZONE18N, 
+riverpoints(seg=dry_segvert$seg, vert=dry_segvert$vert, rivers= dry_flowlines_UTMZONE18N, 
             pch=15, 
             col="blue")
 ```
@@ -453,7 +491,7 @@ for (fish in unique(dry_locations$radioID)) {
       # Calculate distance
       dist <- riverdistance(startseg = from_seg, startvert = from_vert, 
                             endseg = to_seg, endvert = to_vert, 
-                            rivers = dry_flowlines_fine_UTMZONE18N, stopiferror = FALSE)
+                            rivers = dry_flowlines_UTMZONE18N, stopiferror = FALSE)
       
       # Store the result
       dry_locations$distMoved_m[dry_locations$radioID == fish & dry_locations$trackedTime_EST == fish_data$trackedTime_EST[i]] <- dist
@@ -480,25 +518,22 @@ amethyst_flowlines <- lines <- st_read("C:/Users/jpilchik/OneDrive - DOI/Documen
 st_crs(amethyst_flowlines) # This just checks to make sure that your lines are in GCS NAD83
 amethyst_flowlines <- st_transform(amethyst_flowlines, 26918) # Projects to UTM Zone 18N (the code for this is 26918)
 
-# Subdivide the river lines into finer segments (e.g., 0.5-meter resolution)
-amethyst_flowlines_fine <- st_segmentize(amethyst_flowlines, dfMaxLength = 0.5)
-
 ## Please read note before running next line! Comment the next line out if you already reprojected the raw shapefile.
-#st_write(amethyst_flowlines_fine, "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles/NHDFlowline_AmethystBrook_UTMZONE18N_Finer.shp") #Once you run this, it will add a new shapefile to your "shapefiles" folder! It will give you a warning if it's already done. I did it for underhill already, but you'll need to repeat this process for each watershed. 
+#st_write(amethyst_flowlines, "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles/NHDFlowline_AmethystBrook_UTMZONE18N.shp") #Once you run this, it will add a new shapefile to your "shapefiles" folder! It will give you a warning if it's already done. I did it for underhill already, but you'll need to repeat this process for each watershed. 
 
 
-amethyst_flowlines_fine_UTMZONE18N <- line2network(path = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles", # Points to the folder in your R Project folder
-                                    layer = "NHDFlowline_AmethystBrook_UTMZONE18N_Finer", # Identifies the shapefile you want to pull from folder
-                                    tolerance = 1) # This is the spatial tolerance used to determine connectivity between line segments) 
+amethyst_flowlines_UTMZONE18N <- line2network(path = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles", # Points to the folder in your R Project folder
+                                    layer = "NHDFlowline_AmethystBrook_UTMZONE18N", # Identifies the shapefile you want to pull from folder
+                                    tolerance = 10) # This is the spatial tolerance used to determine connectivity between line segments) 
 
 
-plot(x=amethyst_flowlines_fine_UTMZONE18N) # checks imported line
-topologydots(rivers = amethyst_flowlines_fine_UTMZONE18N) # checks line topology
+plot(x=amethyst_flowlines_UTMZONE18N) # checks imported line
+topologydots(rivers = amethyst_flowlines_UTMZONE18N) # checks line topology
 
 # Setting the MOUTH of your watershed allows you to look at directional movement. The "seg = " value will be the segment that includes your mouth, which you can observe in the plot function above. In Underhill, it's segment 46. The "vert = " value identifies the correct node of that segment. Using "showends" on the segment you want will show you what vertex to select.
-plot(x=amethyst_flowlines_fine_UTMZONE18N)
-showends(seg = 411, rivers = amethyst_flowlines_fine_UTMZONE18N) # identifies the true mouth of your watershed
-amethyst_mouth <- setmouth(seg = 411, vert = 3984, rivers = amethyst_flowlines_fine_UTMZONE18N) # sets the mouth to the segment and vertex you need.
+plot(x=amethyst_flowlines_UTMZONE18N)
+showends(seg = 404, rivers = amethyst_flowlines_UTMZONE18N) # identifies the true mouth of your watershed
+amethyst_mouth <- setmouth(seg = 404, vert = 81, rivers = amethyst_flowlines_UTMZONE18N) # sets the mouth to the segment and vertex you need.
 
 ```
 
@@ -524,12 +559,12 @@ res_amethyst <- as.data.frame(res_amethyst)
 res_amethyst <- res_amethyst %>% 
   rename(POINT_X = coords.x1, POINT_Y = coords.x2) %>%  # Rename coords.x1 and coords.x2
   mutate(Rownumber =row_number())
-amethyst_segvert <- xy2segvert(x = res_amethyst$POINT_X, y = res_amethyst$POINT_Y, rivers = amethyst_flowlines_fine_UTMZONE18N) # change the "res$" to your X and Y coord columns
+amethyst_segvert <- xy2segvert(x = res_amethyst$POINT_X, y = res_amethyst$POINT_Y, rivers = amethyst_flowlines_UTMZONE18N) # change the "res$" to your X and Y coord columns
   
 ## Display raw points (red dots) and snapped points (blue). Run these three lines all at once
-plot(x= amethyst_flowlines_fine_UTMZONE18N)
+plot(x= amethyst_flowlines_UTMZONE18N)
 points(res_amethyst$POINT_X, res_amethyst$POINT_Y, pch=16, col="red") # shows raw points
-riverpoints(seg = amethyst_segvert$seg, vert = amethyst_segvert$vert, rivers = amethyst_flowlines_fine_UTMZONE18N, pch = 15, col="blue")
+riverpoints(seg = amethyst_segvert$seg, vert = amethyst_segvert$vert, rivers = amethyst_flowlines_UTMZONE18N, pch = 15, col="blue")
 
 
 ```
@@ -541,9 +576,9 @@ hist(amethyst_segvert$snapdist, main="snapping distance (m)")
 ```
 
 ```{r displaying point data in river locations}
-zoomtoseg(seg=c(409, 280), rivers= amethyst_flowlines_fine_UTMZONE18N)
+zoomtoseg(seg=c(402, 277), rivers= amethyst_flowlines_UTMZONE18N)
 points(res_amethyst$POINT_X, res_amethyst$POINT_Y, pch=16, col="red")
-riverpoints(seg=amethyst_segvert$seg, vert=amethyst_segvert$vert, rivers= amethyst_flowlines_fine_UTMZONE18N, 
+riverpoints(seg=amethyst_segvert$seg, vert=amethyst_segvert$vert, rivers= amethyst_flowlines_UTMZONE18N, 
             pch=15, 
             col="blue")
 ```
@@ -595,7 +630,7 @@ for (fish in unique(amethyst_locations$radioID)) {
       # Calculate distance
       dist <- riverdistance(startseg = from_seg, startvert = from_vert, 
                             endseg = to_seg, endvert = to_vert, 
-                            rivers = amethyst_flowlines_fine_UTMZONE18N, stopiferror = FALSE)
+                            rivers = amethyst_flowlines_UTMZONE18N, stopiferror = FALSE)
       
       # Store the result
       amethyst_locations$distMoved_m[amethyst_locations$radioID == fish & amethyst_locations$trackedTime_EST == fish_data$trackedTime_EST[i]] <- dist
@@ -607,7 +642,36 @@ for (fish in unique(amethyst_locations$radioID)) {
 amethyst_locations$distMoved_m[is.na(amethyst_locations$distMoved_m)] <- 0
 
 ```
+```{r calculate euclidean distance moved for finer-scale movements}
+# Arrange data by fish ID and datetime to ensure chronological order
+amethyst_locations <- amethyst_locations %>%
+  arrange(radioID, trackedTime_EST) %>%
+  group_by(radioID) %>%
+  mutate(
+    euclideanMoved_m = sqrt((snap_x - lag(snap_x))^2 + (snap_y - lag(snap_y))^2)
+  ) %>%
+  ungroup()
 
+# Replace NAs (first observation for each fish) with 0
+amethyst_locations$euclideanMoved_m[is.na(amethyst_locations$euclideanMoved_m)] <- 0
+
+# View results
+head(amethyst_locations)
+
+# This method works great for short distances, but if fish stay in one place, GPS noise might create false movement. Filter out small movements to account for GPS error?
+
+# Include Time Between Movements
+amethyst_locations <- amethyst_locations %>%
+  arrange(radioID, trackedTime_EST) %>%
+  group_by(radioID) %>%
+  mutate(
+    time_diff_hours = as.numeric(difftime(trackedTime_EST, lag(trackedTime_EST), units = "hours")),
+    movement_rate = ifelse(time_diff_hours > 0, euclideanMoved_m / time_diff_hours, NA)
+  ) %>%
+  ungroup()
+
+
+```
 
 ```{r histogram of distance moved}
 hist(amethyst_locations$distMoved_m, main="distance moved (m)")
@@ -623,9 +687,9 @@ tracking_data_locations <- tracking_data_locations %>%
   select(date, trackedTime_EST, river, shift, radioID, tempID, status, power, source, fishNotes, distMoved_m, lon, lat, POINT_X, POINT_Y, snap_x, snap_y, seg, vert, snapdist, habitat, habitatExtra, position, substrate, substrateExtra, shade, airTemp_F, cloud, precip, ftDischarge_cfs, ftTime_EST, startTime_EST, endTime_EST, streamNotes, downstreamGPS, downstreamGain, upstreamGPS, upstreamGain, isoID, length_mm, weight_g, sex, type, geneticSam, blood, section, collectionNotes)
 
 # Write the combined data to a new CSV file
-#write.csv(tracking_data_locations, 
-          #"C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/combined_data/tracking_data_locations_fine.csv", 
-          #row.names = FALSE)
+write.csv(tracking_data_locations, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/combined_data/tracking_data_locations.csv", 
+          row.names = FALSE)
 ```
 
 ```{r histogram of distance moved}
@@ -686,237 +750,31 @@ ggplot(tracking_data_locations_filtered, aes(x = movement_rate)) +
 
 tracking_data_locations_filtered$river <- as.factor(tracking_data_locations_filtered$river)
 
-ggplot(tracking_data_locations_filtered, aes(x = river, y = movement_rate)) + 
+unique(tracking_data_locations_filtered$river)
+
+glimpse(tracking_data_locations_filtered)
+
+colnames(tracking_data_locations_filtered)
+
+ggplot(tracking_data_locations, aes(x = river, y = movement_rate)) + 
+  geom_boxplot()
+
+ggplot(data = tracking_data_locations_filtered, aes(x = river, y = movement_rate, fill = river)) +
   geom_boxplot() +
-  labs(
-    x = "River",
-    y = "Movement Rate (meters/hour)",
-    title = "Movement Rate by River"
-  )
+  scale_fill_manual('River', values = river, labels = river) +
+  labs(title = "Movement Rate (m/hour) by River",
+       y = "Movement rate (m/hour)", x = "River") +
+  theme_classic()
 
-```
-```{r}
-#Boxplot of movement rate (m/hour) 2.0
-
-tracking_data_locations_filtered$river_combined <- tracking_data_locations_filtered$river
-
-tracking_data_locations_filtered$river_combined[tracking_data_locations_filtered$river %in% c("AMETHYST", "BUFFAM", "HARRIS")] <- "AMETHYST"
-
-tracking_data_locations_filtered$river_combined <- as.factor(tracking_data_locations_filtered$river_combined)
-
-ggplot(tracking_data_locations_filtered, aes(x = river_combined, y = movement_rate)) + 
+ggplot(data = tracking_data_locations, aes(x = river, y = movement_rate, fill = river)) +
   geom_boxplot() +
-  labs(
-    x = "River",
-    y = "Movement Rate (meters/hour)",
-    title = "Movement Rate by River"
-  )
-
-```
-####################################################
-```{r fish 16 temp data}
-# Read the Excel file
-tag16_323 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawTempTagData/16_323.xlsx")
-
-# Rename columns
-tag16_323 <- tag16_323 %>%
-  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
-
-# Separate dateTime into date and time columns
-tag16_323 <- tag16_323 %>%
-  separate(dateTime, into = c("date", "time"), sep = " ") %>%
-  mutate(date = as.Date(date, format = "%Y-%m-%d"),
-         time = as.POSIXct(time, format = "%H:%M:%S", tz = "EST"))  # Use `POSIXct` for time manipulation
-
-# Adjust time from EDT to EST by subtracting 1 hour
-tag16_323 <- tag16_323 %>%
-  mutate(time = time - hours(1))
-
-# Combine date and adjusted time back into a single dateTime column
-tag16_323 <- tag16_323 %>%
-  mutate(dateTime = as.POSIXct(paste(date, format(time, "%H:%M:%S")), format = "%Y-%m-%d %H:%M:%S", tz = "EST"))
-
-# Define the start time as the first day of tracking at Dry Upper
-start_datetime <- as.POSIXct("2024-06-14 00:00:00", tz = "EST")
-
-# Define the last known alive point as a POSIXct object
-last_alive_datetime <- as.POSIXct("2024-08-22 09:00:00", tz = "EST")
-
-# Filter dataset up to and including the last known alive point
-tag16_323 <- tag16_323 %>%
-  filter(dateTime >= start_datetime & dateTime <= last_alive_datetime)
-
-# Filter to only the needed columns going forward
-tag16_323 <- tag16_323 %>%
-    select(temp, dateTime)
-
-# Ensure dateTime is POSIXct and temp is numeric
-tag16_323 <- tag16_323 %>%
-  mutate(dateTime = as.POSIXct(dateTime, tz = "EST"),
-         temp = as.numeric(temp))
-```
-```{r}
-tracking_data_locations_16 <- tracking_data_locations_filtered %>% 
-  filter(radioID == "16")
-
-tracking_data_locations_16 <- tracking_data_locations_16 %>% 
-  rename(dateTime = trackedTime_EST)
-```
-```{r}
-# Find max values to scale distance to temperature range
-max_temp <- max(tag16_323$temp, na.rm = TRUE)
-max_dist <- max(tracking_data_locations_16$movement_rate, na.rm = TRUE)
-
-# Scale distance_moved to fit the temperature range (for visualization only)
-tracking_data_locations_16$movement_rate_scaled <- tracking_data_locations_16$movement_rate * (max_temp / max_dist)
-
-# Create the dual-axis plot
-ggplot() +
-  # Temperature line (Left y-axis)
-  geom_line(data = tag16_323, aes(x = dateTime, y = temp, color = "Temperature"), size = 1) +
-  
-  # Distance moved line (Right y-axis, rescaled)
-  geom_line(data = tracking_data_locations_16, aes(x = dateTime, y = movement_rate_scaled, color = "Movement Rate"), size = 1, linetype = "dashed") +
-  
-  # Define the primary and secondary y-axes
-  scale_y_continuous(
-    name = "Temperature (°C)",
-    sec.axis = sec_axis(~ . * (max_dist / max_temp), name = "Movement Rate (m/h)")  # Rescale back
-  ) +
-  
-  # Color settings
-  scale_color_manual(values = c("Temperature" = "red", "Movement Rate" = "green")) +
-  
-  # Labels and theme
-  labs(title = "Fish 16 Internal Temperature and Movement Rate Over Time",
-       x = "DateTime",
-       color = "Legend") +
-  theme_minimal()
-```
-
-```{r}
-# Find max values to scale distance to temperature range
-max_temp <- max(tag16_323$temp, na.rm = TRUE)
-max_dist <- max(tracking_data_locations_16$movement_rate, na.rm = TRUE)
-
-# Scale distance_moved to fit the temperature range (for visualization only)
-tracking_data_locations_16$movement_rate_scaled <- tracking_data_locations_16$movement_rate * (max_temp / max_dist)
-
-# Create the dual-axis plot
-ggplot() +
-  # Temperature line (Left y-axis)
-  geom_line(data = tag16_323, aes(x = dateTime, y = temp, color = temp), size = 1) +
-  
-  # Distance moved line (Right y-axis, rescaled)
-  geom_smooth(data = tracking_data_locations_16, aes(x = dateTime, y = movement_rate_scaled), color = "green", method = "loess", span = 0.3, se = FALSE) +
-  
-  # Define the primary and secondary y-axes
-  scale_y_continuous(
-    name = "Temperature (°C)",
-    sec.axis = sec_axis(~ . * (max_dist / max_temp), name = "Movement Rate (m/h)")  # Rescale back
-  ) +
-  
-  # Temperature gradient color scale
-  scale_color_gradientn(colors = c("blue", "purple", "red"), name = "Temperature (°C)") +
-  
-  # Labels and theme
-  labs(title = "Fish 16 Internal Temperature and Movement Rate Over Time",
-       x = "DateTime") +
-  theme_minimal()
-```
-```{r}
-# Find max values to scale distance to temperature range
-max_temp <- max(tag16_323$temp, na.rm = TRUE)
-max_dist <- max(tracking_data_locations_16$distMoved_m, na.rm = TRUE)
-
-# Scale distance_moved to fit the temperature range (for visualization only)
-tracking_data_locations_16$distance_scaled <- tracking_data_locations_16$distMoved_m * (max_temp / max_dist)
-
-# Create the dual-axis plot
-ggplot() +
-  # Temperature line (Left y-axis)
-  geom_line(data = tag16_323, aes(x = dateTime, y = temp, color = temp), size = 1) +
-  
-  # Distance moved line (Right y-axis, rescaled)
-  geom_line(data = tracking_data_locations_16, aes(x = dateTime, y = distance_scaled), color = "green", size = 1) +
-  
-  # Define the primary and secondary y-axes
-  scale_y_continuous(
-    limits = c(0, 25),
-    name = "Temperature (°C)",
-    sec.axis = sec_axis(~ . * (max_dist / max_temp), name = "Distance Moved (m)")  # Rescale back
-  ) +
- 
-  # Temperature gradient color scale
-  scale_color_gradientn(colors = c("blue", "purple", "red"), name = "Temperature (°C)") +
-  
-  # Labels and theme
-  labs(title = "Fish 16 Internal Temperature and Distance Moved Over Time",
-       x = "DateTime") +
-  theme_minimal()
-```
-
-```{r}
-# Find max values to scale distance to temperature range
-max_temp <- max(tag16_323$temp, na.rm = TRUE)
-max_dist <- max(tracking_data_locations_16$distMoved_m, na.rm = TRUE)
-
-# Scale distance_moved to fit the temperature range (for visualization only)
-tracking_data_locations_16$distance_scaled <- tracking_data_locations_16$distMoved_m * (max_temp / max_dist)
-
-# Set a common color gradient across all plots (10 to 25 degrees Celsius)
-colorMin <- 10
-colorMax <- 25
-
-# Create the dual-axis plot
-move_temp_16 <- ggplot() +
-  # Temperature line (Left y-axis)
-  geom_line(data = tag16_323, aes(x = dateTime, y = temp, color = temp), size = 1) +
-  
-  # Distance moved line (Right y-axis, rescaled)
-  geom_smooth(data = tracking_data_locations_16, aes(x = dateTime, y = distance_scaled), color = "black", method = "loess", span = 0.27, se = FALSE) +
-  
-  # Define the primary and secondary y-axes
-  scale_y_continuous(
-    limits = c(0, 25),
-    name = "Temperature (°C)",
-    sec.axis = sec_axis(~ . * (max_dist / max_temp), name = "Distance Moved (m)")
-  ) +
-  
-  # Temperature gradient color scale
-  scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax), name = "temp") +  # Set colors for low and high temperatures
-  
-  # Labels and theme
-  labs(title = "Fish 16's Internal Temperature and Movement Distance Over Time",
-       x = "DateTime") +
-  theme_minimal()
-
-print(move_temp_16)
-
-# Save the enlarged plot
-ggsave("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/plots/move_temp_16.png",
-       arrangeGrob(move_temp_16, nrow = 1, ncol = 1), 
-       width = 10, height = 15)  # Adjust width and height as needed
-```
-```{r}
-# Find the closest temperature record for each fish movement point
-merged_data <- tracking_data_locations_16 %>%
-  rowwise() %>%
-  mutate(temp = tag16_323$temp[which.min(abs(difftime(tag16_323$dateTime, trackedTime_EST, units="mins")))])
-
-# Plot movement vs. temperature over time
-ggplot(merged_data, aes(x = trackedTime_EST, y = distMoved_m, color = temp)) +
-  geom_line() +
-  scale_color_gradient(low = "blue", high = "red") + # Adjust color scale
-  labs(title = "Fish Movement vs. Temperature Over Time",
-       x = "DateTime",
-       y = "Distance Moved (m)",
-       color = "Temperature (°C)") +
-  theme_minimal()
+  scale_fill_manual('River', values = river, labels = river) +
+  labs(title = "Movement Rate (m/hour) by River",
+       y = "Movement rate (m/hour)", x = "River") +
+  theme_classic()
 ```
 
 
-##########################################################
 ```{r}
 # Calculate movement rate (meters per minute)
 
@@ -952,6 +810,17 @@ ggplot(tracking_data_locations, aes(x = river, y = movement_rate)) +
 
 
 ```{r}
+# Grouping habitat by locations using snap_x and snap_y
+habitat_summary <- tracking_data_locations %>%
+  group_by(snap_x, snap_y) %>%
+  summarise(habitat_list = paste(unique(habitat), collapse = ", ")) %>%
+  ungroup()
+
+# View the result
+head(habitat_summary)
+```
+
+```{r}
 # Grouping habitat by locations using seg and vert
 habitat_summary <- tracking_data_locations %>%
   group_by(river, seg, vert) %>%
@@ -961,4 +830,82 @@ habitat_summary <- tracking_data_locations %>%
 # View the result
 head(habitat_summary)
 
+```
+
+
+
+
+The accuracy of seg and vert for detecting subtle fish movements depends on how your river network was built in riverdist. Here’s what you should consider when determining whether seg and vert can capture fine-scale movements:
+
+1. Understanding seg and vert in riverdist
+-seg (segment): Represents a section of the river between two junctions or bends.
+-vert (vertex): Represents a specific point along a segment, based on how the river network was digitized.
+-The resolution of vert along a seg determines how precisely fish movements can be tracked.
+
+To check your river network resolution:
+```{r}
+# To check my river network resolution
+summary(amethyst_flowlines_UTMZONE18N)  # See number of segments and vertices
+summary(dickey_flowlines_UTMZONE18N)  # See number of segments and vertices
+summary(dry_flowlines_UTMZONE18N)  # See number of segments and vertices
+summary(underhill_flowlines_UTMZONE18N)  # See number of segments and vertices
+```
+If the number of vertices per segment is low, movements within a segment (like from stream edge to center) may not be distinguishable.
+
+```{r}
+# Check number of vertices per segment
+amethyst_vertex_counts <- sapply(amethyst_flowlines_UTMZONE18N$cumuldist, length)
+
+# Summary statistics of vertex counts
+summary(amethyst_vertex_counts)
+
+# Check number of vertices per segment
+underhill_vertex_counts <- sapply(underhill_flowlines_UTMZONE18N$cumuldist, length)
+
+# Summary statistics of vertex counts
+summary(underhill_vertex_counts)
+
+# Check number of vertices per segment
+dickey_vertex_counts <- sapply(dickey_flowlines_UTMZONE18N$cumuldist, length)
+
+# Summary statistics of vertex counts
+summary(dickey_vertex_counts)
+
+# Check number of vertices per segment
+dry_vertex_counts <- sapply(dry_flowlines_UTMZONE18N$cumuldist, length)
+
+# Summary statistics of vertex counts
+summary(dry_vertex_counts)
+
+# If the minimum vertex count is low (e.g., 2-3 per segment), your resolution may be too coarse.
+# If the mean or median vertex count is high (e.g., 20+ per segment), you likely have good resolution
+
+```
+```{r}
+# Compute spacing between vertices within each segment
+amethyst_vertex_spacing <- sapply(amethyst_flowlines_UTMZONE18N$cumuldist, function(x) if (length(x) > 1) mean(diff(x)) else NA)
+
+# Summary of spacing
+summary(amethyst_vertex_spacing)
+
+# Compute spacing between vertices within each segment
+underhill_vertex_spacing <- sapply(underhill_flowlines_UTMZONE18N$cumuldist, function(x) if (length(x) > 1) mean(diff(x)) else NA)
+
+# Summary of spacing
+summary(underhill_vertex_spacing)
+
+# Compute spacing between vertices within each segment
+dickey_vertex_spacing <- sapply(dickey_flowlines_UTMZONE18N$cumuldist, function(x) if (length(x) > 1) mean(diff(x)) else NA)
+
+# Summary of spacing
+summary(dickey_vertex_spacing)
+
+# Compute spacing between vertices within each segment
+dry_vertex_spacing <- sapply(dry_flowlines_UTMZONE18N$cumuldist, function(x) if (length(x) > 1) mean(diff(x)) else NA)
+
+# Summary of spacing
+summary(dry_vertex_spacing)
+
+# If spacing is large (e.g., >10-20m), small fish movements may not be captured.
+# If spacing is small (e.g., <5m), seg and vert should work fine.
 ```
