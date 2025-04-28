@@ -1,0 +1,42 @@
+---
+title: "weekly_temp_averages"
+---
+
+```{r}
+library(dplyr)
+library(lubridate)
+library(tidyr)
+```
+
+```{r}
+logger_data_summer <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/logger_data_summer.csv")
+```
+
+```{r}
+
+logger_data_summer$date <- as.Date(logger_data_summer$date) 
+
+# Compute weekly averages
+weekly_avg <- logger_data_summer %>%
+  mutate(week = floor_date(date, unit = "week", week_start = 1)) %>%  # Group dates into weeks
+  group_by(week, river) %>%
+  summarize(avg_temp =round(mean(temp, na.rm = TRUE), 2), .groups = "drop") %>%
+  pivot_wider(names_from = river, values_from = avg_temp)  # Make rivers into columns
+
+# Compute total average temperature across all rivers per week
+weekly_avg <- logger_data_summer %>%
+  mutate(week = floor_date(date, unit = "week", week_start = 1)) %>%
+  group_by(week) %>%
+  summarize(Total_Avg = round(mean(temp, na.rm = TRUE), 2), .groups = "drop") %>%
+  left_join(weekly_avg, by = "week")  # Merge with river-specific data
+
+# View the final table
+print(weekly_avg)
+
+# Write the combined data to a new CSV file
+write.csv(weekly_avg, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/weekly_avg.csv", 
+          row.names = FALSE)
+
+```
+

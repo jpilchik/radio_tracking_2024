@@ -52,7 +52,7 @@ tag16_323 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study pla
 
 # Rename columns
 tag16_323 <- tag16_323 %>%
-  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+  rename(dateTime = `Date & Time`, temp_C = `Temperature(°C)`)
 
 # Step 1: Explicitly tell R that the datetime is in EDT
 tag16_323 <- tag16_323 %>%
@@ -78,19 +78,24 @@ tag16_323 <- tag16_323 %>%
 
 # Filter to only the needed columns going forward
 tag16_323 <- tag16_323 %>%
-    select(temp, dateTime_EST)
+    select(temp_C, dateTime_EST)
 
 # Ensure dateTime is POSIXct and temp is numeric
 tag16_323 <- tag16_323 %>%
   mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
-         temp = as.numeric(temp))
+         temp_C = as.numeric(temp_C))
+
+# Write new flow csv
+write.csv(tag16_323, 
+          file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag16_323.csv", 
+          row.names = FALSE)
 
 # Set a common color gradient across all plots (10 to 30 degrees Celsius)
 colorMin <- 10
 colorMax <- 30
 
 # Plot the temperature data
-tag16Plot <- ggplot(tag16_323, aes(x = dateTime_EST, y = temp, color = temp)) +
+tag16Plot <- ggplot(tag16_323, aes(x = dateTime_EST, y = temp_C, color = temp_C)) +
   geom_line() +
   scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
   labs(title = "Fish 16's Internal Temperature Over Time in Dry Upper", 
@@ -118,7 +123,7 @@ tag19_329 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study pla
 
 # Rename columns
 tag19_329 <- tag19_329 %>%
-  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+  rename(dateTime = `Date & Time`, temp_C = `Temperature(°C)`)
 
 # Step 1: Explicitly tell R that the datetime is in EDT
 tag19_329 <- tag19_329 %>%
@@ -144,19 +149,24 @@ tag19_329 <- tag19_329 %>%
 
 # Filter to only the needed columns going forward
 tag19_329 <- tag19_329 %>%
-    select(temp, dateTime_EST)
+    select(temp_C, dateTime_EST)
 
 # Ensure dateTime is POSIXct and temp is numeric
 tag19_329 <- tag19_329 %>%
   mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
-         temp = as.numeric(temp))
+         temp_C = as.numeric(temp_C))
+
+# Write new flow csv
+write.csv(tag19_329, 
+          file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag19_329.csv", 
+          row.names = FALSE)
 
 # Set a common color gradient across all plots (10 to 30 degrees Celsius)
 colorMin <- 10
 colorMax <- 30
 
 # Plot the temperature data
-tag19Plot <- ggplot(tag19_329, aes(x = dateTime_EST, y = temp, color = temp)) +
+tag19Plot <- ggplot(tag19_329, aes(x = dateTime_EST, y = temp_C, color = temp_C)) +
   geom_line() +
   scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
   labs(title = "Fish 19's Internal Temperature Over Time in Amethyst", 
@@ -184,7 +194,7 @@ tag22_320 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study pla
 
 # Rename columns
 tag22_320 <- tag22_320 %>%
-  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+  rename(dateTime = `Date & Time`, temp_C = `Temperature(°C)`)
 
 # Step 1: Explicitly tell R that the datetime is in EDT
 tag22_320 <- tag22_320 %>%
@@ -210,19 +220,24 @@ tag22_320 <- tag22_320 %>%
 
 # Filter to only the needed columns going forward
 tag22_320 <- tag22_320 %>%
-    select(temp, dateTime_EST)
+    select(temp_C, dateTime_EST)
 
 # Ensure dateTime is POSIXct and temp is numeric
 tag22_320 <- tag22_320 %>%
   mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
-         temp = as.numeric(temp))
+         temp_C = as.numeric(temp_C))
+
+# Write new flow csv
+write.csv(tag22_320, 
+          file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag22_320.csv", 
+          row.names = FALSE)
 
 # Set a common color gradient across all plots (10 to 30 degrees Celsius)
 colorMin <- 10
 colorMax <- 30
 
 # Plot the temperature data
-tag22Plot <- ggplot(tag22_320, aes(x = dateTime_EST, y = temp, color = temp)) +
+tag22Plot <- ggplot(tag22_320, aes(x = dateTime_EST, y = temp_C, color = temp_C)) +
   geom_line() +
   scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
   labs(title = "Fish 22's Internal Temperature Over Time in Dry Upper", 
@@ -250,7 +265,7 @@ tag23_322 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study pla
 
 # Rename columns
 tag23_322 <- tag23_322 %>%
-  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+  rename(dateTime = `Date & Time`, temp_C = `Temperature(°C)`)
 
 # Step 1: Explicitly tell R that the datetime is in EDT
 tag23_322 <- tag23_322 %>%
@@ -276,19 +291,24 @@ tag23_322 <- tag23_322 %>%
 
 # Filter to only the needed columns going forward
 tag23_322 <- tag23_322 %>%
-    select(temp, dateTime_EST)
+    select(temp_C, dateTime_EST)
 
 # Ensure dateTime is POSIXct and temp is numeric
 tag23_322 <- tag23_322 %>%
   mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
-         temp = as.numeric(temp))
+         temp_C = as.numeric(temp_C))
+
+# Write new flow csv
+write.csv(tag23_322, 
+          file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag23_322.csv", 
+          row.names = FALSE)
 
 # Set a common color gradient across all plots (10 to 30 degrees Celsius)
 colorMin <- 10
 colorMax <- 30
 
 # Plot the temperature data
-tag23Plot <- ggplot(tag23_322, aes(x = dateTime_EST, y = temp, color = temp)) +
+tag23Plot <- ggplot(tag23_322, aes(x = dateTime_EST, y = temp_C, color = temp_C)) +
   geom_line() +
   scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
   labs(title = "Fish 23's Internal Temperature Over Time in Dry Upper", 
@@ -316,7 +336,7 @@ tag24_319 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study pla
 
 # Rename columns
 tag24_319 <- tag24_319 %>%
-  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+  rename(dateTime = `Date & Time`, temp_C = `Temperature(°C)`)
 
 # Step 1: Explicitly tell R that the datetime is in EDT
 tag24_319 <- tag24_319 %>%
@@ -342,19 +362,24 @@ tag24_319 <- tag24_319 %>%
 
 # Filter to only the needed columns going forward
 tag24_319 <- tag24_319 %>%
-    select(temp, dateTime_EST)
+    select(temp_C, dateTime_EST)
 
 # Ensure dateTime is POSIXct and temp is numeric
 tag24_319 <- tag24_319 %>%
   mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
-         temp = as.numeric(temp))
+         temp_C = as.numeric(temp_C))
+
+# Write new flow csv
+write.csv(tag24_319, 
+          file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag24_319.csv", 
+          row.names = FALSE)
 
 # Set a common color gradient across all plots (10 to 30 degrees Celsius)
 colorMin <- 10
 colorMax <- 30
 
 # Plot the temperature data
-tag24Plot <- ggplot(tag24_319, aes(x = dateTime_EST, y = temp, color = temp)) +
+tag24Plot <- ggplot(tag24_319, aes(x = dateTime_EST, y = temp_C, color = temp_C)) +
   geom_line() +
   scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
   labs(title = "Fish 24's Internal Temperature Over Time in Dry Upper", 
@@ -382,7 +407,7 @@ tag27_303 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study pla
 
 # Rename columns
 tag27_303 <- tag27_303 %>%
-  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+  rename(dateTime = `Date & Time`, temp_C = `Temperature(°C)`)
 
 # Step 1: Explicitly tell R that the datetime is in EDT
 tag27_303 <- tag27_303 %>%
@@ -408,19 +433,24 @@ tag27_303 <- tag27_303 %>%
 
 # Filter to only the needed columns going forward
 tag27_303 <- tag27_303 %>%
-    select(temp, dateTime_EST)
+    select(temp_C, dateTime_EST)
 
 # Ensure dateTime is POSIXct and temp is numeric
 tag27_303 <- tag27_303 %>%
   mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
-         temp = as.numeric(temp))
+         temp_C = as.numeric(temp_C))
+
+# Write new flow csv
+write.csv(tag27_303, 
+          file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag27_303.csv", 
+          row.names = FALSE)
 
 # Set a common color gradient across all plots (10 to 30 degrees Celsius)
 colorMin <- 10
 colorMax <- 30
 
 # Plot the temperature data
-tag27Plot <- ggplot(tag27_303, aes(x = dateTime_EST, y = temp, color = temp)) +
+tag27Plot <- ggplot(tag27_303, aes(x = dateTime_EST, y = temp_C, color = temp_C)) +
   geom_line() +
   scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
   labs(title = "Fish 27's Internal Temperature Over Time in Underhill", 
@@ -448,7 +478,7 @@ tag28_306 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study pla
 
 # Rename columns
 tag28_306 <- tag28_306 %>%
-  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+  rename(dateTime = `Date & Time`, temp_C = `Temperature(°C)`)
 
 # Step 1: Explicitly tell R that the datetime is in EDT
 tag28_306 <- tag28_306 %>%
@@ -474,19 +504,24 @@ tag28_306 <- tag28_306 %>%
 
 # Filter to only the needed columns going forward
 tag28_306 <- tag28_306 %>%
-    select(temp, dateTime_EST)
+    select(temp_C, dateTime_EST)
 
 # Ensure dateTime is POSIXct and temp is numeric
 tag28_306 <- tag28_306 %>%
   mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
-         temp = as.numeric(temp))
+         temp_C = as.numeric(temp_C))
+
+# Write new flow csv
+write.csv(tag28_306, 
+          file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag28_306.csv", 
+          row.names = FALSE)
 
 # Set a common color gradient across all plots (10 to 30 degrees Celsius)
 colorMin <- 10
 colorMax <- 30
 
 # Plot the temperature data
-tag28Plot <- ggplot(tag28_306, aes(x = dateTime_EST, y = temp, color = temp)) +
+tag28Plot <- ggplot(tag28_306, aes(x = dateTime_EST, y = temp_C, color = temp_C)) +
   geom_line() +
   scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
   labs(title = "Fish 28's Internal Temperature Over Time in Dickey", 
@@ -514,7 +549,7 @@ tag29.1_325 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study p
 
 # Rename columns
 tag29.1_325 <- tag29.1_325 %>%
-  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+  rename(dateTime = `Date & Time`, temp_C = `Temperature(°C)`)
 
 # Step 1: Explicitly tell R that the datetime is in EDT
 tag29.1_325 <- tag29.1_325 %>%
@@ -540,19 +575,24 @@ tag29.1_325 <- tag29.1_325 %>%
 
 # Filter to only the needed columns going forward
 tag29.1_325 <- tag29.1_325 %>%
-    select(temp, dateTime_EST)
+    select(temp_C, dateTime_EST)
 
 # Ensure dateTime is POSIXct and temp is numeric
 tag29.1_325 <- tag29.1_325 %>%
   mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
-         temp = as.numeric(temp))
+         temp_C = as.numeric(temp_C))
+
+# Write new flow csv
+write.csv(tag29.1_325, 
+          file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag29.1_325.csv", 
+          row.names = FALSE)
 
 # Set a common color gradient across all plots (10 to 30 degrees Celsius)
 colorMin <- 10
 colorMax <- 30
 
 # Plot the temperature data
-tag29.1Plot <- ggplot(tag29.1_325, aes(x = dateTime_EST, y = temp, color = temp)) +
+tag29.1Plot <- ggplot(tag29.1_325, aes(x = dateTime_EST, y = temp_C, color = temp_C)) +
   geom_line() +
   scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
   labs(title = "Fish 29.1's Internal Temperature Over Time in Dry Upper", 
@@ -580,7 +620,7 @@ tag29_304 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study pla
 
 # Rename columns
 tag29_304 <- tag29_304 %>%
-  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+  rename(dateTime = `Date & Time`, temp_C = `Temperature(°C)`)
 
 # Step 1: Explicitly tell R that the datetime is in EDT
 tag29_304 <- tag29_304 %>%
@@ -606,19 +646,24 @@ tag29_304 <- tag29_304 %>%
 
 # Filter to only the needed columns going forward
 tag29_304 <- tag29_304 %>%
-    select(temp, dateTime_EST)
+    select(temp_C, dateTime_EST)
 
 # Ensure dateTime is POSIXct and temp is numeric
 tag29_304 <- tag29_304 %>%
   mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
-         temp = as.numeric(temp))
+         temp_C = as.numeric(temp_C))
+
+# Write new flow csv
+write.csv(tag29_304, 
+          file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag29_304.csv", 
+          row.names = FALSE)
 
 # Set a common color gradient across all plots (10 to 30 degrees Celsius)
 colorMin <- 10
 colorMax <- 30
 
 # Plot the temperature data
-tag29Plot <- ggplot(tag29_304, aes(x = dateTime_EST, y = temp, color = temp)) +
+tag29Plot <- ggplot(tag29_304, aes(x = dateTime_EST, y = temp_C, color = temp_C)) +
   geom_line() +
   scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
   labs(title = "Fish 29's Internal Temperature Over Time in Dickey", 
@@ -646,7 +691,7 @@ tag30.1_319 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study p
 
 # Rename columns
 tag30.1_319 <- tag30.1_319 %>%
-  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+  rename(dateTime = `Date & Time`, temp_C = `Temperature(°C)`)
 
 # Step 1: Explicitly tell R that the datetime is in EDT
 tag30.1_319 <- tag30.1_319 %>%
@@ -672,19 +717,24 @@ tag30.1_319 <- tag30.1_319 %>%
 
 # Filter to only the needed columns going forward
 tag30.1_319 <- tag30.1_319 %>%
-    select(temp, dateTime_EST)
+    select(temp_C, dateTime_EST)
 
 # Ensure dateTime is POSIXct and temp is numeric
 tag30.1_319 <- tag30.1_319 %>%
   mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
-         temp = as.numeric(temp))
+         temp_C = as.numeric(temp_C))
+
+# Write new flow csv
+write.csv(tag30.1_319, 
+          file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag30.1_319.csv", 
+          row.names = FALSE)
 
 # Set a common color gradient across all plots (10 to 30 degrees Celsius)
 colorMin <- 10
 colorMax <- 30
 
 # Plot the temperature data
-tag30.1Plot <- ggplot(tag30.1_319, aes(x = dateTime_EST, y = temp, color = temp)) +
+tag30.1Plot <- ggplot(tag30.1_319, aes(x = dateTime_EST, y = temp_C, color = temp_C)) +
   geom_line() +
   scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
   labs(title = "Fish 30.1's Internal Temperature Over Time in Dry Upper", 
@@ -712,7 +762,7 @@ tag31_302 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study pla
 
 # Rename columns
 tag31_302 <- tag31_302 %>%
-  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+  rename(dateTime = `Date & Time`, temp_C = `Temperature(°C)`)
 
 # Step 1: Explicitly tell R that the datetime is in EDT
 tag31_302 <- tag31_302 %>%
@@ -738,19 +788,24 @@ tag31_302 <- tag31_302 %>%
 
 # Filter to only the needed columns going forward
 tag31_302 <- tag31_302 %>%
-    select(temp, dateTime_EST)
+    select(temp_C, dateTime_EST)
 
 # Ensure dateTime is POSIXct and temp is numeric
 tag31_302 <- tag31_302 %>%
   mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
-         temp = as.numeric(temp))
+         temp_C = as.numeric(temp_C))
+
+# Write new flow csv
+write.csv(tag31_302, 
+          file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag31_302.csv", 
+          row.names = FALSE)
 
 # Set a common color gradient across all plots (10 to 30 degrees Celsius)
 colorMin <- 10
 colorMax <- 30
 
 # Plot the temperature data
-tag31Plot <- ggplot(tag31_302, aes(x = dateTime_EST, y = temp, color = temp)) +
+tag31Plot <- ggplot(tag31_302, aes(x = dateTime_EST, y = temp_C, color = temp_C)) +
   geom_line() +
   scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
   labs(title = "Fish 31's Internal Temperature Over Time in Dickey", 
@@ -778,7 +833,7 @@ tag32_298 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study pla
 
 # Rename columns
 tag32_298 <- tag32_298 %>%
-  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+  rename(dateTime = `Date & Time`, temp_C = `Temperature(°C)`)
 
 # Step 1: Explicitly tell R that the datetime is in EDT
 tag32_298 <- tag32_298 %>%
@@ -804,19 +859,24 @@ tag32_298 <- tag32_298 %>%
 
 # Filter to only the needed columns going forward
 tag32_298 <- tag32_298 %>%
-    select(temp, dateTime_EST)
+    select(temp_C, dateTime_EST)
 
 # Ensure dateTime is POSIXct and temp is numeric
 tag32_298 <- tag32_298 %>%
   mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
-         temp = as.numeric(temp))
+         temp_C = as.numeric(temp_C))
+
+# Write new flow csv
+write.csv(tag32_298, 
+          file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag32_298.csv", 
+          row.names = FALSE)
 
 # Set a common color gradient across all plots (10 to 30 degrees Celsius)
 colorMin <- 10
 colorMax <- 30
 
 # Plot the temperature data
-tag32Plot <- ggplot(tag32_298, aes(x = dateTime_EST, y = temp, color = temp)) +
+tag32Plot <- ggplot(tag32_298, aes(x = dateTime_EST, y = temp_C, color = temp_C)) +
   geom_line() +
   scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
   labs(title = "Fish 32's Internal Temperature Over Time in Dickey", 
@@ -844,7 +904,7 @@ tag33_305 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study pla
 
 # Rename columns
 tag33_305 <- tag33_305 %>%
-  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+  rename(dateTime = `Date & Time`, temp_C = `Temperature(°C)`)
 
 # Step 1: Explicitly tell R that the datetime is in EDT
 tag33_305 <- tag33_305 %>%
@@ -870,19 +930,24 @@ tag33_305 <- tag33_305 %>%
 
 # Filter to only the needed columns going forward
 tag33_305 <- tag33_305 %>%
-    select(temp, dateTime_EST)
+    select(temp_C, dateTime_EST)
 
 # Ensure dateTime is POSIXct and temp is numeric
 tag33_305 <- tag33_305 %>%
   mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
-         temp = as.numeric(temp))
+         temp_C = as.numeric(temp_C))
+
+# Write new flow csv
+write.csv(tag33_305, 
+          file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag33_305.csv", 
+          row.names = FALSE)
 
 # Set a common color gradient across all plots (10 to 30 degrees Celsius)
 colorMin <- 10
 colorMax <- 30
 
 # Plot the temperature data
-tag33Plot <- ggplot(tag33_305, aes(x = dateTime_EST, y = temp, color = temp)) +
+tag33Plot <- ggplot(tag33_305, aes(x = dateTime_EST, y = temp_C, color = temp_C)) +
   geom_line() +
   scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
   labs(title = "Fish 33's Internal Temperature Over Time in Underhill", 
@@ -910,7 +975,7 @@ tag34_296 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study pla
 
 # Rename columns
 tag34_296 <- tag34_296 %>%
-  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+  rename(dateTime = `Date & Time`, temp_C = `Temperature(°C)`)
 
 # Step 1: Explicitly tell R that the datetime is in EDT
 tag34_296 <- tag34_296 %>%
@@ -936,19 +1001,24 @@ tag34_296 <- tag34_296 %>%
 
 # Filter to only the needed columns going forward
 tag34_296 <- tag34_296 %>%
-    select(temp, dateTime_EST)
+    select(temp_C, dateTime_EST)
 
 # Ensure dateTime is POSIXct and temp is numeric
 tag34_296 <- tag34_296 %>%
   mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
-         temp = as.numeric(temp))
+         temp_C = as.numeric(temp_C))
+
+# Write new flow csv
+write.csv(tag34_296, 
+          file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag34_296.csv", 
+          row.names = FALSE)
 
 # Set a common color gradient across all plots (10 to 30 degrees Celsius)
 colorMin <- 10
 colorMax <- 30
 
 # Plot the temperature data
-tag34Plot <- ggplot(tag34_296, aes(x = dateTime_EST, y = temp, color = temp)) +
+tag34Plot <- ggplot(tag34_296, aes(x = dateTime_EST, y = temp_C, color = temp_C)) +
   geom_line() +
   scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
   labs(title = "Fish 34's Internal Temperature Over Time in Underhill", 
@@ -976,7 +1046,7 @@ tag36_301 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study pla
 
 # Rename columns
 tag36_301 <- tag36_301 %>%
-  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+  rename(dateTime = `Date & Time`, temp_C = `Temperature(°C)`)
 
 # Step 1: Explicitly tell R that the datetime is in EDT
 tag36_301 <- tag36_301 %>%
@@ -1002,19 +1072,24 @@ tag36_301 <- tag36_301 %>%
 
 # Filter to only the needed columns going forward
 tag36_301 <- tag36_301 %>%
-    select(temp, dateTime_EST)
+    select(temp_C, dateTime_EST)
 
 # Ensure dateTime is POSIXct and temp is numeric
 tag36_301 <- tag36_301 %>%
   mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
-         temp = as.numeric(temp))
+         temp_C = as.numeric(temp_C))
+
+# Write new flow csv
+write.csv(tag36_301, 
+          file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag36_301.csv", 
+          row.names = FALSE)
 
 # Set a common color gradient across all plots (10 to 30 degrees Celsius)
 colorMin <- 10
 colorMax <- 30
 
 # Plot the temperature data
-tag36Plot <- ggplot(tag36_301, aes(x = dateTime_EST, y = temp, color = temp)) +
+tag36Plot <- ggplot(tag36_301, aes(x = dateTime_EST, y = temp_C, color = temp_C)) +
   geom_line() +
   scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
   labs(title = "Fish 36's Internal Temperature Over Time in Underhill", 
@@ -1042,7 +1117,7 @@ tag37_308 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study pla
 
 # Rename columns
 tag37_308 <- tag37_308 %>%
-  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+  rename(dateTime = `Date & Time`, temp_C = `Temperature(°C)`)
 
 # Step 1: Explicitly tell R that the datetime is in EDT
 tag37_308 <- tag37_308 %>%
@@ -1068,19 +1143,24 @@ tag37_308 <- tag37_308 %>%
 
 # Filter to only the needed columns going forward
 tag37_308 <- tag37_308 %>%
-    select(temp, dateTime_EST)
+    select(temp_C, dateTime_EST)
 
 # Ensure dateTime is POSIXct and temp is numeric
 tag37_308 <- tag37_308 %>%
   mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
-         temp = as.numeric(temp))
+         temp_C = as.numeric(temp_C))
+
+# Write new flow csv
+write.csv(tag37_308, 
+          file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag37_308.csv", 
+          row.names = FALSE)
 
 # Set a common color gradient across all plots (10 to 30 degrees Celsius)
 colorMin <- 10
 colorMax <- 30
 
 # Plot the temperature data
-tag37Plot <- ggplot(tag37_308, aes(x = dateTime_EST, y = temp, color = temp)) +
+tag37Plot <- ggplot(tag37_308, aes(x = dateTime_EST, y = temp_C, color = temp_C)) +
   geom_line() +
   scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
   labs(title = "Fish 37's Internal Temperature Over Time in Dickey", 
@@ -1108,7 +1188,7 @@ tag38_315 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study pla
 
 # Rename columns
 tag38_315 <- tag38_315 %>%
-  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+  rename(dateTime = `Date & Time`, temp_C = `Temperature(°C)`)
 
 # Step 1: Explicitly tell R that the datetime is in EDT
 tag38_315 <- tag38_315 %>%
@@ -1134,19 +1214,24 @@ tag38_315 <- tag38_315 %>%
 
 # Filter to only the needed columns going forward
 tag38_315 <- tag38_315 %>%
-    select(temp, dateTime_EST)
+    select(temp_C, dateTime_EST)
 
 # Ensure dateTime is POSIXct and temp is numeric
 tag38_315 <- tag38_315 %>%
   mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
-         temp = as.numeric(temp))
+         temp_C = as.numeric(temp_C))
+
+# Write new flow csv
+write.csv(tag38_315, 
+          file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag38_315.csv", 
+          row.names = FALSE)
 
 # Set a common color gradient across all plots (10 to 30 degrees Celsius)
 colorMin <- 10
 colorMax <- 30
 
 # Plot the temperature data
-tag38Plot <- ggplot(tag38_315, aes(x = dateTime_EST, y = temp, color = temp)) +
+tag38Plot <- ggplot(tag38_315, aes(x = dateTime_EST, y = temp_C, color = temp_C)) +
   geom_line() +
   scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
   labs(title = "Fish 38's Internal Temperature Over Time in Dickey", 
@@ -1174,7 +1259,7 @@ tag40_312 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study pla
 
 # Rename columns
 tag40_312 <- tag40_312 %>%
-  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+  rename(dateTime = `Date & Time`, temp_C = `Temperature(°C)`)
 
 # Step 1: Explicitly tell R that the datetime is in EDT
 tag40_312 <- tag40_312 %>%
@@ -1200,19 +1285,24 @@ tag40_312 <- tag40_312 %>%
 
 # Filter to only the needed columns going forward
 tag40_312 <- tag40_312 %>%
-    select(temp, dateTime_EST)
+    select(temp_C, dateTime_EST)
 
 # Ensure dateTime is POSIXct and temp is numeric
 tag40_312 <- tag40_312 %>%
   mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
-         temp = as.numeric(temp))
+         temp_C = as.numeric(temp_C))
+
+# Write new flow csv
+write.csv(tag40_312, 
+          file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag40_312.csv", 
+          row.names = FALSE)
 
 # Set a common color gradient across all plots (10 to 30 degrees Celsius)
 colorMin <- 10
 colorMax <- 30
 
 # Plot the temperature data
-tag40Plot <- ggplot(tag40_312, aes(x = dateTime_EST, y = temp, color = temp)) +
+tag40Plot <- ggplot(tag40_312, aes(x = dateTime_EST, y = temp_C, color = temp_C)) +
   geom_line() +
   scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
   labs(title = "Fish 40's Internal Temperature Over Time in Underhill", 
@@ -1240,7 +1330,7 @@ tag42_325 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study pla
 
 # Rename columns
 tag42_325 <- tag42_325 %>%
-  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+  rename(dateTime = `Date & Time`, temp_C = `Temperature(°C)`)
 
 # Step 1: Explicitly tell R that the datetime is in EDT
 tag42_325 <- tag42_325 %>%
@@ -1266,19 +1356,24 @@ tag42_325 <- tag42_325 %>%
 
 # Filter to only the needed columns going forward
 tag42_325 <- tag42_325 %>%
-    select(temp, dateTime_EST)
+    select(temp_C, dateTime_EST)
 
 # Ensure dateTime is POSIXct and temp is numeric
 tag42_325 <- tag42_325 %>%
   mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
-         temp = as.numeric(temp))
+         temp_C = as.numeric(temp_C))
+
+# Write new flow csv
+write.csv(tag42_325, 
+          file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag42_325.csv", 
+          row.names = FALSE)
 
 # Set a common color gradient across all plots (10 to 30 degrees Celsius)
 colorMin <- 10
 colorMax <- 30
 
 # Plot the temperature data
-tag42Plot <- ggplot(tag42_325, aes(x = dateTime_EST, y = temp, color = temp)) +
+tag42Plot <- ggplot(tag42_325, aes(x = dateTime_EST, y = temp_C, color = temp_C)) +
   geom_line() +
   scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
   labs(title = "Fish 42's Internal Temperature Over Time in Dry Upper", 
@@ -1306,7 +1401,7 @@ tag43_309 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study pla
 
 # Rename columns
 tag43_309 <- tag43_309 %>%
-  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+  rename(dateTime = `Date & Time`, temp_C = `Temperature(°C)`)
 
 # Step 1: Explicitly tell R that the datetime is in EDT
 tag43_309 <- tag43_309 %>%
@@ -1332,19 +1427,24 @@ tag43_309 <- tag43_309 %>%
 
 # Filter to only the needed columns going forward
 tag43_309 <- tag43_309 %>%
-    select(temp, dateTime_EST)
+    select(temp_C, dateTime_EST)
 
 # Ensure dateTime is POSIXct and temp is numeric
 tag43_309 <- tag43_309 %>%
   mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
-         temp = as.numeric(temp))
+         temp_C = as.numeric(temp_C))
+
+# Write new flow csv
+write.csv(tag43_309, 
+          file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag43_309.csv", 
+          row.names = FALSE)
 
 # Set a common color gradient across all plots (10 to 30 degrees Celsius)
 colorMin <- 10
 colorMax <- 30
 
 # Plot the temperature data
-tag43Plot <- ggplot(tag43_309, aes(x = dateTime_EST, y = temp, color = temp)) +
+tag43Plot <- ggplot(tag43_309, aes(x = dateTime_EST, y = temp_C, color = temp_C)) +
   geom_line() +
   scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
   labs(title = "Fish 43's Internal Temperature Over Time in Underhill", 
@@ -1372,7 +1472,7 @@ tag46.1_317 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study p
 
 # Rename columns
 tag46.1_317 <- tag46.1_317 %>%
-  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+  rename(dateTime = `Date & Time`, temp_C = `Temperature(°C)`)
 
 # Step 1: Explicitly tell R that the datetime is in EDT
 tag46.1_317 <- tag46.1_317 %>%
@@ -1398,19 +1498,24 @@ tag46.1_317 <- tag46.1_317 %>%
 
 # Filter to only the needed columns going forward
 tag46.1_317 <- tag46.1_317 %>%
-    select(temp, dateTime_EST)
+    select(temp_C, dateTime_EST)
 
 # Ensure dateTime is POSIXct and temp is numeric
 tag46.1_317 <- tag46.1_317 %>%
   mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
-         temp = as.numeric(temp))
+         temp_C = as.numeric(temp_C))
+
+# Write new flow csv
+write.csv(tag46.1_317, 
+          file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag46.1_317.csv", 
+          row.names = FALSE)
 
 # Set a common color gradient across all plots (10 to 30 degrees Celsius)
 colorMin <- 10
 colorMax <- 30
 
 # Plot the temperature data
-tag46.1Plot <- ggplot(tag46.1_317, aes(x = dateTime_EST, y = temp, color = temp)) +
+tag46.1Plot <- ggplot(tag46.1_317, aes(x = dateTime_EST, y = temp_C, color = temp_C)) +
   geom_line() +
   scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
   labs(title = "Fish 46.1's Internal Temperature Over Time in Dry Upper", 
@@ -1438,7 +1543,7 @@ tag46_317 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study pla
 
 # Rename columns
 tag46_317 <- tag46_317 %>%
-  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+  rename(dateTime = `Date & Time`, temp_C = `Temperature(°C)`)
 
 # Step 1: Explicitly tell R that the datetime is in EDT
 tag46_317 <- tag46_317 %>%
@@ -1464,19 +1569,24 @@ tag46_317 <- tag46_317 %>%
 
 # Filter to only the needed columns going forward
 tag46_317 <- tag46_317 %>%
-    select(temp, dateTime_EST)
+    select(temp_C, dateTime_EST)
 
 # Ensure dateTime is POSIXct and temp is numeric
 tag46_317 <- tag46_317 %>%
   mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
-         temp = as.numeric(temp))
+         temp_C = as.numeric(temp_C))
+
+# Write new flow csv
+write.csv(tag46_317, 
+          file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag46_317.csv", 
+          row.names = FALSE)
 
 # Set a common color gradient across all plots (10 to 30 degrees Celsius)
 colorMin <- 10
 colorMax <- 30
 
 # Plot the temperature data
-tag46Plot <- ggplot(tag46_317, aes(x = dateTime_EST, y = temp, color = temp)) +
+tag46Plot <- ggplot(tag46_317, aes(x = dateTime_EST, y = temp_C, color = temp_C)) +
   geom_line() +
   scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
   labs(title = "Fish 46's Internal Temperature Over Time in Dickey", 
@@ -1504,7 +1614,7 @@ tag52_326 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study pla
 
 # Rename columns
 tag52_326 <- tag52_326 %>%
-  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+  rename(dateTime = `Date & Time`, temp_C = `Temperature(°C)`)
 
 # Step 1: Explicitly tell R that the datetime is in EDT
 tag52_326 <- tag52_326 %>%
@@ -1530,19 +1640,24 @@ tag52_326 <- tag52_326 %>%
 
 # Filter to only the needed columns going forward
 tag52_326 <- tag52_326 %>%
-    select(temp, dateTime_EST)
+    select(temp_C, dateTime_EST)
 
 # Ensure dateTime is POSIXct and temp is numeric
 tag52_326 <- tag52_326 %>%
   mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
-         temp = as.numeric(temp))
+         temp_C = as.numeric(temp_C))
+
+# Write new flow csv
+write.csv(tag52_326, 
+          file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag52_326.csv", 
+          row.names = FALSE)
 
 # Set a common color gradient across all plots (10 to 30 degrees Celsius)
 colorMin <- 10
 colorMax <- 30
 
 # Plot the temperature data
-tag52Plot <- ggplot(tag52_326, aes(x = dateTime_EST, y = temp, color = temp)) +
+tag52Plot <- ggplot(tag52_326, aes(x = dateTime_EST, y = temp_C, color = temp_C)) +
   geom_line() +
   scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
   labs(title = "Fish 52's Internal Temperature Over Time in Dry Upper", 
@@ -1570,7 +1685,7 @@ tag54_328 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study pla
 
 # Rename columns
 tag54_328 <- tag54_328 %>%
-  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+  rename(dateTime = `Date & Time`, temp_C = `Temperature(°C)`)
 
 # Step 1: Explicitly tell R that the datetime is in EDT
 tag54_328 <- tag54_328 %>%
@@ -1596,19 +1711,24 @@ tag54_328 <- tag54_328 %>%
 
 # Filter to only the needed columns going forward
 tag54_328 <- tag54_328 %>%
-    select(temp, dateTime_EST)
+    select(temp_C, dateTime_EST)
 
 # Ensure dateTime is POSIXct and temp is numeric
 tag54_328 <- tag54_328 %>%
   mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
-         temp = as.numeric(temp))
+         temp_C = as.numeric(temp_C))
+
+# Write new flow csv
+write.csv(tag54_328, 
+          file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag54_328.csv", 
+          row.names = FALSE)
 
 # Set a common color gradient across all plots (10 to 30 degrees Celsius)
 colorMin <- 10
 colorMax <- 30
 
 # Plot the temperature data
-tag54Plot <- ggplot(tag54_328, aes(x = dateTime_EST, y = temp, color = temp)) +
+tag54Plot <- ggplot(tag54_328, aes(x = dateTime_EST, y = temp_C, color = temp_C)) +
   geom_line() +
   scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
   labs(title = "Fish 54's Internal Temperature Over Time in Dry Upper", 
@@ -1636,7 +1756,7 @@ tag57_337 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study pla
 
 # Rename columns
 tag57_337 <- tag57_337 %>%
-  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+  rename(dateTime = `Date & Time`, temp_C = `Temperature(°C)`)
 
 # Step 1: Explicitly tell R that the datetime is in EDT
 tag57_337 <- tag57_337 %>%
@@ -1662,19 +1782,24 @@ tag57_337 <- tag57_337 %>%
 
 # Filter to only the needed columns going forward
 tag57_337 <- tag57_337 %>%
-    select(temp, dateTime_EST)
+    select(temp_C, dateTime_EST)
 
 # Ensure dateTime is POSIXct and temp is numeric
 tag57_337 <- tag57_337 %>%
   mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
-         temp = as.numeric(temp))
+         temp_C = as.numeric(temp_C))
+
+# Write new flow csv
+write.csv(tag57_337, 
+          file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag57_337.csv", 
+          row.names = FALSE)
 
 # Set a common color gradient across all plots (10 to 30 degrees Celsius)
 colorMin <- 10
 colorMax <- 30
 
 # Plot the temperature data
-tag57Plot <- ggplot(tag57_337, aes(x = dateTime_EST, y = temp, color = temp)) +
+tag57Plot <- ggplot(tag57_337, aes(x = dateTime_EST, y = temp_C, color = temp_C)) +
   geom_line() +
   scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
   labs(title = "Fish 57's Internal Temperature Over Time in Amethyst", 
@@ -1702,7 +1827,7 @@ tag60_338 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study pla
 
 # Rename columns
 tag60_338 <- tag60_338 %>%
-  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+  rename(dateTime = `Date & Time`, temp_C = `Temperature(°C)`)
 
 # Step 1: Explicitly tell R that the datetime is in EDT
 tag60_338 <- tag60_338 %>%
@@ -1728,19 +1853,24 @@ tag60_338 <- tag60_338 %>%
 
 # Filter to only the needed columns going forward
 tag60_338 <- tag60_338 %>%
-    select(temp, dateTime_EST)
+    select(temp_C, dateTime_EST)
 
 # Ensure dateTime is POSIXct and temp is numeric
 tag60_338 <- tag60_338 %>%
   mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
-         temp = as.numeric(temp))
+         temp_C = as.numeric(temp_C))
+
+# Write new flow csv
+write.csv(tag60_338, 
+          file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag60_338.csv", 
+          row.names = FALSE)
 
 # Set a common color gradient across all plots (10 to 30 degrees Celsius)
 colorMin <- 10
 colorMax <- 30
 
 # Plot the temperature data
-tag60Plot <- ggplot(tag60_338, aes(x = dateTime_EST, y = temp, color = temp)) +
+tag60Plot <- ggplot(tag60_338, aes(x = dateTime_EST, y = temp_C, color = temp_C)) +
   geom_line() +
   scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
   labs(title = "Fish 60's Internal Temperature Over Time in Amethyst", 
@@ -1768,7 +1898,7 @@ tag62_334 <- read_excel("C:/Users/jpilchik/OneDrive - DOI/Documents/My study pla
 
 # Rename columns
 tag62_334 <- tag62_334 %>%
-  rename(dateTime = `Date & Time`, temp = `Temperature(°C)`)
+  rename(dateTime = `Date & Time`, temp_C = `Temperature(°C)`)
 
 # Step 1: Explicitly tell R that the datetime is in EDT
 tag62_334 <- tag62_334 %>%
@@ -1794,19 +1924,24 @@ tag62_334 <- tag62_334 %>%
 
 # Filter to only the needed columns going forward
 tag62_334 <- tag62_334 %>%
-    select(temp, dateTime_EST)
+    select(temp_C, dateTime_EST)
 
 # Ensure dateTime is POSIXct and temp is numeric
 tag62_334 <- tag62_334 %>%
   mutate(dateTime_EST = as.POSIXct(dateTime_EST, tz = "EST"),
-         temp = as.numeric(temp))
+         temp_C = as.numeric(temp_C))
+
+# Write new flow csv
+write.csv(tag62_334, 
+          file = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag62_334.csv", 
+          row.names = FALSE)
 
 # Set a common color gradient across all plots (10 to 30 degrees Celsius)
 colorMin <- 10
 colorMax <- 30
 
 # Plot the temperature data
-tag62Plot <- ggplot(tag62_334, aes(x = dateTime_EST, y = temp, color = temp)) +
+tag62Plot <- ggplot(tag62_334, aes(x = dateTime_EST, y = temp_C, color = temp_C)) +
   geom_line() +
   scale_color_gradient(low = "blue", high = "red", limits = c(colorMin, colorMax)) +  # Set colors for low and high temperatures
   labs(title = "Fish 62's Internal Temperature Over Time in Amethyst", 

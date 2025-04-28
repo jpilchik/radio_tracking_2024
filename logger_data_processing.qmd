@@ -2,6 +2,12 @@
 title: "logger_data_processing"
 ---
 
+```{r}
+library(lubridate)
+library(dplyr)
+```
+
+
 ## Preparing HOBO Logger Files
 
 ```{r combine all underhill files}
@@ -10,11 +16,19 @@ title: "logger_data_processing"
 UNDH_logger_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawLoggerData/Temperature/UNDH/"
 
 # Define file names
-file_names <- paste0(UNDH_logger_data, c("UNDH_1.csv", "UNDH_2.csv", 
-                                          "UNDH_3.csv", "UNDH_4.csv", 
-                                          "UNDH_5.csv", "UNDH_trib.csv", 
-                                          "UNDH_6.csv", "UNDH_7.csv", 
-                                          "UNDH_8.csv")) 
+file_names <- paste0(UNDH_logger_data, c("UNDH_12.csv", 
+                                         "UNDH_25.csv", 
+                                         "UNDH_29.csv", 
+                                         "UNDH_29_5m.csv",
+                                         "UNDH_49.csv", 
+                                         "UNDH_A01.csv", 
+                                         "UNDH_A02.csv", 
+                                         "UNDH_A03.csv", 
+                                         "UNDH_A04.csv", 
+                                         "UNDH_A05.csv",
+                                         "UNDH_A06.csv", 
+                                         "UNDH_depth.csv",
+                                         "UNDH_trib.csv")) 
 
 # Create an empty list to store the data from each file
 full_data_list <- list()
@@ -44,9 +58,17 @@ write.csv(UNDH_logger_data,
 HARR_logger_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawLoggerData/Temperature/HARR/"
 
 # Define file names
-file_names <- paste0(HARR_logger_data, c("HARR_1.csv", "HARR_2.csv", 
-                                          "HARR_3.csv", "HARR_4.csv", 
-                                          "HARR_5.csv", "HARR_6.csv")) 
+file_names <- paste0(HARR_logger_data, c("HARR_01.csv", 
+                                         "HARR_03.csv", 
+                                         "HARR_06.csv", 
+                                         "HARR_08.csv", 
+                                         "HARR_10.csv", 
+                                         "HARR_A01.csv",
+                                         "HARR_A02.csv", 
+                                         "HARR_A03.csv",
+                                         "HARR_A04.csv", 
+                                         "HARR_A05.csv",
+                                         "HARR_depth.csv")) 
 
 # Create an empty list to store the data from each file
 full_data_list <- list()
@@ -76,8 +98,10 @@ write.csv(HARR_logger_data,
 BUFF_logger_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawLoggerData/Temperature/BUFF/"
 
 # Define file names
-file_names <- paste0(BUFF_logger_data, c("BUFF_1.csv", "BUFF_2.csv", 
-                                          "BUFF_3.csv")) 
+file_names <- paste0(BUFF_logger_data, c("BUFF_04.csv", 
+                                         "BUFF_A01.csv", 
+                                         "BUFF_A02.csv", 
+                                         "BUFF_depth.csv")) 
 
 # Create an empty list to store the data from each file
 full_data_list <- list()
@@ -107,8 +131,21 @@ write.csv(BUFF_logger_data,
 AMTH_logger_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawLoggerData/Temperature/AMTH/"
 
 # Define file names
-file_names <- paste0(AMTH_logger_data, c("AMTH_1.csv", "AMTH_2.csv", 
-                                          "AMTH_3.csv")) 
+file_names <- paste0(AMTH_logger_data, c("AMTH_01.csv", 
+                                         "AMTH_04.csv", 
+                                         "AMTH_20.csv", 
+                                         "AMTH_25.csv",
+                                         "AMTH_27.csv", 
+                                         "AMTH_29.csv",
+                                         "AMTH_31.csv", 
+                                         "AMTH_31_0C.csv",
+                                         "AMTH_31_0D.csv", 
+                                         "AMTH_31_1C.csv", 
+                                         "AMTH_31_1D.csv",
+                                         "AMTH_31_2D.csv",
+                                         "AMTH_A01.csv", 
+                                         "AMTH_A02.csv",
+                                         "AMTH_A03.csv")) 
 
 # Create an empty list to store the data from each file
 full_data_list <- list()
@@ -138,10 +175,21 @@ write.csv(AMTH_logger_data,
 DCKY_logger_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawLoggerData/Temperature/DCKY/"
 
 # Define file names
-file_names <- paste0(DCKY_logger_data, c("DCKY_1.csv", "DCKY_2.csv", 
-                                          "DCKY_3.csv", "DCKY_4.csv", 
-                                          "DCKY_5.csv", "DCKY_6.csv", 
-                                          "DCKY_7.csv")) 
+file_names <- paste0(DCKY_logger_data, c("DCKY_01.csv", 
+                                         "DCKY_04_1B.csv", 
+                                         "DCKY_04_1m.csv", 
+                                         "DCKY_13.csv",
+                                         "DCKY_15.csv", 
+                                         "DCKY_21_5m.csv",
+                                         "DCKY_21_7m.csv", 
+                                         "DCKY_25.csv",
+                                         "DCKY_A02.csv", 
+                                         "DCKY_A03.csv",
+                                         "DCKY_A04.csv", 
+                                         "DCKY_A05.csv",
+                                         "DCKY_A06.csv", 
+                                         "DCKY_A07.csv",
+                                         "DCKY_depth.csv")) 
 
 # Create an empty list to store the data from each file
 full_data_list <- list()
@@ -171,10 +219,29 @@ write.csv(DCKY_logger_data,
 DRYU_logger_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawLoggerData/Temperature/DRYU/"
 
 # Define file names
-file_names <- paste0(DRYU_logger_data, c("DRYU_1.csv", "DRYU_2.csv", 
-                                          "DRYU_3.csv", "DRYU_4.csv", 
-                                          "DRYU_5.csv", "DRYU_6.csv", 
-                                          "DRYU_7.csv")) 
+file_names <- paste0(DRYU_logger_data, c("DRYU_08_0B.csv", #works
+                                         "DRYU_08_0m.csv", #works
+                                         "DRYU_08_1m.csv", #works
+                                         "DRYU_09_5m.csv", #works
+                                         "DRYU_09_13m.csv", #works
+                                         "DRYU_09_15B.csv", #works
+                                         "DRYU_09_15m.csv", #works
+                                         "DRYU_10.csv", #works
+                                         "DRYU_10_1B.csv", #works
+                                         "DRYU_14.15.csv", #works
+                                         "DRYU_17.csv", #works
+                                         "DRYU_17_8m.csv", #works 
+                                         "DRYU_18_4m.csv", #works
+                                         "DRYU_18_5m.csv", #works
+                                         "DRYU_19_13m.csv", #works
+                                         "DRYU_19_15A.csv", #works
+                                         "DRYU_22_1m.csv", #works
+                                         "DRYU_22_3m.csv", #works
+                                         "DRYU_A01.csv", #works
+                                         "DRYU_A02.csv", #works
+                                         "DRYU_A03.csv"#, #works
+                                         #"DRYU_depth" #broken
+                                         )) 
 
 # Create an empty list to store the data from each file
 full_data_list <- list()
@@ -198,10 +265,44 @@ write.csv(DRYU_logger_data,
 
 ```
 
+```{r combine all dry lower files}
+
+# Define the path to the folder
+DRYL_logger_data <- "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/rawLoggerData/Temperature/DRYL/"
+
+# Define file names
+file_names <- paste0(DRYL_logger_data, c("DRYL_1.csv", 
+                                         "DRYL_2.csv", 
+                                         "DRYL_3.csv"
+                                         )) 
+
+# Create an empty list to store the data from each file
+full_data_list <- list()
+
+# Loop through each file and read the data into the list
+for (file_name in file_names) {
+  all_data <- read.csv(file_name, stringsAsFactors = FALSE)
+  full_data_list[[file_name]] <- all_data
+}
+
+# Combine all datasets into a single data frame by stacking rows
+DRYL_logger_data <- bind_rows(full_data_list)
+
+# Display the first few rows of the combined dataset
+head(DRYL_logger_data)
+
+# Write the combined data to a new CSV file
+write.csv(DRYL_logger_data, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/DRYL_logger_data.csv", 
+          row.names = FALSE)
+
+```
+
 ```{r combine all logger data}
 
 # Read in the logger data
 DRYU_logger_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/DRYU_logger_data.csv")
+DRYL_logger_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/DRYL_logger_data.csv")
 HARR_logger_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/HARR_logger_data.csv")
 BUFF_logger_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/BUFF_logger_data.csv")
 AMTH_logger_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/AMTH_logger_data.csv")
@@ -209,7 +310,23 @@ DCKY_logger_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My stud
 UNDH_logger_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/UNDH_logger_data.csv")
 
 # Combine the data frames by rows
-logger_data_all <- bind_rows(DRYU_logger_data, HARR_logger_data, BUFF_logger_data, AMTH_logger_data, DCKY_logger_data, UNDH_logger_data)
+logger_data_all <- bind_rows(DRYU_logger_data, DRYL_logger_data, HARR_logger_data, BUFF_logger_data, AMTH_logger_data, DCKY_logger_data, UNDH_logger_data)
+
+# Convert datetime to EST if timezone is EDT, else keep unchanged but set as EST
+logger_data_all <- logger_data_all %>%
+  mutate(
+    dateTime_POSIX = mdy_hm(datetime),  # Parse without assigning a timezone
+    dateTime_EST = case_when(
+      timezone == "EDT" ~ force_tz(dateTime_POSIX - hours(1), tzone = "EST"),  # Subtract 1 hour for EDT points
+      TRUE ~ force_tz(dateTime_POSIX, tzone = "EST")  # Keep EST values unchanged
+    )
+  )
+
+logger_data_all <- logger_data_all %>%
+  rename(location_ID = `location_id`, series_ID = `series_id`, temp = `temperature..degC.`)
+
+logger_data_all <- logger_data_all %>%
+  select("agency_name", "location_ID", "series_ID", "river", "logger_name", "lon", "lat", "dateTime_EST", "temp", "flagged") 
 
 # Display the first few rows of the combined dataset
 head(logger_data_all)
@@ -234,18 +351,45 @@ write.csv(logger_data_filtered,
           "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/logger_data_filtered.csv", 
           row.names = FALSE)
 
-logger_data_filtered$date <- as.Date(logger_data_filtered$datetime, format = "%m/%d/%Y %H:%M")
+logger_data_filtered$date <- as.Date(format(logger_data_filtered$dateTime_EST, tz = "EST", usetz = FALSE))  # Ensure correct timezone extraction
 
 # Define date range
-start_date <- as.Date("2024-06-11")
-end_date <- as.Date("2024-08-29")
+start_date <- as.Date("2024-06-10") #tracking starts on 6/11/24
+end_date <- as.Date("2024-08-30") #tracking ends on 8/29/24
 
 # Filter dataset to within the date range
 logger_data_summer <- logger_data_filtered %>%
   filter(date >= start_date & date <= end_date)
 
+logger_data_summer <- logger_data_summer %>%
+  mutate(river = recode(river,
+                        "UNDH" = "UNDERHILL",
+                        "DCKY" = "DICKEY",
+                        "AMTH" = "AMETHYST",
+                        "DRYU" = "DRY UPPER",
+                        "DRYL" = "DRY LOWER",
+                        "BUFF" = "BUFFAM",
+                        "HARR" = "HARRIS"
+  ))
+
+# Average data points from loggers at same time with different series ID
+logger_data_summer <- logger_data_summer %>%
+  group_by(agency_name, location_ID, river, logger_name, lon, lat, dateTime_EST, flagged, date) %>%
+  summarise(
+    temp = mean(temp, na.rm = TRUE),
+    count_seriesIDs = n(),
+    .groups = "drop"
+  )
+
 # Display the first few rows of the combined dataset
 head(logger_data_summer)
+
+# Check for duplicate rows
+duplicates <- logger_data_summer %>%
+  group_by(logger_name, dateTime_EST) %>% #, series_ID)
+  filter(n() > 1)
+
+print(duplicates)
 
 # Write the combined data to a new CSV file
 write.csv(logger_data_summer, 

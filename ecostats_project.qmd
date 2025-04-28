@@ -1,0 +1,1687 @@
+---
+title: "ecostats_project"
+---
+
+# Karli RiverDist Script
+
+## Load your libraries (You might not need them all right now)
+
+```{r setup libraries}
+# Required packages for script
+require(tidyverse) # Used for Data Wrangling and Clean-up
+require(data.table) # Used for Data Wrangling and Clean-up
+require(riverdist) # Used for Individual Movement
+require(RMark) # Used for Mark-Recapture Data (Survival and Detection Rates)
+library(readxl)
+library(gridExtra)
+library(moments)
+library(ggplot2)
+library(dplyr)
+library(lubridate)
+
+# Convert points to UTMs from decimal degrees
+library(sf)
+
+# For the coordinates function
+library(sp)
+```
+
+## Load dataset
+
+```{r load and filter fish data}
+tracking_data_all <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/combined_data/tracking_data_all.csv")
+
+tracking_data_locations <- tracking_data_all %>%
+  filter(source == "iPad", is.na(status))
+
+tracking_data_locations <- tracking_data_locations %>%
+  filter(!is.na(lon) & !is.na(lat))
+```
+
+```{r load logger data}
+logger_data_summer <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/logger_data/logger_data_summer.csv")
+```
+
+## Underhill Brook
+
+1. Load your flowline shapefiles (do this for each watershed separately)
+
+```{r Load in watershed flowlines}
+
+underhill_flowlines <- lines <- st_read("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles/NHDFlowline_UnderhillBrook.shp") # Reads shapefile, these shapefiles are already in geographic coordinate system NAD83
+st_crs(underhill_flowlines) # This just checks to make sure that your lines are in GCS NAD83
+underhill_flowlines <- st_transform(underhill_flowlines, 26918) # Projects to UTM Zone 18N (the code for this is 26918)
+
+## Please read note before running next line! Comment the next line out if you already reprojected the raw shapefile.
+#st_write(underhill_flowlines, "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles/NHDFlowline_UnderhillBrook_UTMZONE18N.shp") #Once you run this, it will add a new shapefile to your "shapefiles" folder! It will give you a warning if it's already done. I did it for underhill already, but you'll need to repeat this process for each watershed. 
+
+
+underhill_flowlines_UTMZONE18N <- line2network(path = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles", # Points to the folder in your R Project folder
+                                    layer = "NHDFlowline_UnderhillBrook_UTMZONE18N", # Identifies the shapefile you want to pull from folder
+                                    tolerance = 10) # This is the spatial tolerance used to determine connectivity between line segments) 
+
+
+# Adding vertices every 1 meter to the river network
+underhill_flowlines_UTMZONE18N <- addverts(underhill_flowlines_UTMZONE18N, mindist=1)
+
+plot(x=underhill_flowlines_UTMZONE18N) # checks imported line
+topologydots(rivers = underhill_flowlines_UTMZONE18N) # checks line topology
+
+# Setting the MOUTH of your watershed allows you to look at directional movement. The "seg = " value will be the segment that includes your mouth, which you can observe in the plot function above. In Underhill, it's segment 46. The "vert = " value identifies the correct node of that segment. Using "showends" on the segment you want will show you what vertex to select.
+plot(x=underhill_flowlines_UTMZONE18N)
+showends(seg = 46, rivers = underhill_flowlines_UTMZONE18N) # identifies the true mouth of your watershed
+underhill_mouth <- setmouth(seg = 46, vert = 275, rivers = underhill_flowlines_UTMZONE18N) # sets the mouth to the segment and vertex you need.
+
+```
+
+2. Load your fish points for the watershed you are analyzing (do this for each watershed separately)
+```{r Load in fish points}
+
+# read in your fish points and filter by the watershed you're looking at. Make sure to have X and Y columns available in decimal degrees
+
+# Keep only points from "UNDERHILL" and also remove rows where lat or lon are NA
+underhill_points <- tracking_data_locations %>%
+  filter(river == "UNDERHILL" & !is.na(lon) & !is.na(lat))
+
+# Make Lat Lon columns numeric
+
+underhill_points_spatial <- underhill_points %>% 
+  mutate(POINT_Y = as.numeric(lat)) %>% # change to whatever your Y coord column is
+  mutate(POINT_X = as.numeric(lon)) # change to whatever your X coord column is
+coordinates(underhill_points_spatial) <- c("POINT_X","POINT_Y") # identifies the coordinate columns
+proj4string(underhill_points_spatial) <- CRS("+proj=longlat +datum=WGS84") 
+res_underhill_fish <- spTransform(underhill_points_spatial, CRS("+proj=utm +zone=18 +ellps=WGS84")) # reprojects the points to UTM ZONE 18
+as(res_underhill_fish, "SpatialPoints")
+res_underhill_fish <- as.data.frame(res_underhill_fish)
+res_underhill_fish <- res_underhill_fish %>% 
+  rename(POINT_X = coords.x1, POINT_Y = coords.x2) %>%  # Rename coords.x1 and coords.x2
+  mutate(Rownumber =row_number())
+underhill_segvert_fish <- xy2segvert(x = res_underhill_fish$POINT_X, y = res_underhill_fish$POINT_Y, rivers = underhill_flowlines_UTMZONE18N) # change the "res$" to your X and Y coord columns
+  
+## Display raw points (red dots) and snapped points (blue). Run these three lines all at once
+plot(x= underhill_flowlines_UTMZONE18N)
+points(res_underhill_fish$POINT_X, res_underhill_fish$POINT_Y, pch=16, col="red") # shows raw points
+riverpoints(seg = underhill_segvert_fish$seg, vert = underhill_segvert_fish$vert, rivers = underhill_flowlines_UTMZONE18N, pch = 15, col="blue")
+
+
+```
+
+```{r prepare fish dataset}
+nrow(res_underhill_fish)  # Total points before snapping
+nrow(underhill_segvert_fish)  # Total points successfully snapped
+
+# Assign row numbers
+underhill_segvert_fish <- underhill_segvert_fish %>%
+  mutate(Rownumber = row_number()) 
+
+# Merge snapped points back with the original dataset using row numbers
+underhill_fish_locations <- left_join(res_underhill_fish %>% select(Rownumber, radioID, trackedTime_EST, POINT_X, POINT_Y), 
+                               underhill_segvert_fish, 
+                               by = "Rownumber")
+
+# Organize dataset
+underhill_fish_locations <- underhill_fish_locations %>%
+  select(radioID, trackedTime_EST, POINT_X, POINT_Y, snap_x, snap_y, seg, vert, snapdist)
+
+# Arrange data by fish ID and datetime to ensure chronological order
+underhill_fish_locations <- underhill_fish_locations %>%
+  arrange(radioID, trackedTime_EST)
+
+head(underhill_fish_locations)
+
+# Check for duplicate rows
+duplicates <- underhill_fish_locations %>%
+  group_by(radioID, trackedTime_EST) %>%
+  filter(n() > 1)
+
+print(duplicates)
+```
+
+
+3. Load your temperature loggers for the watershed you are analyzing (do this for each watershed separately)
+```{r Load in temperature loggers}
+
+# read in your temperature loggers and filter by the watershed you're looking at. Make sure to have X and Y columns available in decimal degrees
+
+# Keep only points from "UNDERHILL" and also remove rows where lat or lon are NA
+underhill_loggers <- logger_data_summer %>%
+  filter(river == "UNDERHILL" & !is.na(lon) & !is.na(lat))
+
+# Make Lat Lon columns numeric
+
+underhill_loggers_spatial <- underhill_loggers %>% 
+  mutate(POINT_Y = as.numeric(lat)) %>% # change to whatever your Y coord column is
+  mutate(POINT_X = as.numeric(lon)) # change to whatever your X coord column is
+coordinates(underhill_loggers_spatial) <- c("POINT_X","POINT_Y") # identifies the coordinate columns
+proj4string(underhill_loggers_spatial) <- CRS("+proj=longlat +datum=WGS84") 
+res_underhill_loggers <- spTransform(underhill_loggers_spatial, CRS("+proj=utm +zone=18 +ellps=WGS84")) # reprojects the points to UTM ZONE 18
+as(res_underhill_loggers, "SpatialPoints")
+res_underhill_loggers <- as.data.frame(res_underhill_loggers)
+res_underhill_loggers <- res_underhill_loggers %>% 
+  rename(POINT_X = coords.x1, POINT_Y = coords.x2) %>%  # Rename coords.x1 and coords.x2
+  mutate(Rownumber =row_number())
+underhill_segvert_loggers <- xy2segvert(x = res_underhill_loggers$POINT_X, y = res_underhill_loggers$POINT_Y, rivers = underhill_flowlines_UTMZONE18N) # change the "res$" to your X and Y coord columns
+  
+## Display raw points (red dots) and snapped points (blue). Run these three lines all at once
+plot(x= underhill_flowlines_UTMZONE18N)
+points(res_underhill_loggers$POINT_X, res_underhill_loggers$POINT_Y, pch=16, col="red") # shows raw points
+riverpoints(seg = underhill_segvert_loggers$seg, vert = underhill_segvert_loggers$vert, rivers = underhill_flowlines_UTMZONE18N, pch = 15, col="blue")
+
+
+```
+
+```{r prepare logger dataset}
+nrow(res_underhill_loggers)  # Total points before snapping
+nrow(underhill_segvert_loggers)  # Total points successfully snapped
+
+# Assign row numbers
+underhill_segvert_loggers <- underhill_segvert_loggers %>%
+  mutate(Rownumber = row_number()) 
+
+# Merge snapped points back with the original dataset using row numbers
+underhill_logger_locations <- left_join(res_underhill_loggers %>% select(Rownumber, logger_name, dateTime_EST, POINT_X, POINT_Y), 
+                               underhill_segvert_loggers, 
+                               by = "Rownumber")
+
+# Organize dataset
+underhill_logger_locations <- underhill_logger_locations %>%
+  select(logger_name, dateTime_EST, POINT_X, POINT_Y, snap_x, snap_y, seg, vert, snapdist)
+
+# Arrange data by logger and datetime to ensure chronological order
+underhill_logger_locations <- underhill_logger_locations %>%
+  arrange(logger_name, dateTime_EST)
+
+head(underhill_logger_locations)
+
+# Check for duplicate rows
+duplicates <- underhill_logger_locations %>%
+  group_by(logger_name, dateTime_EST) %>%
+  filter(n() > 1)
+
+print(duplicates)
+```
+
+
+## Dickey Brook
+
+1. Load your flowline shapefiles (do this for each watershed separately)
+
+```{r Load in watershed flowlines}
+
+dickey_flowlines <- lines <- st_read("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles/NHDFlowline_DickeyBrook.shp") # Reads shapefile, these shapefiles are already in geographic coordinate system NAD83
+st_crs(dickey_flowlines) # This just checks to make sure that your lines are in GCS NAD83
+dickey_flowlines <- st_transform(dickey_flowlines, 26918) # Projects to UTM Zone 18N (the code for this is 26918)
+
+## Please read note before running next line! Comment the next line out if you already reprojected the raw shapefile.
+#st_write(dickey_flowlines, "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles/NHDFlowline_DickeyBrook_UTMZONE18N.shp") #Once you run this, it will add a new shapefile to your "shapefiles" folder! It will give you a warning if it's already done. I did it for underhill already, but you'll need to repeat this process for each watershed. 
+
+
+dickey_flowlines_UTMZONE18N <- line2network(path = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles", # Points to the folder in your R Project folder
+                                    layer = "NHDFlowline_DickeyBrook_UTMZONE18N", # Identifies the shapefile you want to pull from folder
+                                    tolerance = 10) # This is the spatial tolerance used to determine connectivity between line segments) 
+
+
+# Adding vertices every 1 meter to the river network
+dickey_flowlines_UTMZONE18N <- addverts(dickey_flowlines_UTMZONE18N, mindist=1)
+
+plot(x=dickey_flowlines_UTMZONE18N) # checks imported line
+topologydots(rivers = dickey_flowlines_UTMZONE18N) # checks line topology
+
+# Setting the MOUTH of your watershed allows you to look at directional movement. The "seg = " value will be the segment that includes your mouth, which you can observe in the plot function above. In Underhill, it's segment 46. The "vert = " value identifies the correct node of that segment. Using "showends" on the segment you want will show you what vertex to select.
+plot(x=dickey_flowlines_UTMZONE18N)
+showends(seg = 42, rivers = dickey_flowlines_UTMZONE18N) # identifies the true mouth of your watershed
+dickey_mouth <- setmouth(seg = 42, vert = 313, rivers = dickey_flowlines_UTMZONE18N) # sets the mouth to the segment and vertex you need.
+
+```
+
+2. Load your fish points for the watershed you are analyzing (do this for each watershed separately)
+```{r Load in fish points}
+
+# read in your fish points and filter by the watershed you're looking at. Make sure to have X and Y columns available in decimal degrees
+
+# Keep only points from "DICKEY" and also remove rows where lat or lon are NA
+dickey_points <- tracking_data_locations %>%
+  filter(river == "DICKEY" & !is.na(lon) & !is.na(lat))
+
+# Make Lat Lon columns numeric
+
+dickey_points_spatial <- dickey_points %>% 
+  mutate(POINT_Y = as.numeric(lat)) %>% # change to whatever your Y coord column is
+  mutate(POINT_X = as.numeric(lon)) # change to whatever your X coord column is
+coordinates(dickey_points_spatial) <- c("POINT_X","POINT_Y") # identifies the coordinate columns
+proj4string(dickey_points_spatial) <- CRS("+proj=longlat +datum=WGS84") 
+res_dickey_fish <- spTransform(dickey_points_spatial, CRS("+proj=utm +zone=18 +ellps=WGS84")) # reprojects the points to UTM ZONE 18
+as(res_dickey_fish, "SpatialPoints")
+res_dickey_fish <- as.data.frame(res_dickey_fish)
+res_dickey_fish <- res_dickey_fish %>% 
+  rename(POINT_X = coords.x1, POINT_Y = coords.x2) %>%  # Rename coords.x1 and coords.x2
+  mutate(Rownumber =row_number())
+dickey_segvert_fish <- xy2segvert(x = res_dickey_fish$POINT_X, y = res_dickey_fish$POINT_Y, rivers = dickey_flowlines_UTMZONE18N) # change the "res$" to your X and Y coord columns
+  
+## Display raw points (red dots) and snapped points (blue). Run these three lines all at once
+plot(x= dickey_flowlines_UTMZONE18N)
+points(res_dickey_fish$POINT_X, res_dickey_fish$POINT_Y, pch=16, col="red") # shows raw points
+riverpoints(seg = dickey_segvert_fish$seg, vert = dickey_segvert_fish$vert, rivers = dickey_flowlines_UTMZONE18N, pch = 15, col="blue")
+
+
+```
+
+```{r prepare fish dataset}
+nrow(res_dickey_fish)  # Total points before snapping
+nrow(dickey_segvert_fish)  # Total points successfully snapped
+
+# Assign row numbers
+dickey_segvert_fish <- dickey_segvert_fish %>%
+  mutate(Rownumber = row_number()) 
+
+# Merge snapped points back with the original dataset using row numbers
+dickey_fish_locations <- left_join(res_dickey_fish %>% select(Rownumber, radioID, trackedTime_EST, POINT_X, POINT_Y), 
+                               dickey_segvert_fish, 
+                               by = "Rownumber")
+
+# Organize dataset
+dickey_fish_locations <- dickey_fish_locations %>%
+  select(radioID, trackedTime_EST, POINT_X, POINT_Y, snap_x, snap_y, seg, vert, snapdist)
+
+# Arrange data by fish ID and datetime to ensure chronological order
+dickey_fish_locations <- dickey_fish_locations %>%
+  arrange(radioID, trackedTime_EST)
+
+head(dickey_fish_locations)
+
+# Check for duplicate rows
+duplicates <- dickey_fish_locations %>%
+  group_by(radioID, trackedTime_EST) %>%
+  filter(n() > 1)
+
+print(duplicates)
+```
+
+
+3. Load your temperature loggers for the watershed you are analyzing (do this for each watershed separately)
+```{r Load in temperature loggers}
+
+# read in your temperature loggers and filter by the watershed you're looking at. Make sure to have X and Y columns available in decimal degrees
+
+# Keep only points from "DICKEY" and also remove rows where lat or lon are NA
+dickey_loggers <- logger_data_summer %>%
+  filter(river == "DICKEY" & !is.na(lon) & !is.na(lat))
+
+# Make Lat Lon columns numeric
+
+dickey_loggers_spatial <- dickey_loggers %>% 
+  mutate(POINT_Y = as.numeric(lat)) %>% # change to whatever your Y coord column is
+  mutate(POINT_X = as.numeric(lon)) # change to whatever your X coord column is
+coordinates(dickey_loggers_spatial) <- c("POINT_X","POINT_Y") # identifies the coordinate columns
+proj4string(dickey_loggers_spatial) <- CRS("+proj=longlat +datum=WGS84") 
+res_dickey_loggers <- spTransform(dickey_loggers_spatial, CRS("+proj=utm +zone=18 +ellps=WGS84")) # reprojects the points to UTM ZONE 18
+as(res_dickey_loggers, "SpatialPoints")
+res_dickey_loggers <- as.data.frame(res_dickey_loggers)
+res_dickey_loggers <- res_dickey_loggers %>% 
+  rename(POINT_X = coords.x1, POINT_Y = coords.x2) %>%  # Rename coords.x1 and coords.x2
+  mutate(Rownumber =row_number())
+dickey_segvert_loggers <- xy2segvert(x = res_dickey_loggers$POINT_X, y = res_dickey_loggers$POINT_Y, rivers = dickey_flowlines_UTMZONE18N) # change the "res$" to your X and Y coord columns
+  
+## Display raw points (red dots) and snapped points (blue). Run these three lines all at once
+plot(x= dickey_flowlines_UTMZONE18N)
+points(res_dickey_loggers$POINT_X, res_dickey_loggers$POINT_Y, pch=16, col="red") # shows raw points
+riverpoints(seg = dickey_segvert_loggers$seg, vert = dickey_segvert_loggers$vert, rivers = dickey_flowlines_UTMZONE18N, pch = 15, col="blue")
+
+
+```
+
+```{r prepare logger dataset}
+nrow(res_dickey_loggers)  # Total points before snapping
+nrow(dickey_segvert_loggers)  # Total points successfully snapped
+
+# Assign row numbers
+dickey_segvert_loggers <- dickey_segvert_loggers %>%
+  mutate(Rownumber = row_number()) 
+
+# Merge snapped points back with the original dataset using row numbers
+dickey_logger_locations <- left_join(res_dickey_loggers %>% select(Rownumber, logger_name, dateTime_EST, POINT_X, POINT_Y), 
+                               dickey_segvert_loggers, 
+                               by = "Rownumber")
+
+# Organize dataset
+dickey_logger_locations <- dickey_logger_locations %>%
+  select(logger_name, dateTime_EST, POINT_X, POINT_Y, snap_x, snap_y, seg, vert, snapdist)
+
+# Arrange data by logger and datetime to ensure chronological order
+dickey_logger_locations <- dickey_logger_locations %>%
+  arrange(logger_name, dateTime_EST)
+
+head(dickey_logger_locations)
+
+# Check for duplicate rows
+duplicates <- dickey_logger_locations %>%
+  group_by(logger_name, dateTime_EST) %>%
+  filter(n() > 1)
+
+print(duplicates)
+```
+
+## Dry Brook
+
+1. Load your flowline shapefiles (do this for each watershed separately)
+
+```{r Load in watershed flowlines}
+
+dry_flowlines <- lines <- st_read("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles/NHDFlowline_DryBrook.shp") # Reads shapefile, these shapefiles are already in geographic coordinate system NAD83
+st_crs(dry_flowlines) # This just checks to make sure that your lines are in GCS NAD83
+dry_flowlines <- st_transform(dry_flowlines, 26918) # Projects to UTM Zone 18N (the code for this is 26918)
+
+## Please read note before running next line! Comment the next line out if you already reprojected the raw shapefile.
+#st_write(dry_flowlines, "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles/NHDFlowline_DryBrook_UTMZONE18N.shp") #Once you run this, it will add a new shapefile to your "shapefiles" folder! It will give you a warning if it's already done. I did it for underhill already, but you'll need to repeat this process for each watershed. 
+
+
+dry_flowlines_UTMZONE18N <- line2network(path = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles", # Points to the folder in your R Project folder
+                                    layer = "NHDFlowline_DryBrook_UTMZONE18N", # Identifies the shapefile you want to pull from folder
+                                    tolerance = 10) # This is the spatial tolerance used to determine connectivity between line segments) 
+
+
+# Adding vertices every 1 meter to the river network
+dry_flowlines_UTMZONE18N <- addverts(dry_flowlines_UTMZONE18N, mindist=1)
+
+plot(x=dry_flowlines_UTMZONE18N) # checks imported line
+topologydots(rivers = dry_flowlines_UTMZONE18N) # checks line topology
+
+# Setting the MOUTH of your watershed allows you to look at directional movement. The "seg = " value will be the segment that includes your mouth, which you can observe in the plot function above. In Underhill, it's segment 46. The "vert = " value identifies the correct node of that segment. Using "showends" on the segment you want will show you what vertex to select.
+plot(x=dry_flowlines_UTMZONE18N)
+showends(seg = 9, rivers = dry_flowlines_UTMZONE18N) # identifies the true mouth of your watershed
+dry_mouth <- setmouth(seg = 9, vert = 195, rivers = dry_flowlines_UTMZONE18N) # sets the mouth to the segment and vertex you need.
+
+```
+
+2. Load your fish points for the watershed you are analyzing (do this for each watershed separately)
+```{r Load in fish points}
+
+# read in your fish points and filter by the watershed you're looking at. Make sure to have X and Y columns available in decimal degrees
+
+# Keep only points from "DRY UPPER" and also remove rows where lat or lon are NA
+dry_points <- tracking_data_locations %>%
+  filter(river == "DRY UPPER" & !is.na(lon) & !is.na(lat))
+
+# Make Lat Lon columns numeric
+
+dry_points_spatial <- dry_points %>% 
+  mutate(POINT_Y = as.numeric(lat)) %>% # change to whatever your Y coord column is
+  mutate(POINT_X = as.numeric(lon)) # change to whatever your X coord column is
+coordinates(dry_points_spatial) <- c("POINT_X","POINT_Y") # identifies the coordinate columns
+proj4string(dry_points_spatial) <- CRS("+proj=longlat +datum=WGS84") 
+res_dry_fish <- spTransform(dry_points_spatial, CRS("+proj=utm +zone=18 +ellps=WGS84")) # reprojects the points to UTM ZONE 18
+as(res_dry_fish, "SpatialPoints")
+res_dry_fish <- as.data.frame(res_dry_fish)
+res_dry_fish <- res_dry_fish %>% 
+  rename(POINT_X = coords.x1, POINT_Y = coords.x2) %>%  # Rename coords.x1 and coords.x2
+  mutate(Rownumber =row_number())
+dry_segvert_fish <- xy2segvert(x = res_dry_fish$POINT_X, y = res_dry_fish$POINT_Y, rivers = dry_flowlines_UTMZONE18N) # change the "res$" to your X and Y coord columns
+  
+## Display raw points (red dots) and snapped points (blue). Run these three lines all at once
+plot(x= dry_flowlines_UTMZONE18N)
+points(res_dry_fish$POINT_X, res_dry_fish$POINT_Y, pch=16, col="red") # shows raw points
+riverpoints(seg = dry_segvert_fish$seg, vert = dry_segvert_fish$vert, rivers = dry_flowlines_UTMZONE18N, pch = 15, col="blue")
+
+
+```
+
+```{r prepare fish dataset}
+nrow(res_dry_fish)  # Total points before snapping
+nrow(dry_segvert_fish)  # Total points successfully snapped
+
+# Assign row numbers
+dry_segvert_fish <- dry_segvert_fish %>%
+  mutate(Rownumber = row_number()) 
+
+# Merge snapped points back with the original dataset using row numbers
+dry_fish_locations <- left_join(res_dry_fish %>% select(Rownumber, radioID, trackedTime_EST, POINT_X, POINT_Y), 
+                               dry_segvert_fish, 
+                               by = "Rownumber")
+
+# Organize dataset
+dry_fish_locations <- dry_fish_locations %>%
+  select(radioID, trackedTime_EST, POINT_X, POINT_Y, snap_x, snap_y, seg, vert, snapdist)
+
+# Arrange data by fish ID and datetime to ensure chronological order
+dry_fish_locations <- dry_fish_locations %>%
+  arrange(radioID, trackedTime_EST)
+
+head(dry_fish_locations)
+
+# Check for duplicate rows
+duplicates <- dry_fish_locations %>%
+  group_by(radioID, trackedTime_EST) %>%
+  filter(n() > 1)
+
+print(duplicates)
+```
+
+
+3. Load your temperature loggers for the watershed you are analyzing (do this for each watershed separately)
+```{r Load in temperature loggers}
+
+# read in your temperature loggers and filter by the watershed you're looking at. Make sure to have X and Y columns available in decimal degrees
+
+# Keep only points from "DRY UPPER" and "DRY LOWER" and also remove rows where lat or lon are NA
+dry_loggers <- logger_data_summer %>%
+  filter((river == "DRY UPPER" | river == "DRY LOWER") & !is.na(lon) & !is.na(lat))
+
+# Make Lat Lon columns numeric
+
+dry_loggers_spatial <- dry_loggers %>% 
+  mutate(POINT_Y = as.numeric(lat)) %>% # change to whatever your Y coord column is
+  mutate(POINT_X = as.numeric(lon)) # change to whatever your X coord column is
+coordinates(dry_loggers_spatial) <- c("POINT_X","POINT_Y") # identifies the coordinate columns
+proj4string(dry_loggers_spatial) <- CRS("+proj=longlat +datum=WGS84") 
+res_dry_loggers <- spTransform(dry_loggers_spatial, CRS("+proj=utm +zone=18 +ellps=WGS84")) # reprojects the points to UTM ZONE 18
+as(res_dry_loggers, "SpatialPoints")
+res_dry_loggers <- as.data.frame(res_dry_loggers)
+res_dry_loggers <- res_dry_loggers %>% 
+  rename(POINT_X = coords.x1, POINT_Y = coords.x2) %>%  # Rename coords.x1 and coords.x2
+  mutate(Rownumber =row_number())
+dry_segvert_loggers <- xy2segvert(x = res_dry_loggers$POINT_X, y = res_dry_loggers$POINT_Y, rivers = dry_flowlines_UTMZONE18N) # change the "res$" to your X and Y coord columns
+  
+## Display raw points (red dots) and snapped points (blue). Run these three lines all at once
+plot(x= dry_flowlines_UTMZONE18N)
+points(res_dry_loggers$POINT_X, res_dry_loggers$POINT_Y, pch=16, col="red") # shows raw points
+riverpoints(seg = dry_segvert_loggers$seg, vert = dry_segvert_loggers$vert, rivers = dry_flowlines_UTMZONE18N, pch = 15, col="blue")
+
+
+```
+
+```{r prepare logger dataset}
+nrow(res_dry_loggers)  # Total points before snapping
+nrow(dry_segvert_loggers)  # Total points successfully snapped
+
+# Assign row numbers
+dry_segvert_loggers <- dry_segvert_loggers %>%
+  mutate(Rownumber = row_number()) 
+
+# Merge snapped points back with the original dataset using row numbers
+dry_logger_locations <- left_join(res_dry_loggers %>% select(Rownumber, logger_name, dateTime_EST, POINT_X, POINT_Y), 
+                               dry_segvert_loggers, 
+                               by = "Rownumber")
+
+# Organize dataset
+dry_logger_locations <- dry_logger_locations %>%
+  select(logger_name, dateTime_EST, POINT_X, POINT_Y, snap_x, snap_y, seg, vert, snapdist)
+
+# Arrange data by logger and datetime to ensure chronological order
+dry_logger_locations <- dry_logger_locations %>%
+  arrange(logger_name, dateTime_EST)
+
+head(dry_logger_locations)
+
+# Check for duplicate rows
+duplicates <- dry_logger_locations %>%
+  group_by(logger_name, dateTime_EST) %>%
+  filter(n() > 1)
+
+print(duplicates)
+```
+
+
+## Amethyst Brook
+
+1. Load your flowline shapefiles (do this for each watershed separately)
+
+```{r Load in watershed flowlines}
+
+amethyst_flowlines <- lines <- st_read("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles/NHDFlowline_AmethystBrook.shp") # Reads shapefile, these shapefiles are already in geographic coordinate system NAD83
+st_crs(amethyst_flowlines) # This just checks to make sure that your lines are in GCS NAD83
+amethyst_flowlines <- st_transform(amethyst_flowlines, 26918) # Projects to UTM Zone 18N (the code for this is 26918)
+
+## Please read note before running next line! Comment the next line out if you already reprojected the raw shapefile.
+#st_write(amethyst_flowlines, "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles/NHDFlowline_AmethystBrook_UTMZONE18N.shp") #Once you run this, it will add a new shapefile to your "shapefiles" folder! It will give you a warning if it's already done. I did it for underhill already, but you'll need to repeat this process for each watershed. 
+
+
+amethyst_flowlines_UTMZONE18N <- line2network(path = "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/streamShapeFiles/Riverdist MA BKT/Shapefiles", # Points to the folder in your R Project folder
+                                    layer = "NHDFlowline_AmethystBrook_UTMZONE18N", # Identifies the shapefile you want to pull from folder
+                                    tolerance = 10) # This is the spatial tolerance used to determine connectivity between line segments) 
+
+
+# Adding vertices every 1 meter to the river network
+amethyst_flowlines_UTMZONE18N <- addverts(amethyst_flowlines_UTMZONE18N, mindist=1)
+
+plot(x=amethyst_flowlines_UTMZONE18N) # checks imported line
+topologydots(rivers = amethyst_flowlines_UTMZONE18N) # checks line topology
+
+# Setting the MOUTH of your watershed allows you to look at directional movement. The "seg = " value will be the segment that includes your mouth, which you can observe in the plot function above. In Underhill, it's segment 46. The "vert = " value identifies the correct node of that segment. Using "showends" on the segment you want will show you what vertex to select.
+plot(x=amethyst_flowlines_UTMZONE18N)
+showends(seg = 404, rivers = amethyst_flowlines_UTMZONE18N) # identifies the true mouth of your watershed
+amethyst_mouth <- setmouth(seg = 404, vert = 2013, rivers = amethyst_flowlines_UTMZONE18N) # sets the mouth to the segment and vertex you need.
+
+# Save river network
+#save(amethyst_flowlines_UTMZONE18N, file = "amethyst_flowlines_UTMZONE18N.RData")
+
+```
+
+2. Load your fish points for the watershed you are analyzing (do this for each watershed separately)
+```{r Load in fish points}
+
+# read in your fish points and filter by the watershed you're looking at. Make sure to have X and Y columns available in decimal degrees
+
+# Keep only points from "AMETHYST", "BUFFAM", and "HARRIS" and also remove rows where lat or lon are NA
+amethyst_points <- tracking_data_locations %>%
+  filter((river == "AMETHYST" | river == "BUFFAM" | river == "HARRIS") & !is.na(lon) & !is.na(lat))
+
+# Make Lat Lon columns numeric
+
+amethyst_points_spatial <- amethyst_points %>% 
+  mutate(POINT_Y = as.numeric(lat)) %>% # change to whatever your Y coord column is
+  mutate(POINT_X = as.numeric(lon)) # change to whatever your X coord column is
+coordinates(amethyst_points_spatial) <- c("POINT_X","POINT_Y") # identifies the coordinate columns
+proj4string(amethyst_points_spatial) <- CRS("+proj=longlat +datum=WGS84") 
+res_amethyst_fish <- spTransform(amethyst_points_spatial, CRS("+proj=utm +zone=18 +ellps=WGS84")) # reprojects the points to UTM ZONE 18
+as(res_amethyst_fish, "SpatialPoints")
+res_amethyst_fish <- as.data.frame(res_amethyst_fish)
+res_amethyst_fish <- res_amethyst_fish %>% 
+  rename(POINT_X = coords.x1, POINT_Y = coords.x2) %>%  # Rename coords.x1 and coords.x2
+  mutate(Rownumber =row_number())
+amethyst_segvert_fish <- xy2segvert(x = res_amethyst_fish$POINT_X, y = res_amethyst_fish$POINT_Y, rivers = amethyst_flowlines_UTMZONE18N) # change the "res$" to your X and Y coord columns
+  
+## Display raw points (red dots) and snapped points (blue). Run these three lines all at once
+plot(x= amethyst_flowlines_UTMZONE18N)
+points(res_amethyst_fish$POINT_X, res_amethyst_fish$POINT_Y, pch=16, col="red") # shows raw points
+riverpoints(seg = amethyst_segvert_fish$seg, vert = amethyst_segvert_fish$vert, rivers = amethyst_flowlines_UTMZONE18N, pch = 15, col="blue")
+
+
+```
+
+```{r prepare fish dataset}
+nrow(res_amethyst_fish)  # Total points before snapping
+nrow(amethyst_segvert_fish)  # Total points successfully snapped
+
+# Assign row numbers
+amethyst_segvert_fish <- amethyst_segvert_fish %>%
+  mutate(Rownumber = row_number()) 
+
+# Merge snapped points back with the original dataset using row numbers
+amethyst_fish_locations <- left_join(res_amethyst_fish %>% select(Rownumber, radioID, trackedTime_EST, POINT_X, POINT_Y), 
+                               amethyst_segvert_fish, 
+                               by = "Rownumber")
+
+# Organize dataset
+amethyst_fish_locations <- amethyst_fish_locations %>%
+  select(radioID, trackedTime_EST, POINT_X, POINT_Y, snap_x, snap_y, seg, vert, snapdist)
+
+# Arrange data by fish ID and datetime to ensure chronological order
+amethyst_fish_locations <- amethyst_fish_locations %>%
+  arrange(radioID, trackedTime_EST)
+
+head(amethyst_fish_locations)
+
+# Check for duplicate rows
+duplicates <- amethyst_fish_locations %>%
+  group_by(radioID, trackedTime_EST) %>%
+  filter(n() > 1)
+
+print(duplicates)
+```
+
+
+3. Load your temperature loggers for the watershed you are analyzing (do this for each watershed separately)
+```{r Load in temperature loggers}
+
+# read in your temperature loggers and filter by the watershed you're looking at. Make sure to have X and Y columns available in decimal degrees
+
+# Keep only points from "AMETHYST", "BUFFAM", and "HARRIS" and also remove rows where lat or lon are NA
+amethyst_loggers <- logger_data_summer %>%
+  filter((river == "AMETHYST" | river == "BUFFAM" | river == "HARRIS") & !is.na(lon) & !is.na(lat))
+
+# Make Lat Lon columns numeric
+
+amethyst_loggers_spatial <- amethyst_loggers %>% 
+  mutate(POINT_Y = as.numeric(lat)) %>% # change to whatever your Y coord column is
+  mutate(POINT_X = as.numeric(lon)) # change to whatever your X coord column is
+coordinates(amethyst_loggers_spatial) <- c("POINT_X","POINT_Y") # identifies the coordinate columns
+proj4string(amethyst_loggers_spatial) <- CRS("+proj=longlat +datum=WGS84") 
+res_amethyst_loggers <- spTransform(amethyst_loggers_spatial, CRS("+proj=utm +zone=18 +ellps=WGS84")) # reprojects the points to UTM ZONE 18
+as(res_amethyst_loggers, "SpatialPoints")
+res_amethyst_loggers <- as.data.frame(res_amethyst_loggers)
+res_amethyst_loggers <- res_amethyst_loggers %>% 
+  rename(POINT_X = coords.x1, POINT_Y = coords.x2) %>%  # Rename coords.x1 and coords.x2
+  mutate(Rownumber =row_number())
+amethyst_segvert_loggers <- xy2segvert(x = res_amethyst_loggers$POINT_X, y = res_amethyst_loggers$POINT_Y, rivers = amethyst_flowlines_UTMZONE18N) # change the "res$" to your X and Y coord columns
+  
+## Display raw points (red dots) and snapped points (blue). Run these three lines all at once
+plot(x= amethyst_flowlines_UTMZONE18N)
+points(res_amethyst_loggers$POINT_X, res_amethyst_loggers$POINT_Y, pch=16, col="red") # shows raw points
+riverpoints(seg = amethyst_segvert_loggers$seg, vert = amethyst_segvert_loggers$vert, rivers = amethyst_flowlines_UTMZONE18N, pch = 15, col="blue")
+
+
+```
+
+```{r prepare logger dataset}
+nrow(res_amethyst_loggers)  # Total points before snapping
+nrow(amethyst_segvert_loggers)  # Total points successfully snapped
+
+# Assign row numbers
+amethyst_segvert_loggers <- amethyst_segvert_loggers %>%
+  mutate(Rownumber = row_number()) 
+
+# Merge snapped points back with the original dataset using row numbers
+amethyst_logger_locations <- left_join(res_amethyst_loggers %>% select(Rownumber, logger_name, dateTime_EST, POINT_X, POINT_Y), 
+                               amethyst_segvert_loggers, 
+                               by = "Rownumber")
+
+# Organize dataset
+amethyst_logger_locations <- amethyst_logger_locations %>%
+  select(logger_name, dateTime_EST, POINT_X, POINT_Y, snap_x, snap_y, seg, vert, snapdist)
+
+# Arrange data by logger and datetime to ensure chronological order
+amethyst_logger_locations <- amethyst_logger_locations %>%
+  arrange(logger_name, dateTime_EST)
+
+head(amethyst_logger_locations)
+
+# Check for duplicate rows
+duplicates <- amethyst_logger_locations %>%
+  group_by(logger_name, dateTime_EST) %>%
+  filter(n() > 1)
+
+print(duplicates)
+```
+
+## Combine location files
+
+```{r recombine all files back into original file}
+fish_locations <- bind_rows(underhill_fish_locations, dickey_fish_locations, dry_fish_locations, amethyst_fish_locations)
+ecostats_tracking_data <- left_join(tracking_data_locations, fish_locations, 
+                                           by = c("radioID", "trackedTime_EST"))
+ecostats_tracking_data <- ecostats_tracking_data %>%
+  select(date, trackedTime_EST, river, radioID, power, fishNotes, lon, lat, POINT_X, POINT_Y, snap_x, snap_y, seg, vert, snapdist, habitat, habitatExtra, position, substrate, substrateExtra, shade, airTemp_F, cloud, precip, ftDischarge_cfs, ftTime_EST)
+
+head(ecostats_tracking_data)
+
+# Write the combined data to a new CSV file
+write.csv(ecostats_tracking_data, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/Courses/Eco636/ecostats_tracking_data.csv", 
+          row.names = FALSE)
+```
+
+
+```{r recombine all files back into original file}
+logger_locations <- bind_rows(underhill_logger_locations, dickey_logger_locations, dry_logger_locations, amethyst_logger_locations)
+ecostats_logger_data <- left_join(logger_data_summer, logger_locations, 
+                                           by = c("logger_name", "dateTime_EST"))
+ecostats_logger_data <- ecostats_logger_data %>%
+  select(date, dateTime_EST, river, logger_name, temp, lon, lat, POINT_X, POINT_Y, snap_x, snap_y, seg, vert, snapdist)
+
+head(ecostats_logger_data)
+
+# Write the combined data to a new CSV file
+write.csv(ecostats_logger_data, 
+          "C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/combined_data/ecostats_logger_data.csv", 
+          row.names = FALSE)
+```
+
+# Combine logger and fish data
+
+```{r}
+# Standardize river names
+ecostats_tracking_data <- ecostats_tracking_data %>%
+  mutate(river = case_when(
+    river %in% c("BUFFAM", "HARRIS") ~ "AMETHYST",
+    TRUE ~ river
+  ))
+
+ecostats_logger_data <- ecostats_logger_data %>%
+  mutate(river = case_when(
+    river %in% c("BUFFAM", "HARRIS") ~ "AMETHYST",
+    TRUE ~ river
+  ))
+
+ecostats_tracking_data <- ecostats_tracking_data %>%
+  mutate(river = case_when(
+    river %in% c("DRY UPPER") ~ "DRY",
+    TRUE ~ river
+  ))
+
+ecostats_logger_data <- ecostats_logger_data %>%
+  mutate(river = case_when(
+    river %in% c("DRY UPPER", "DRY LOWER") ~ "DRY",
+    TRUE ~ river
+  ))
+
+# Split fish dataset into a list by river
+fish_list <- split(ecostats_tracking_data, ecostats_tracking_data$river)
+
+# Split logger dataset into a list by river
+logger_list <- split(ecostats_logger_data, ecostats_logger_data$river)
+
+# Create a list of my river networks
+river_networks <- list(
+  "UNDERHILL" = underhill_flowlines_UTMZONE18N,
+  "DICKEY" = dickey_flowlines_UTMZONE18N,
+  "DRY" = dry_flowlines_UTMZONE18N,
+  "AMETHYST" = amethyst_flowlines_UTMZONE18N
+)
+
+# Prepare an empty list to store results
+all_matched <- list()
+
+# Loop through each river
+for (riv in names(fish_list)) {
+  cat("Processing river:", riv, "\n")
+  
+  # Subset fish and logger data for this river
+  fish_sub <- fish_list[[riv]]
+  logger_sub <- logger_list[[riv]]
+  
+  # Get the river network object for this river
+  rivnet <- river_networks[[riv]]
+  
+  matched_rows <- list()
+  
+  # Precompute all river distances between fish points and logger points
+  for (i in seq_len(nrow(fish_sub))) {
+    
+    fish_point <- fish_sub[i, ]
+    
+    # Filter logger points within 30 minutes
+    time_window <- 30 * 60  # 30 minutes in seconds
+    time_diffs <- abs(as.numeric(difftime(logger_sub$dateTime_EST, fish_point$trackedTime_EST, units = "secs")))
+    logger_filtered <- logger_sub[time_diffs <= time_window, ]
+    
+    if (nrow(logger_filtered) == 0) {
+      matched_rows[[i]] <- cbind(fish_point, logger_name = NA, temp = NA, logger_time = NA, logger_dist_m = NA)
+      next
+    }
+
+    # Calculate river distances to all logger points
+    distances <- riverdist::riverdistance(
+      startvert = rep(fish_point$vert, nrow(logger_filtered)),
+      startseg = rep(fish_point$seg, nrow(logger_filtered)),
+      endvert = logger_filtered$vert,
+      endseg = logger_filtered$seg,
+      rivers = rivnet,
+      map = FALSE
+    )
+    
+    # Combine distance and time to find best match
+    combined <- logger_filtered %>%
+      mutate(
+        dist_m = distances,
+        time_diff_s = abs(as.numeric(difftime(dateTime_EST, fish_point$trackedTime_EST, units = "secs")))
+      ) %>%
+      arrange(dist_m, time_diff_s) %>%
+      slice(1)  # Closest in space, then time
+    
+    matched_row <- cbind(fish_point,
+                         logger_name = combined$logger_name,
+                         temp = combined$temp,
+                         logger_time = combined$dateTime_EST,
+                         logger_dist_m = combined$dist_m)
+    
+    matched_rows[[i]] <- matched_row
+  }
+  
+  all_matched[[riv]] <- bind_rows(matched_rows)
+}
+
+# Combine all into a single dataframe
+combined_df <- bind_rows(all_matched)
+
+```
+
+
+```{r}
+# Standardize river names
+ecostats_tracking_data <- ecostats_tracking_data %>%
+  mutate(river = case_when(
+    river %in% c("BUFFAM", "HARRIS") ~ "AMETHYST",
+    TRUE ~ river
+  ))
+
+ecostats_logger_data <- ecostats_logger_data %>%
+  mutate(river = case_when(
+    river %in% c("BUFFAM", "HARRIS") ~ "AMETHYST",
+    TRUE ~ river
+  ))
+
+ecostats_tracking_data <- ecostats_tracking_data %>%
+  mutate(river = case_when(
+    river %in% c("DRY UPPER") ~ "DRY",
+    TRUE ~ river
+  ))
+
+ecostats_logger_data <- ecostats_logger_data %>%
+  mutate(river = case_when(
+    river %in% c("DRY UPPER", "DRY LOWER") ~ "DRY",
+    TRUE ~ river
+  ))
+```
+
+```{r}
+library(data.table)
+
+# Filter for Amethyst
+fish_dt <- as.data.table(ecostats_tracking_data %>% filter(river == "AMETHYST"))
+logger_dt <- as.data.table(ecostats_logger_data %>% filter(river == "AMETHYST"))
+
+# Convert datetime columns
+fish_dt[, trackedTime_EST := as.POSIXct(trackedTime_EST, tz = "EST")]
+logger_dt[, dateTime_EST := as.POSIXct(dateTime_EST, tz = "EST")]
+
+# Set time window
+time_window <- minutes(15)
+
+# Prepare empty list to collect rows
+matched_rows <- vector("list", nrow(fish_dt))
+
+# Matching loop
+for (i in seq_len(nrow(fish_dt))) {
+  
+  fish_point <- fish_dt[i]
+  
+  # Subset logger data to within 15 min of the fish point time
+  logger_sub <- logger_dt[
+    dateTime_EST >= fish_point$trackedTime_EST - time_window &
+    dateTime_EST <= fish_point$trackedTime_EST + time_window
+  ]
+  
+  # If no nearby logger points, return NA
+  if (nrow(logger_sub) == 0) {
+    matched_rows[[i]] <- cbind(fish_point, logger_name = NA, temp = NA, logger_time = NA, logger_dist_m = NA)
+    next
+  }
+  
+  # Calculate river distances from fish point to each logger point
+  dist_vec <- riverdistancemat(
+    start = data.frame(seg = fish_point$seg, vert = fish_point$vert),  # Fish point
+    end = data.frame(seg = logger_sub$seg, vert = logger_sub$vert),  # Logger points
+    rivers = amethyst_flowlines_UTMZONE18N
+  )
+  
+  # Find the index of the closest logger point
+  min_idx <- which.min(dist_vec)
+  
+  # Extract the matched logger point
+  best_logger <- logger_sub[min_idx]
+  
+  matched_rows[[i]] <- cbind(
+    fish_point,
+    logger_name = best_logger$logger_name,
+    temp = best_logger$temp,
+    logger_time = best_logger$dateTime_EST,
+    logger_dist_m = dist_vec[min_idx]
+  )
+}
+
+# Combine results
+matched_data <- rbindlist(matched_rows, fill = TRUE)
+```
+
+
+```{r}
+# Standardize river names
+ecostats_tracking_data <- ecostats_tracking_data %>%
+  mutate(river = case_when(
+    river %in% c("BUFFAM", "HARRIS") ~ "AMETHYST",
+    TRUE ~ river
+  ))
+
+ecostats_logger_data <- ecostats_logger_data %>%
+  mutate(river = case_when(
+    river %in% c("BUFFAM", "HARRIS") ~ "AMETHYST",
+    TRUE ~ river
+  ))
+
+ecostats_tracking_data <- ecostats_tracking_data %>%
+  mutate(river = case_when(
+    river %in% c("DRY UPPER") ~ "DRY",
+    TRUE ~ river
+  ))
+
+ecostats_logger_data <- ecostats_logger_data %>%
+  mutate(river = case_when(
+    river %in% c("DRY UPPER", "DRY LOWER") ~ "DRY",
+    TRUE ~ river
+  ))
+```
+
+```{r}
+summary(amethyst_flowlines_UTMZONE18N)
+
+range(amethyst_tracking_data$seg)
+range(amethyst_tracking_data$vert)
+
+range(amethyst_logger_data$seg)
+range(amethyst_logger_data$vert)
+
+# And also check the network itself
+max(amethyst_flowlines_UTMZONE18N$lines$seg)
+
+amethyst_tracking_data[93, ]
+
+str(amethyst_flowlines_UTMZONE18N)
+```
+
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(lubridate)
+library(riverdist)
+
+# Filter for Amethyst
+amethyst_tracking_data <- ecostats_tracking_data %>% filter(river == "AMETHYST")
+amethyst_logger_data <- ecostats_logger_data %>% filter(river == "AMETHYST")
+
+# Convert time columns
+amethyst_tracking_data$trackedTime_EST <- as.POSIXct(amethyst_tracking_data$trackedTime_EST, tz = "EST")
+amethyst_logger_data$dateTime_EST <- as.POSIXct(amethyst_logger_data$dateTime_EST, tz = "EST")
+
+match_temp_to_fish <- function(fish_point, logger_data, river_net, time_window = lubridate::minutes(30)) {
+  # Subset logger data to within the ±30-minute window
+  time_min <- fish_point$trackedTime_EST - time_window
+  time_max <- fish_point$trackedTime_EST + time_window
+
+  temp_sub <- logger_data %>%
+    filter(dateTime_EST >= time_min & dateTime_EST <= time_max)
+
+  if (nrow(temp_sub) == 0) {
+    return(tibble(temp = NA, logger_name = NA, dateTime_EST = NA, river_dist = NA))
+  }
+
+  # riverdistancetofrom expects arguments in this order: 
+  # (tovert, toseg, fromvert, fromseg, network)
+  distances <- riverdist::riverdistancetofrom(
+    fish_point$vert,
+    fish_point$seg,
+    temp_sub$vert,
+    temp_sub$seg,
+    river_net
+  )
+
+  temp_sub <- temp_sub %>%
+    mutate(river_dist = distances)
+
+  closest_point <- temp_sub %>%
+    filter(river_dist == min(river_dist, na.rm = TRUE)) %>%
+    mutate(time_diff = abs(difftime(dateTime_EST, fish_point$trackedTime_EST, units = "secs"))) %>%
+    arrange(time_diff) %>%
+    slice(1)
+
+  return(closest_point %>% select(temp, logger_name, dateTime_EST, river_dist))
+}
+
+# Apply to each row in fish dataset
+matched_with_temp <- amethyst_tracking_data %>%
+  rowwise() %>%
+  mutate(matched = list(match_temp_to_fish(cur_data(), amethyst_logger_data, amethyst_flowlines_UTMZONE18N))) %>%
+  unnest_wider(matched, names_sep = "_")
+
+# `matched_temps` will contain all original fish columns + matched logger info
+head(matched_with_temp)
+```
+
+
+```{r}
+# Filter for Amethyst
+amethyst_tracking_data <- ecostats_tracking_data %>% filter(river == "AMETHYST")
+amethyst_logger_data <- ecostats_logger_data %>% filter(river == "AMETHYST")
+
+# Convert time columns
+amethyst_tracking_data$trackedTime_EST <- as.POSIXct(amethyst_tracking_data$trackedTime_EST, tz = "EST")
+amethyst_logger_data$dateTime_EST <- as.POSIXct(amethyst_logger_data$dateTime_EST, tz = "EST")
+
+# Pick one row of your fish data — for example, row 1
+fish_point <- amethyst_tracking_data %>% slice(1)
+
+logger_locations <- amethyst_logger_data %>%
+  select(logger_name, seg, vert) %>%
+  distinct()
+
+# Step 1: River distance to each logger
+distances <- logger_locations %>%
+  rowwise() %>%
+  mutate(riv_dist = riverdistance(
+    seg, vert,
+    fish_point$seg, fish_point$vert,
+    amethyst_flowlines_UTMZONE18N
+  )) %>%
+  ungroup()
+
+# Step 2: Find the closest logger
+closest_logger_name <- distances %>%
+  filter(!is.na(riv_dist)) %>%
+  slice_min(riv_dist, n = 1) %>%
+  pull(logger_name)
+
+# Step 3: Match to closest time point from that logger
+matched_point <- amethyst_logger_data %>%
+  filter(logger_name == closest_logger_name) %>%
+  mutate(time_diff = abs(difftime(dateTime_EST, fish_point$dateTime_EST, units = "mins"))) %>%
+  filter(time_diff <= 15) %>%
+  slice_min(time_diff, n = 1)
+
+fish_point$matched_temp <- matched_point$temp
+```
+
+```{r}
+showends(seg = fish_point$seg, rivers = amethyst_flowlines_UTMZONE18N)
+
+# Replace these with real numbers you're trying to use
+riverdistance(
+  startvert = list(seg = 402, vert = 95),
+  endvert = list(seg = 402, vert = 94),
+  rivers = amethyst_flowlines_UTMZONE18N
+)
+
+#amethyst_flowlines_UTMZONE18N$lines
+
+names(amethyst_flowlines_UTMZONE18N$lengths)
+summary(amethyst_flowlines_UTMZONE18N)
+showends(seg = 402, rivers = amethyst_flowlines_UTMZONE18N)
+
+start_pt <- list(seg = 402, vert = 50)
+end_pt <- list(seg = 402, vert = 120)
+
+riverdistance(
+  startvert = start_pt,
+  endvert = end_pt,
+  rivers = amethyst_flowlines_UTMZONE18N
+)
+
+class(amethyst_flowlines_UTMZONE18N)
+
+data(Gulk)  # example river network in riverdist
+
+riverdistance(
+  startvert = list(seg = 1, vert = 1),
+  endvert = list(seg = 1, vert = 5),
+  rivers = Gulk
+)
+```
+
+# Ecostats modeling process
+
+Set up code
+
+```{r}
+library(tidyverse)
+library(car)
+library(ggplot2)
+library(lubridate)
+library(dplyr)
+library(purrr)
+library(tidyr)
+library(GGally)
+options(scipen = 999)
+```
+
+# Modeling process
+
+## State the question
+
+Question: What variables influence the type of stream habitat a fish is utilizing?  
+
+Response variable: habitat (categorical variable with 4 groups)  
+
+Explanatory variables:  
+- time (continuous)  
+- date (continuous)  
+- waterTemp (continuous)  
+- internalTemp (continuous)  
+- discharge (ie. stream flow) (continuous)  
+- shade (categorical)  
+- cloud (categorical)  
+- precip (categorical)  
+
+Random effects variables:  
+- radioID (categorical)  
+- river (categorical)  
+
+Error distribution: multinomial 
+
+Doing a multinomial logistic regression  
+
+## Check the data
+
+```{r preparing the data}
+
+ecostats_tracking_data <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/Courses/Eco636/ecostats_tracking_data.csv")
+
+# Filter to rows where habitat is not NA
+ecostats_tracking_data <- ecostats_tracking_data %>%
+  filter(!is.na(habitat))
+
+# Filter to rows where power is greater than 150 or power is NA
+ecostats_tracking_data <- ecostats_tracking_data %>%
+  filter(power > 150 | is.na(power))
+
+# Convert trackedTime_EST to POSIXct format
+ecostats_tracking_data$trackedTime_EST <- as.POSIXct(ecostats_tracking_data$trackedTime_EST,
+                                                     tz = "EST")
+
+# Covert date to date format
+#ecostats_tracking_data$date <- as.Date(ecostats_tracking_data$date)
+
+# Create a time column from trackedTime_EST
+ecostats_tracking_data$time_EST <- hms::as_hms(ecostats_tracking_data$trackedTime_EST)
+
+# Set radioID column as character
+ecostats_tracking_data$radioID <- as.character(ecostats_tracking_data$radioID)
+
+# Set categorical variables as factor
+ecostats_tracking_data <- ecostats_tracking_data %>%
+  mutate(across(c(habitat, position, cloud, precip, shade, radioID, river), as.factor))
+
+# Combine substrate and substrate extra columns
+ecostats_tracking_data$substrate <- coalesce(ecostats_tracking_data$substrate, ecostats_tracking_data$substrateExtra)
+
+# Convert airTemp column from Fahrenheit to Celsius
+ecostats_tracking_data <- ecostats_tracking_data %>%
+  mutate(airTemp_F = round((airTemp_F - 32) * 5 / 9, 2)) %>%
+  rename(airTemp_C = airTemp_F)
+
+# Filter columns included in dataset
+ecostats_tracking_data <- ecostats_tracking_data %>%
+  select(trackedTime_EST, date, time_EST, river, radioID, habitat, habitatExtra, position, substrate, shade, airTemp_C, cloud, precip, ftDischarge_cfs)
+
+# View dataset
+head(ecostats_tracking_data)
+
+```
+
+
+```{r}
+
+# Convert date to day of year
+ecostats_tracking_data <- ecostats_tracking_data %>%
+  mutate(doy = yday(trackedTime_EST))
+
+```
+
+
+```{r}
+
+# Convert time_EST to number of minutes past midight
+ecostats_tracking_data <- ecostats_tracking_data %>%
+  mutate(time_minutes = hour(time_EST) * 60 + minute(time_EST) + second(time_EST) / 60)
+
+```
+
+
+```{r prepare internal temperature data}
+
+# Read in internal temperature datasets and convert dateTime_EST to POSIXct format
+
+tag16_323 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag16_323.csv")
+tag16_323$dateTime_EST <- as.POSIXct(tag16_323$dateTime_EST)
+
+tag19_329 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag19_329.csv")
+tag19_329$dateTime_EST <- as.POSIXct(tag19_329$dateTime_EST)
+
+tag22_320 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag22_320.csv")
+tag22_320$dateTime_EST <- as.POSIXct(tag22_320$dateTime_EST)
+
+tag23_322 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag23_322.csv")
+tag23_322$dateTime_EST <- as.POSIXct(tag23_322$dateTime_EST)
+
+tag24_319 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag24_319.csv")
+tag24_319$dateTime_EST <- as.POSIXct(tag24_319$dateTime_EST)
+
+tag27_303 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag27_303.csv")
+tag27_303$dateTime_EST <- as.POSIXct(tag27_303$dateTime_EST)
+
+tag28_306 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag28_306.csv")
+tag28_306$dateTime_EST <- as.POSIXct(tag28_306$dateTime_EST)
+
+tag29.1_325 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag29.1_325.csv")
+tag29.1_325$dateTime_EST <- as.POSIXct(tag29.1_325$dateTime_EST)
+
+tag29_304 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag29_304.csv")
+tag29_304$dateTime_EST <- as.POSIXct(tag29_304$dateTime_EST)
+
+tag30.1_319 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag30.1_319.csv")
+tag30.1_319$dateTime_EST <- as.POSIXct(tag30.1_319$dateTime_EST)
+
+tag31_302 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag31_302.csv")
+tag31_302$dateTime_EST <- as.POSIXct(tag31_302$dateTime_EST)
+
+tag32_298 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag32_298.csv")
+tag32_298$dateTime_EST <- as.POSIXct(tag32_298$dateTime_EST)
+
+tag33_305 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag33_305.csv")
+tag33_305$dateTime_EST <- as.POSIXct(tag33_305$dateTime_EST)
+
+tag34_296 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag34_296.csv")
+tag34_296$dateTime_EST <- as.POSIXct(tag34_296$dateTime_EST)
+
+tag36_301 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag36_301.csv")
+tag36_301$dateTime_EST <- as.POSIXct(tag36_301$dateTime_EST)
+
+tag37_308 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag37_308.csv")
+tag37_308$dateTime_EST <- as.POSIXct(tag37_308$dateTime_EST)
+
+tag38_315 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag38_315.csv")
+tag38_315$dateTime_EST <- as.POSIXct(tag38_315$dateTime_EST)
+
+tag40_312 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag40_312.csv")
+tag40_312$dateTime_EST <- as.POSIXct(tag40_312$dateTime_EST)
+
+tag42_325 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag42_325.csv")
+tag42_325$dateTime_EST <- as.POSIXct(tag42_325$dateTime_EST)
+
+tag43_309 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag43_309.csv")
+tag43_309$dateTime_EST <- as.POSIXct(tag43_309$dateTime_EST)
+
+tag46.1_317 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag46.1_317.csv")
+tag46.1_317$dateTime_EST <- as.POSIXct(tag46.1_317$dateTime_EST)
+
+tag46_317 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag46_317.csv")
+tag46_317$dateTime_EST <- as.POSIXct(tag46_317$dateTime_EST)
+
+tag52_326 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag52_326.csv")
+tag52_326$dateTime_EST <- as.POSIXct(tag52_326$dateTime_EST)
+
+tag54_328 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag54_328.csv")
+tag54_328$dateTime_EST <- as.POSIXct(tag54_328$dateTime_EST)
+
+tag57_337 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag57_337.csv")
+tag57_337$dateTime_EST <- as.POSIXct(tag57_337$dateTime_EST)
+
+tag60_338 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag60_338.csv")
+tag60_338$dateTime_EST <- as.POSIXct(tag60_338$dateTime_EST)
+
+tag62_334 <- read.csv("C:/Users/jpilchik/OneDrive - DOI/Documents/My study plan/Tagging/Tracking/radio_tracking_2024/data/internal_temp_data/tag62_334.csv")
+tag62_334$dateTime_EST <- as.POSIXct(tag62_334$dateTime_EST)
+
+# Create a list of which radioID goes with which internal temperature dataset
+temp_list <- list(
+  "16" = tag16_323,
+  "19" = tag19_329,
+  "22" = tag22_320,
+  "23" = tag23_322,
+  "24" = tag24_319,
+  "27" = tag27_303,
+  "28" = tag28_306,
+  "29.1" = tag29.1_325,
+  "29" = tag29_304,
+  "30.1" = tag30.1_319,
+  "31" = tag31_302,
+  "32" = tag32_298,
+  "33" = tag33_305,
+  "34" = tag34_296,
+  "36" = tag36_301,
+  "37" = tag37_308,
+  "38" = tag38_315,
+  "40" = tag40_312,
+  "42" = tag42_325,
+  "43" = tag43_309,
+  "46.1" = tag46.1_317,
+  "46" = tag46_317,
+  "52" = tag52_326,
+  "54" = tag54_328,
+  "57" = tag57_337,
+  "60" = tag60_338,
+  "62" = tag62_334
+)
+
+```
+
+
+```{r incorporating the internal temperature data with fish observation data}
+
+# Merge closest temperature for each fish observation
+ecostats_tracking_data <- ecostats_tracking_data %>%
+  rowwise() %>%
+  mutate(
+    internalTemp_C = {
+      fish_id <- as.character(radioID)
+      obs_time <- trackedTime_EST
+      
+      if (fish_id %in% names(temp_list)) {
+        temp_df <- temp_list[[fish_id]]
+        
+        # Find the temp observation closest in time
+        closest_row <- temp_df %>%
+          mutate(time_diff = abs(difftime(dateTime_EST, obs_time, units = "secs"))) %>%
+          arrange(time_diff) %>%
+          slice(1)
+        
+        closest_row$temp_C
+      } else {
+        NA_real_
+      }
+    }
+  ) %>%
+  ungroup()
+
+head(ecostats_tracking_data)
+
+```
+
+One-hot encoding works best for multinomial logistic regression because multinomial logistic regression expects a single row per observation with predictor variables as separate columns. Having binary (0/1) columns for each habitatExtra feature (e.g., Root_bundle, Woody_debris) allows you to directly assess the effect of each feature on the likelihood of a fish using a particular habitat type.
+
+```{r splitting habitatExtra into binary columns}
+
+# Separate values into lists
+ecostats_tracking_data <- ecostats_tracking_data %>%
+  mutate(habitatExtra_list = strsplit(habitatExtra, ",\\s*"))
+
+# Unnest and spread into binary columns
+ecostats_tracking_data <- ecostats_tracking_data %>%
+  unnest(habitatExtra_list) %>%
+  mutate(habitatExtra_list = trimws(habitatExtra_list)) %>%
+  mutate(value = 1) %>%
+  pivot_wider(
+    names_from = habitatExtra_list,
+    values_from = value,
+    values_fill = 0
+  )
+
+# Rename columns
+ecostats_tracking_data <- ecostats_tracking_data %>%
+  rename(root_bundle = Root_bundle,
+         woody_debris = Woody_debris,
+         undercut_bank = Undercut_bank)
+
+# Filter columns included in dataset
+ecostats_tracking_data <- ecostats_tracking_data %>%
+  select(trackedTime_EST, doy, time_minutes, river, radioID, habitat, root_bundle, woody_debris, undercut_bank, position, substrate, shade, airTemp_C, cloud, precip, ftDischarge_cfs, internalTemp_C)
+
+```
+
+```{r splitting substrate into binary columns}
+
+# Separate values into lists
+ecostats_tracking_data <- ecostats_tracking_data %>%
+  mutate(substrate_list = strsplit(substrate, ",\\s*"))
+
+# Unnest and spread into binary columns
+ecostats_tracking_data <- ecostats_tracking_data %>%
+  unnest(substrate_list) %>%
+  mutate(substrate_list = trimws(substrate_list)) %>%
+  mutate(value = 1) %>%
+  pivot_wider(
+    names_from = substrate_list,
+    values_from = value,
+    values_fill = 0
+  )
+
+# Rename columns
+ecostats_tracking_data <- ecostats_tracking_data %>%
+  rename(rock = Rock,
+         pebble = Pebble,
+         sand = Sand,
+         granule = Granule,
+         mud = Mud,
+         boulder = Boulder)
+
+# Filter columns included in dataset
+ecostats_tracking_data <- ecostats_tracking_data %>%
+  select(trackedTime_EST, doy, time_minutes, river, radioID, habitat, root_bundle, woody_debris, undercut_bank, position, mud, sand, granule, pebble, rock, boulder, shade, airTemp_C, cloud, precip, ftDischarge_cfs, internalTemp_C)
+
+```
+
+Definitions of each of the columns:  
+- trackedTime_EST - a number denoting the date and time in EST of each individual fish observation (year-month-day hour:minute:second)  
+- doy - a number denoting the day of year of each individual fish observation 
+- time_minutes - a number denoting the time in minutes past midnight in EST of each individual fish observation
+- river - a factor denoting the stream name each fish is located in (Buffam, Harris, and Amethyst are connected - ie. fish can move between them)  
+- radioID - a factor denoting each individual fish identification number (radioID with .1 are re-tagged fish)  
+- habitat - a factor denoting the habitat type at each individual fish location (Riffle, Run, Pool, Glide)  
+- root_bundle - a binary variable denoting whether the habitat at each fish location had a root bundle  
+- woody_debris - a binary variable denoting whether the habitat at each fish location had woody debris  
+- undercut_bank - a binary variable denoting whether the habitat at each fish location had an undercut bank  
+- position - a factor denoting the position of each fish location in the stream while looking downstream (Left, Center, Right)  
+- mud - a binary variable denoting whether the stream substrate at each individual fish location included mud  
+- sand - a binary variable denoting whether the stream substrate at each individual fish location included sand  
+- granule - a binary variable denoting whether the stream substrate at each individual fish location included granule sized rocks  
+- pebble - a binary variable denoting whether the stream substrate at each individual fish location included pebble sized rocks  
+- rock - a binary variable denoting whether the stream substrate at each individual fish location included rock/cobble sized rocks  
+- boulder - a binary variable denoting whether the stream substrate at each individual fish location included boulder size rocks  
+- shade - a factor denoting the amount of shade on the water at each individual fish location (Fully Sunny, Lightly Shaded, Mostly Shaded, Fully Shaded, Night)  
+- airTemp_C - a number denoting the air temperature for each tracking shift (Celsius)  
+- cloud - a factor denoting the amount of overall cloud cover for each tracking shift (Cloudy, Mostly Cloudy, Partly Cloudy/Partly Sunny, Mostly Sunny/Mostly Clear, Clear)  
+- precip - a factor denoting the amount of precipitation for each tracking shift (No Rain, Weak Rain, Moderate Rain, Heavy Rain, Very Heavy Rain)  
+- ftDischarge_cfs - a number denoting the acute stream discharge/flow measurement for each tracking shift (cubic feet per second)  
+- internalTemp_C - a number denoting the internal temperature of each individual fish at each observation (Celsuis)  
+
+## Data exploration
+
+```{r}
+
+# Create graph to display pairwise correlations
+#ggpairs(ecostats_tracking_data)
+
+# Let's just look at variables with hypothesized effects base R way and the psych way
+vars <- c("habitat", "airTemp_C", "ftDischarge_cfs", "internalTemp_C", "doy", "time_minutes")
+ggpairs(ecostats_tracking_data[, vars], aes(color=habitat)) + theme_bw()
+
+```
+
+Check for collinearity issues. Because VIF measures have some trouble with these types of models, create a basic lm model to check for collinearity issues, then move on to the correct error distribution. 
+
+```{r}
+
+dummy.lm.vif <- lm(as.numeric(habitat) ~ doy + time_minutes + root_bundle + woody_debris + undercut_bank + position + mud + sand + pebble + granule + rock + boulder + airTemp_C + shade + cloud + precip + ftDischarge_cfs + internalTemp_C + river, data = ecostats_tracking_data)
+# river as explanatory variable? radioID as random effects variable?
+
+car::vif(dummy.lm.vif)
+
+```
+
+Remove river as an explanatory variable due to collinearity.
+
+```{r}
+
+dummy.lm.vif <- lm(as.numeric(habitat) ~ doy + time_minutes + root_bundle + woody_debris + undercut_bank + position + mud + sand + pebble + granule + rock + boulder + airTemp_C + shade + cloud + precip + ftDischarge_cfs + internalTemp_C, data = ecostats_tracking_data)
+
+car::vif(dummy.lm.vif)
+
+```
+
+Standardize continuous variables
+
+```{r}
+ecostats_tracking_data.std <- ecostats_tracking_data %>%
+  mutate(across(c(doy, time_minutes, airTemp_C, ftDischarge_cfs, internalTemp_C), scale)) %>%
+  rename(doy_sd = doy,
+         time_minutes_sd = time_minutes,
+         airTemp_C_sd = airTemp_C,
+         ftDischarge_cfs_sd = ftDischarge_cfs,
+         internalTemp_C_sd = internalTemp_C)
+
+head(ecostats_tracking_data.std)
+```
+
+
+```{r}
+require(nnet)
+require(AICcmodavg)
+
+fitList <- list(
+  "m.full" = multinom(habitat ~ doy_sd + time_minutes_sd + root_bundle + woody_debris + undercut_bank + airTemp_C_sd + shade + cloud + precip + ftDischarge_cfs_sd + internalTemp_C_sd, 
+                      data = ecostats_tracking_data.std),
+  
+  "m.full_reduced" = multinom(habitat ~ doy_sd + time_minutes_sd + root_bundle + woody_debris + undercut_bank + airTemp_C_sd + shade + ftDischarge_cfs_sd + internalTemp_C_sd, 
+                      data = ecostats_tracking_data.std),
+  
+  "m.full_doy" = multinom(habitat ~ time_minutes_sd + root_bundle + woody_debris + undercut_bank + airTemp_C_sd + shade + cloud + precip + ftDischarge_cfs_sd + internalTemp_C_sd, 
+                      data = ecostats_tracking_data.std),
+  
+  "m.full_time" = multinom(habitat ~ doy_sd + root_bundle + woody_debris + undercut_bank + airTemp_C_sd + shade + cloud + precip + ftDischarge_cfs_sd + internalTemp_C_sd, 
+                      data = ecostats_tracking_data.std),
+  
+  "m.full_root" = multinom(habitat ~ doy_sd + time_minutes_sd + woody_debris + undercut_bank + airTemp_C_sd + shade + cloud + precip + ftDischarge_cfs_sd + internalTemp_C_sd, 
+                      data = ecostats_tracking_data.std),
+  
+  "m.full_wood" = multinom(habitat ~ doy_sd + time_minutes_sd + root_bundle + undercut_bank + airTemp_C_sd + shade + cloud + precip + ftDischarge_cfs_sd + internalTemp_C_sd, 
+                      data = ecostats_tracking_data.std),
+  
+  "m.full_bank" = multinom(habitat ~ doy_sd + time_minutes_sd + root_bundle + woody_debris + airTemp_C_sd + shade + cloud + precip + ftDischarge_cfs_sd + internalTemp_C_sd, 
+                      data = ecostats_tracking_data.std),
+  
+  "m.full_airtemp" = multinom(habitat ~ doy_sd + time_minutes_sd + root_bundle + woody_debris + undercut_bank + shade + cloud + precip + ftDischarge_cfs_sd + internalTemp_C_sd, 
+                      data = ecostats_tracking_data.std),
+  
+  "m.full_shade" = multinom(habitat ~ doy_sd + time_minutes_sd + root_bundle + woody_debris + undercut_bank + airTemp_C_sd + cloud + precip + ftDischarge_cfs_sd + internalTemp_C_sd, 
+                      data = ecostats_tracking_data.std),
+  
+  "m.full_cloud" = multinom(habitat ~ doy_sd + time_minutes_sd + root_bundle + woody_debris + undercut_bank + airTemp_C_sd + shade + precip + ftDischarge_cfs_sd + internalTemp_C_sd, 
+                      data = ecostats_tracking_data.std),
+  
+  "m.full_precip" = multinom(habitat ~ doy_sd + time_minutes_sd + root_bundle + woody_debris + undercut_bank + airTemp_C_sd + shade + cloud + ftDischarge_cfs_sd + internalTemp_C_sd, 
+                      data = ecostats_tracking_data.std),
+  
+  "m.full_flow" = multinom(habitat ~ doy_sd + time_minutes_sd + root_bundle + woody_debris + undercut_bank + airTemp_C_sd + shade + cloud + precip + internalTemp_C_sd, 
+                      data = ecostats_tracking_data.std),
+  
+  "m.full_internaltemp" = multinom(habitat ~ doy_sd + time_minutes_sd + root_bundle + woody_debris + undercut_bank + airTemp_C_sd + shade + cloud + precip + ftDischarge_cfs_sd, 
+                      data = ecostats_tracking_data.std),
+  
+  "m.datetime" = multinom(habitat ~ doy_sd + time_minutes_sd, 
+                      data = ecostats_tracking_data.std),
+  
+  "m.doy" = multinom(habitat ~ doy_sd, 
+                      data = ecostats_tracking_data.std),
+  
+  "m.time" = multinom(habitat ~ time_minutes_sd, 
+                      data = ecostats_tracking_data.std),
+  
+  "m.time_structure" = multinom(habitat ~ doy_sd + time_minutes_sd + root_bundle + woody_debris + undercut_bank, 
+                                data = ecostats_tracking_data.std),
+  
+  "m.structure" = multinom(habitat ~ root_bundle + woody_debris + undercut_bank, 
+                           data = ecostats_tracking_data.std),
+  
+  "m.root" = multinom(habitat ~ root_bundle, 
+                           data = ecostats_tracking_data.std),
+  
+  "m.wood" = multinom(habitat ~ woody_debris, 
+                           data = ecostats_tracking_data.std),
+  
+  "m.bank" = multinom(habitat ~ undercut_bank, 
+                           data = ecostats_tracking_data.std),
+  
+  "m.time_weather" = multinom(habitat ~ doy_sd + time_minutes_sd + airTemp_C_sd + shade + cloud + precip, 
+                              data = ecostats_tracking_data.std),
+  
+  "m.weather" = multinom(habitat ~ airTemp_C_sd + shade + cloud + precip, 
+                         data = ecostats_tracking_data.std),
+  
+  "m.airtemp" = multinom(habitat ~ airTemp_C_sd, 
+                         data = ecostats_tracking_data.std),
+  
+  "m.shade" = multinom(habitat ~ shade, 
+                         data = ecostats_tracking_data.std),
+  
+  "m.cloud" = multinom(habitat ~ cloud, 
+                         data = ecostats_tracking_data.std),
+  
+  "m.precip" = multinom(habitat ~ precip, 
+                         data = ecostats_tracking_data.std),
+  
+  "m.time_flow" = multinom(habitat ~ doy_sd + time_minutes_sd + ftDischarge_cfs_sd, 
+                           data = ecostats_tracking_data.std),
+  
+  "m.flow" = multinom(habitat ~ ftDischarge_cfs_sd, 
+                      data = ecostats_tracking_data.std),
+  
+  "m.time_internaltemp" = multinom(habitat ~ doy_sd + time_minutes_sd + internalTemp_C_sd, 
+                                 data = ecostats_tracking_data.std),
+  
+  "m.internaltemp" = multinom(habitat ~ internalTemp_C_sd, 
+                            data = ecostats_tracking_data.std),
+  
+  "m.time_structure_weather" = multinom(habitat ~ doy_sd + time_minutes_sd + root_bundle + woody_debris + undercut_bank + airTemp_C_sd + shade + cloud + precip, 
+                                        data = ecostats_tracking_data.std),
+  
+  "m.structure_weather" = multinom(habitat ~ root_bundle + woody_debris + undercut_bank + airTemp_C_sd + shade + cloud + precip, 
+                                   data = ecostats_tracking_data.std),
+  
+  "m.time_structure_weather_flow" = multinom(habitat ~ doy_sd + time_minutes_sd + root_bundle + woody_debris + undercut_bank + airTemp_C_sd + shade + cloud + precip + ftDischarge_cfs_sd, 
+                                             data = ecostats_tracking_data.std),
+  
+  "m.structure_weather_flow" = multinom(habitat ~ root_bundle + woody_debris + undercut_bank + airTemp_C_sd + shade + cloud + precip + ftDischarge_cfs_sd, 
+                                        data = ecostats_tracking_data.std),
+  
+  "m.structure_weather_flow_internaltemp" = multinom(habitat ~ root_bundle + woody_debris + undercut_bank + airTemp_C_sd + shade + cloud + precip + ftDischarge_cfs_sd + internalTemp_C_sd, 
+                                                   data = ecostats_tracking_data.std),
+  
+  "m.0" = multinom(habitat ~ 1, 
+                   data = ecostats_tracking_data.std)
+)
+
+aictab(fitList)
+```
+
+```{r}
+
+require(nnet)
+require(AICcmodavg)
+
+fitList <- list(
+  "m.full" = multinom(habitat ~ doy_sd + time_minutes_sd + root_bundle + woody_debris + undercut_bank + airTemp_C_sd + shade + cloud + precip + ftDischarge_cfs_sd + internalTemp_C_sd, 
+                      data = ecostats_tracking_data.std),
+  
+  "m.full_precip_cloud" = multinom(habitat ~ doy_sd + time_minutes_sd + root_bundle + woody_debris + undercut_bank + airTemp_C_sd + shade + ftDischarge_cfs_sd + internalTemp_C_sd, 
+                      data = ecostats_tracking_data.std),
+  
+  "m.full_precip_time" = multinom(habitat ~ doy_sd + root_bundle + woody_debris + undercut_bank + airTemp_C_sd + shade + cloud + ftDischarge_cfs_sd + internalTemp_C_sd, 
+                      data = ecostats_tracking_data.std),
+  
+  "m.full_precip_bank" = multinom(habitat ~ doy_sd + time_minutes_sd + root_bundle + woody_debris + airTemp_C_sd + shade + cloud + ftDischarge_cfs_sd + internalTemp_C_sd, 
+                      data = ecostats_tracking_data.std),
+  
+  "m.full_precip_cloud_bank" = multinom(habitat ~ doy_sd + time_minutes_sd + root_bundle + woody_debris + airTemp_C_sd + shade + ftDischarge_cfs_sd + internalTemp_C_sd, 
+                      data = ecostats_tracking_data.std),
+  
+  "m.full_precip_cloud_time" = multinom(habitat ~ doy_sd + root_bundle + woody_debris + undercut_bank + airTemp_C_sd + shade + ftDischarge_cfs_sd + internalTemp_C_sd, 
+                      data = ecostats_tracking_data.std),
+  
+  "m.full_precip_cloud_shade" = multinom(habitat ~ doy_sd + time_minutes_sd + root_bundle + woody_debris + undercut_bank + airTemp_C_sd + ftDischarge_cfs_sd + internalTemp_C_sd, 
+                      data = ecostats_tracking_data.std),
+  
+  "m.full_precip_cloud_airtemp" = multinom(habitat ~ doy_sd + time_minutes_sd + root_bundle + woody_debris + undercut_bank + shade + ftDischarge_cfs_sd + internalTemp_C_sd, 
+                      data = ecostats_tracking_data.std),
+  
+  "m.full_doy" = multinom(habitat ~ time_minutes_sd + root_bundle + woody_debris + undercut_bank + airTemp_C_sd + shade + cloud + precip + ftDischarge_cfs_sd + internalTemp_C_sd, 
+                      data = ecostats_tracking_data.std),
+  
+  "m.full_time" = multinom(habitat ~ doy_sd + root_bundle + woody_debris + undercut_bank + airTemp_C_sd + shade + cloud + precip + ftDischarge_cfs_sd + internalTemp_C_sd, 
+                      data = ecostats_tracking_data.std),
+  
+  "m.full_root" = multinom(habitat ~ doy_sd + time_minutes_sd + woody_debris + undercut_bank + airTemp_C_sd + shade + cloud + precip + ftDischarge_cfs_sd + internalTemp_C_sd, 
+                      data = ecostats_tracking_data.std),
+  
+  "m.full_wood" = multinom(habitat ~ doy_sd + time_minutes_sd + root_bundle + undercut_bank + airTemp_C_sd + shade + cloud + precip + ftDischarge_cfs_sd + internalTemp_C_sd, 
+                      data = ecostats_tracking_data.std),
+  
+  "m.full_bank" = multinom(habitat ~ doy_sd + time_minutes_sd + root_bundle + woody_debris + airTemp_C_sd + shade + cloud + precip + ftDischarge_cfs_sd + internalTemp_C_sd, 
+                      data = ecostats_tracking_data.std),
+  
+  "m.full_airtemp" = multinom(habitat ~ doy_sd + time_minutes_sd + root_bundle + woody_debris + undercut_bank + shade + cloud + precip + ftDischarge_cfs_sd + internalTemp_C_sd, 
+                      data = ecostats_tracking_data.std),
+  
+  "m.full_shade" = multinom(habitat ~ doy_sd + time_minutes_sd + root_bundle + woody_debris + undercut_bank + airTemp_C_sd + cloud + precip + ftDischarge_cfs_sd + internalTemp_C_sd, 
+                      data = ecostats_tracking_data.std),
+  
+  "m.full_cloud" = multinom(habitat ~ doy_sd + time_minutes_sd + root_bundle + woody_debris + undercut_bank + airTemp_C_sd + shade + precip + ftDischarge_cfs_sd + internalTemp_C_sd, 
+                      data = ecostats_tracking_data.std),
+  
+  "m.full_precip" = multinom(habitat ~ doy_sd + time_minutes_sd + root_bundle + woody_debris + undercut_bank + airTemp_C_sd + shade + cloud + ftDischarge_cfs_sd + internalTemp_C_sd, 
+                      data = ecostats_tracking_data.std),
+  
+  "m.full_flow" = multinom(habitat ~ doy_sd + time_minutes_sd + root_bundle + woody_debris + undercut_bank + airTemp_C_sd + shade + cloud + precip + internalTemp_C_sd, 
+                      data = ecostats_tracking_data.std),
+  
+  "m.full_internaltemp" = multinom(habitat ~ doy_sd + time_minutes_sd + root_bundle + woody_debris + undercut_bank + airTemp_C_sd + shade + cloud + precip + ftDischarge_cfs_sd, 
+                      data = ecostats_tracking_data.std)
+)
+
+aictab(fitList)
+```
+
+
+
+
+
+
+
+
