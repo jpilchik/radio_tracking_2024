@@ -1,0 +1,160 @@
+---
+title: "temporal_variation_tips"
+---
+
+**Question:**
+I am working on a project trying to understand what environmental variables affect fish habitat choice. I collected fish habitat use data from June-August 2024 during both the day and at night. This was split into two 6 hour shifts that were on a swing schedule: that being, week A had shifts from 6am-noon and 6pm-midnight, and week b had shifts from 4am-10am and 2pm-8pm. Each individual fish was located and data was collected on it about once an hour, so about 6 times a shift, give or take. There were 10-15 fish per stream, among 4 streams - each stream was visited once a week. Therefore, there are about 12 sightings of each individual fish per week. The environmental variables were collected at vastly different time scales. When each fish was located, the data collected included the individual fish radio ID, the date and time, the habitat type, the gps location, the amount of shade on the water, whether there were other habitat features included like woody debris, the type of substrate, and the position in the stream horizontally (left, right, center). The cloud cover, air temperature, and precipitation data was collected once per shift. Additionally, a discrete stream flow measurement was collected once per shift. Additionally, internal fish temperature of each individual fish, relative stream flow, and water temperature was collected continuously throughout the summer at 5 minute internals, so there is a lot more of these data than of all the other data. The relative flows, water temperatures, and internal temperatures that the fish experienced in between sightings can have a major influence on the response variable I'm looking at, that being the habitat type they're choosing to be in. I have two main things I need help with: 1. what is the best way to structure this dataset with all of this different data, and 2. what is the best way to model this data which are all on vastly different time scales and when data in between observations influences observations?
+
+**Answer:**
+This is a rich dataset with a lot of complexity—you're dealing with multiple temporal and spatial scales, repeated measures, individual variation, and environmental covariates that influence habitat choice both immediately and cumulatively. Here's how I suggest approaching both structuring and modeling:
+
+# 1. Best Way to Structure the Dataset
+Your goal should be to collapse or summarize environmental variables to the same time resolution as habitat observations (i.e., once per fish per sighting). Here's a suggested structure:
+
+Main habitat use dataset (one row per sighting):
+| radioID | dateTime_EST | habitat | gps | stream | shift | shade | woody_debris | substrate | position | cloud | airTemp | precip | discharge | internalTemp | waterTemp | relFlow |
+
+How to populate each column:
+- radioID, dateTime_EST, habitat, gps, stream, shade, woody_debris, substrate, position: from direct fish observations.
+- shift: assign based on date and time using your swing schedule logic.
+- cloud, airTemp, precip, discharge: use the nearest shift-level values (within that shift).
+- internalTemp, waterTemp, relFlow: summarize continuous 5-min data between previous and current fish sightings (e.g., mean, median, max, or area under the curve).
+
+You’ll likely need to:
+- Create a "lagged" version of your sightings per fish to define the period between two sightings.
+- Join or summarize the continuous variables using timestamps between those lags.
+
+# 2. Best Way to Model the Data
+Model Type: Multinomial Logistic Regression (or Multilevel GLMM)
+Because your response variable (habitat) is categorical with >2 levels, a multinomial model or multilevel model is appropriate.
+
+Model formula example:
+```{r}
+multinom(habitat ~ shade + woody_debris + substrate + position +
+         cloud + airTemp + precip + discharge +
+         mean_internalTemp + mean_waterTemp + mean_relFlow +
+         (1 | radioID) + (1 | stream), data = final_data)
+```
+
+If you want to incorporate temporal dynamics:
+- Include time of day (hour) and doy (day of year), possibly as smoothers (if using GAMs).
+- You could also test interaction terms (e.g., shade * time_of_day).
+- For modeling influence of prior conditions, you can:
+-- Include summary stats (mean, min, variability) of variables between sightings.
+-- Use cumulative effects or rolling averages (e.g., past 1–3 hours).
+
+# Extra Notes:
+- Repeated Measures: Include radioID as a random effect to account for repeated observations of the same fish.
+- Temporal Autocorrelation: You could explore generalized additive mixed models (GAMMs) or state-space models if habitat use is autocorrelated over time.
+- Imbalance in Predictors: Make sure to standardize continuous variables and check for collinearity.
+
+**Question:**
+I want to understand more how to summarize the continuous data between sightings. I want to understand the pros and cons of all the options. I also want to understand how best to do this considering the inconsistent breaks in sightings, that being 1 hour apart within shifts, 6 hours apart between shifts, and 1 week apart between weeks
+
+**Answer:**
+This is an important and nuanced part of your analysis—summarizing continuous environmental data between fish sightings requires decisions that impact your model's ability to capture biologically relevant patterns. Here's a breakdown of approaches, their pros/cons, and how to think about inconsistent time gaps like hourly, 6-hour, and weekly breaks.
+
+# Goal Recap
+You want to represent what a fish experienced in terms of internal temperature, water temperature, and relative flow leading up to a habitat decision (i.e., the time of each fish sighting).
+
+# Defining the Window Between Sightings
+You can define the summary window as:
+- Previous Sighting ➝ Current Sighting (the default, most direct window)
+- Or: a fixed lookback window (e.g., 30 minutes, 1 hour, 6 hours before sighting)
+
+Key challenge: Time between sightings is inconsistent:
+- Within shift: ~1 hour → short-term influences are relevant.
+- Between shifts: 6–12 hours → unclear if fish memory or lag effects extend this long.
+- Between weeks: ~1 week → data may not reflect carryover effects; consider excluding these long gaps from summary.
+
+# Summary Options for Continuous Data
+Let’s walk through each summarization method and its trade-offs:
+
+1. Mean value
+- What it tells you: Central tendency of the variable experienced by the fish.
+- Pros: Simple, smooths out short-term noise.
+- Cons: May miss extreme events that could drive behavior.
+- Best for: Variables with gradual influence (e.g., background stream temperature).
+
+2. Max / Min
+- What it tells you: Extremes experienced by the fish.
+- Pros: Useful when habitat choice is triggered by stress thresholds (e.g., temp > 20°C).
+- Cons: Sensitive to outliers, might not reflect sustained exposure.
+
+3. Standard deviation / Range
+- What it tells you: Variability or fluctuation in the environment.
+- Pros: Could indicate habitat instability.
+- Cons: Harder to interpret biologically unless tied to hypothesis.
+
+4. Weighted Mean (recent time weighted more)
+- What it tells you: Gives higher importance to recent conditions.
+- Pros: More biologically relevant if fish behavior responds to recent stimuli.
+- Cons: More complex to implement; need to define a decay function (e.g., exponential).
+
+5. Area Under the Curve (AUC)
+- What it tells you: Cumulative exposure over time (e.g., total temperature load).
+- Pros: Captures both duration and intensity.
+- Cons: Can correlate with mean unless time window varies widely.
+
+# Handling Unequal Time Gaps
+This is where it gets tricky. Here are strategies to address the 1hr vs. 6hr vs. 1wk gaps:
+
+Option A: Use only previous sighting ➝ current sighting, but censor gaps > 4 hours
+- Avoids mixing very different behavioral states.
+- Pros: More realistic.
+- Cons: You'll drop some data (like first sightings in a shift).
+
+Option B: Cap the summary window (e.g., always summarize last 1 hour)
+- Easy to standardize.
+- Pros: Cleaner model input, easier comparisons.
+- Cons: Risk of missing important events in longer gaps.
+
+Option C: Include time-since-last-sighting as a covariate
+- Helps account for different exposure durations.
+- Pros: Lets model learn whether longer gaps dilute or amplify effects.
+- Cons: Adds model complexity.
+
+# Implementation in R (Conceptual)
+Assuming your data has:
+- fish_data with radioID and time of sightings
+- cont_data with 5-min interval continuous data (internalTemp, waterTemp, relFlow)
+
+You could:
+```{r}
+library(dplyr)
+library(fuzzyjoin)
+
+# For each sighting, get the previous sighting for that fish
+fish_data <- fish_data %>%
+  arrange(radioID, trackedTime_EST) %>%
+  group_by(radioID) %>%
+  mutate(prev_time = lag(trackedTime_EST))
+
+# Join with continuous data within those time windows
+joined_data <- fish_data %>%
+  rowwise() %>%
+  do({
+    cont_sub <- cont_data %>%
+      filter(radioID == .$radioID,
+             timestamp >= .$prev_time,
+             timestamp <= .$trackedTime_EST)
+
+    # summarize: you could include mean, max, sd, AUC etc.
+    summarize_data <- cont_sub %>%
+      summarize(mean_internalTemp = mean(internalTemp),
+                max_internalTemp = max(internalTemp),
+                sd_internalTemp = sd(internalTemp))
+
+    bind_cols(., summarize_data)
+  })
+```
+
+# Recommendations
+1. Use mean + max + sd summaries (or combinations) between sightings for each continuous variable.
+2. Exclude gaps > 6 hours, or test if modeling them separately affects interpretation.
+3. Add a covariate for time-since-last-sighting to control for gap length.
+4. Try both previous-sighting and fixed-window (e.g., last 1hr) summaries, then compare model fit (e.g., AIC or cross-validation).
+
+
+
+
